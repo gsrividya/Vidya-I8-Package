@@ -1,0 +1,618 @@
+<apex:page showheader="false" controller="Modify_Task_cntrl" standardStylesheets="false">
+    <apex:form id="frm">
+    <apex:stylesheet value="{!URLFOR($Resource.FontAwesome, '/font-awesome-4.7.0/css/font-awesome.min.css')}" />
+    <style>       
+        .popover {background-color: #e3f3ff !important;}        
+        .table.dataTable thead .sorting {  background: none !important;} 
+        a {color: #0070d2;}
+        a:hover, a:active, a:focus {outline: none;text-decoration: underline;color: #005fb2; } 
+        hr{margin-top:10px;margin-bottom:10px;}
+        th{text-align:center;}
+        .custPopup{  border-width: 0px;  z-index: 9999; padding:10px;  position: fixed;width: 60%;left: 20%;top:17%; }
+        .popupBackground{ background-color:black; opacity: 0.20; filter: alpha(opacity = 20); position: fixed;  width: 100%;  height: 100%; top: 0; left: 0; z-index: 9998; }
+        @media (min-width: 200px) and (max-width: 849px){
+               .custPopup{  top:1%; }
+        }
+        body{font-size : 135%}
+        
+    </style>
+       
+        <div class="wrapper">
+           <apex:outputPanel id="hdr">
+                <apex:outputPanel rendered="{!CurSOE.Id != null}"> <c:SOEPageHeader sid="{!CurSOE.Id}"></c:SOEPageHeader> </apex:outputPanel>
+                <apex:outputPanel rendered="{!MISID != null}"> <c:SOEPageHeader object="{!MISID}"></c:SOEPageHeader> </apex:outputPanel> 
+            </apex:outputPanel><br/>
+            <div  style="min-height:0px!important">
+                <!-- Main content -->
+                <section class="content  user-scalable=no">
+                    <form id="frmTasksOverview" class="form-group">                        
+                        <apex:outputPanel rendered="{!TaskId != null}" id="panel3"> 
+<apex:outputPanel rendered="{!displayPopUp}" id="panel5">
+                <apex:outputPanel styleClass="popupBackground" layout="block"/>
+                <apex:outputPanel styleClass="custPopup" layout="block" >
+                    <div class="box box-primary"  >
+                        <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                            <div class="row">  <i class="fa fa-file-text"></i>  <p style="display: inline; font-size: 20px; font-weight: bold;">{!active}</p>  </div> <hr/>
+                            <div class="row">
+                                <div class="col-sm-4 col-xs-12 lbl">Members</div>
+                                <div class="col-sm-8 col-xs-12">
+                                    <apex:selectList value="{!Members}" multiselect="true" size="5" style="width:60%">
+                                        <apex:selectOptions value="{!items}" />
+                                    </apex:selectList>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <apex:outputPanel rendered="{!active == 'Milestone'}">
+                                    <div class="col-sm-4 col-xs-12 lbl">Implementation Managers</div>
+                                    <div class="col-sm-8 col-xs-12"> <apex:inputCheckbox value="{!com.MileStone_for_default_Imp_Mngrs__c}" />  </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!active == 'Ready'}">
+                                    <div class="col-sm-4 col-xs-12 lbl">Task Owner</div>
+                                    <div class="col-sm-8 col-xs-12">   <apex:inputCheckbox value="{!com.Default_Owner_Task_ready__c}" />  </div>
+                                </apex:outputPanel>                               
+                                <apex:outputPanel rendered="{!active == 'Completed'}">
+                                    <div class="col-sm-4 col-xs-12 lbl">Implementation Managers</div>
+                                    <div class="col-sm-8 col-xs-12">  <apex:inputCheckbox value="{!com.Default_Owner_Completed__c}" />  </div>
+                                </apex:outputPanel>                                    
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4 col-xs-12 lbl">Additional Emails<br/>(Comma separated mails)</div>
+                                <div class="col-sm-8 col-xs-12">
+                                    <apex:inputField value="{!com.Additinal_Emails_Milestone__c}" rendered="{!active == 'Milestone'}" style="width:90%"/>
+                                    <apex:inputField value="{!com.Additinal_Emails_Task_Ready__c}" rendered="{!active == 'Ready'}" style="width:90%"/>
+                                    <apex:inputField value="{!com.Additional_Emails_Completed__c}" rendered="{!active == 'Completed'}" style="width:90%"/>
+                                </div> 
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4 col-xs-12 lbl">Additional Phones<br/> (Country code followed by Phone number)</div>
+                                <div class="col-sm-8 col-xs-12">
+                                    <apex:inputField value="{!com.Additional_Phone_Milestone__c}" rendered="{!active == 'Milestone'}" style="width:90%"/>
+                                    <apex:inputField value="{!com.Additional_Phone_Task_Ready__c}" rendered="{!active == 'Ready'}" style="width:90%"/>
+                                    <apex:inputField value="{!com.Additional_Phone_Completed__c}" rendered="{!active == 'Completed'}" style="width:90%"/>
+                                </div> 
+                            </div>
+                            <div class="row">
+                               <center>
+                                    <apex:commandButton value="Add" alt="Add" styleClass="btn btn-primary btn-sm" action="{!UpdateMembers}" rerender="panel3" style="padding-left: 15px; padding-right:15px;"/>&nbsp;
+                                    <apex:commandButton value="Close" alt="close" styleClass="btn btn-primary btn-sm" action="{!CancelPopUp}" rerender="panel3" style="padding-left: 15px; padding-right:15px;"/>
+                                </center>
+                            </div>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+            </apex:outputPanel>
+                            <div class="box box-info" >
+                                <apex:outputPanel id="panel1">
+                                    <div class="box-body" style="padding: 0px; margin-left: 15px;">                                        
+                                        <div class="row" >
+                                           <div id="testdiv"  >
+                                                <apex:outputPanel rendered="{!errorbool == true}" >                                
+                                                   <div class="col-lg-12" style="padding-right:30px;"><h4 id="messages" class="bg-success" style="text-transform:uppercase;"><span><center> {!$Label.EditStack010}</center></span></h4></div>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!errormessage != null}" >  <div class="col-md-12"> <div class="alert alert-danger" role="alert" id="err"> {!errormessage} </div> </div></apex:outputPanel>
+                                                <script type="text/javascript">
+                                                    $(function() {
+                                                            $("#testdiv").delay(5000).fadeOut(0);
+                                                    });
+                                                </script>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-2 col-sm-12">
+                                                <div class="row">
+                                                    <div class="col-md-5 col-sm-3 lbl"><label>Task Id</label></div>                                                    
+                                                    <div class="col-md-7 col-sm-6"> <span>{!CurTask.ID_Text__c}</span></div>
+                                                </div>                                                
+                                            </div>
+                                            <div class="col-md-2 col-sm-12">                                   
+                                                <div class="row">
+                                                    <div class="col-md-3 col-sm-3 lbl"> <label>Stage</label> </div>                                                    
+                                                    <div class="col-sm-6 col-md-4"><span>{!CurTask.Stage__c}</span> </div>
+                                                </div>                                                
+                                            </div>
+                                            <div class="col-md-2">                                   
+                                                <div class="row">
+                                                    <div class="col-md-6 col-sm-3 lbl"> <label>Stage Level</label> </div>                                                    
+                                                    <div class="col-sm-6 col-md-6"><span>{!CurTask.Stage_Level__c}</span> </div>
+                                                </div>                                                
+                                            </div>
+                                            <div class="col-md-6 col-sm-12" style="text-align: right">
+                                                <apex:actionStatus id="updateStatus">
+                                                    <apex:facet name="start">
+                                                       <img src="{!$Resource.Running}" alt="" height="25" width="25" /> Processing...
+                                                    </apex:facet>
+                                                </apex:actionStatus>                                               
+                                                <apex:commandButton value="Save" action="{!SaveTask}" styleClass="btn btn-primary" rerender="panel3" status="updateStatus" rendered="{!locked == false && CONTAINS(ImpMgrMapKey,$User.Id)}" style="padding-left: 15px; padding-right:15px;"/>
+                                                <apex:commandButton value="Delete"  styleClass="btn btn-primary"   action="{!deletetask}" rendered="{!CountTask > 3 && CurTask.Is_Stack__c == false && CurTask.End_Stack__c == false && output == false && locked == false && CONTAINS(ImpMgrMapKey,$User.Id)}"  onclick="if(!confirm('Are you sure?')) return false;" style="padding-left: 15px; padding-right:15px;"/>
+                                                    <apex:commandLink status="updateStatus" value="Run" action="{!ExecuteTask}" reRender="panel3" onclick="if(!confirm('Please confirm you want to Run the task')) return false;" styleClass="btn btn-primary" rendered="{!(CurTask.Status__c == i8.STATUS_READY && locked == false && CONTAINS(ImpMgrMapKey,$User.Id))}">
+                                                        <apex:param name="ActiveTaskId" value="{!CurTAsk.ID}" assignTo="{!ActiveTaskId}"/>
+                                                    </apex:CommandLink>
+                                                    <apex:commandLink status="updateStatus" value="Force Complete" action="{!ForceCompleteTask}" oncomplete="ForceComplete();" onclick="if(!confirm('Please confirm you want to Force complete the task')) return false;" styleClass="btn btn-primary" rendered="{!(CurTask.Status__c == i8.STATUS_RUNNING && CurTask.Is_Stack__c == false && CurTask.End_Stack__c == false && locked == false && CONTAINS(ImpMgrMapKey,$User.Id))}">
+                                                        <apex:param name="ActiveTaskId" value="{!CurTAsk.ID}" assignTo="{!ActiveTaskId}"/>
+                                                    </apex:CommandLink>
+                                                    <apex:commandLink value="Suspend" action="{!TaskSuspend}"  onclick="if(!confirm('Please confirm you want to Suspend the task')) return false;" styleClass="btn btn-primary" rendered="{!(CurTask.Status__c == i8.STATUS_RUNNING && CurTask.Is_Stack__c == false && CurTask.End_Stack__c == false && locked == false && CONTAINS(ImpMgrMapKey,$User.Id))}">
+                                                        <apex:param name="ActiveTaskId" value="{!CurTAsk.ID}" assignTo="{!ActiveTaskId}"/>
+                                                    </apex:CommandLink>
+                                                    <apex:commandLink status="updateStatus" value="ReRun" action="{!TaskReExecute}"  reRender="panel3" onclick="if(!confirm('Please confirm you want to ReRun the task')) return false;" styleClass="btn btn-primary" rendered="{!(CurTask.Status__c == i8.STATUS_RERUN && CurTask.SOE__r.Status__c != i8.STATUS_SUSPENDED && locked == false && CONTAINS(ImpMgrMapKey,$User.Id))}">
+                                                        <apex:param name="ActiveTaskId" value="{!CurTAsk.ID}" assignTo="{!ActiveTaskId}"/>
+                                                    </apex:CommandLink>
+                                                    <apex:commandLink status="updateStatus" value="Complete"  action="{!CompleteTask1}" onclick="if(!confirm('Please confirm you want to Complete the task')) return false;" styleClass="btn btn-primary" rendered="{!(CurTask.Status__c == i8.STATUS_RUNNING && CurTask.Is_Stack__c == false && locked == false && CONTAINS(ImpMgrMapKey,$User.Id))}">
+                                                        <apex:param name="ActiveTaskId" value="{!CurTAsk.ID}" assignTo="{!ActiveTaskId}"/>
+                                                    </apex:commandLink>
+                                                <apex:commandButton value="Prev" action="{!BeforeTask}" rendered="{!!before && CurSOE != null}" oncomplete="nexttask()" reRender="panel3" styleClass="btn btn-primary" status="updateStatus" style="padding-left: 15px; padding-right:15px;"/>
+                                                <apex:commandButton value="Next" action="{!AfterTask}" rendered="{!!after && CurSOE != null}" oncomplete="nexttask()" reRender="panel3" styleClass="btn btn-primary" status="updateStatus" style="padding-left: 15px; padding-right:15px;"/>
+                                                <apex:commandButton value="Cancel" action="{!CancelTask}" styleClass="btn btn-primary" style="padding-left: 15px; padding-right:15px;"/>&nbsp;&nbsp;
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                            <apex:outputPanel id="panel4">                                 
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div id="showdiv2">
+                                            <div class="box box-info">
+                                                <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                                    <div class="row">
+                                                        <div class="col-sm-6"> <h4><i class="fa fa-tasks"></i>&nbsp;<b>Modify Task</b></h4> </div>
+                                                        <div class="col-sm-6 text-right"> </div>
+                                                    </div>                                                    
+                                                    <hr />
+                                                    <div class="row">
+                                                        <div class="col-sm-8">
+                                                            <div class="row">
+                                                                <div class="col-sm-3 col-xs-12 lbl"><label>Task title</label></div>
+                                                                <div class="col-sm-6 col-xs-12">
+                                                                    <apex:inputField value="{!CurTask.Task_Title__c}" styleclass="col-sm-10" style="padding:0px;" rendered="{! output ==false}" />
+                                                                    <apex:outputField value="{!CurTask.Task_Title__c}" rendered="{!output == true}"/>
+                                                                </div>                                                                
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-sm-3 col-xs-12 lbl"> <label>Team</label> </div>
+                                                                <div class="col-sm-6 col-xs-12">
+                                                                    <apex:inputField value="{!CurTask.Team__c}" rendered="{!  output == false}"/>
+                                                                    <apex:outputField value="{!CurTask.Team__c}" rendered="{!output == true}"/>
+                                                                </div>
+                                                                <div class="col-sm-3">  </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-sm-3 col-xs-12 lbl"> <label>Owner</label> </div>
+                                                                <div class="col-sm-6 col-xs-12">
+                                                                    <apex:inputField value="{!CurTask.Owner__c}" rendered="{!output == false}"/>
+                                                                    <apex:outputField value="{!CurTask.Owner__c}"  rendered="{!output == true}"/>
+                                                                </div> 
+                                                            </div>
+                                                            <apex:actionRegion rendered="{!CurTask.Is_Stack__c == false}">
+                                                                <div class="row">
+                                                                    <div class="col-sm-3 col-xs-12 lbl"> <label>Time Bound</label></div>
+                                                                    <div class="col-sm-6 col-xs-12">
+                                                                        <apex:inputField value="{!CurTask.Time_Bound__c}" rendered="{! output == false && CurTask.Jump__c==false}" />
+                                                                        <apex:outputField value="{!CurTask.Time_Bound__c}" style="width:300px;" rendered="{!output == true || CurTask.Jump__c==True}"/>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:actionRegion>
+                                                            <apex:actionRegion rendered="{!CurTask.Jump__c == False && CurTask.Is_Stack__c == false && output == false}">
+                                                                <div class="row">
+                                                                    <div class="col-sm-3 col-xs-12 lbl"> <label>Update Duration</label> </div>
+                                                                    <div class="col-sm-9 col-xs-12">
+                                                                        <div class="input-group">
+                                                                            <input type="number" id="days" name="days" style="padding:0px;" class="col-sm-3 spin-button_days spin-button" value="{!CurTask.Days__c}"  min="0"></input>
+                                                                            <apex:outputlabel styleclass="col-sm-2" style="padding:0px;">Days</apex:outputlabel>
+                                                                            <input type="number" id="hours" name="hours" style="padding:0px;" class="col-sm-2 spin-button_days spin-button" value="{!CurTask.Hours__c}"  max="23" min="0"></input>
+                                                                            <apex:outputlabel styleclass="col-sm-2" style="padding:0px;">Hrs</apex:outputlabel>
+                                                                            <input type="number" id="minutes" name="minutes" style="padding:0px;" class="col-sm-2 spin-button_days spin-button" value="{!CurTask.Minutes__c}"  max="59" min="0"></input>
+                                                                            <apex:outputlabel styleclass="col-sm-1" style="padding:0px;">Mins</apex:outputlabel>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </apex:actionRegion>
+                                                            <apex:outputPanel rendered="{!CurTask.Jump__c == true || CurTask.Is_Stack__c == true || output == true}">
+                                                                <div class="row">
+                                                                    <div class="col-sm-3 col-xs-12 lbl">  <label>Duration</label>  </div>
+                                                                    <div class="col-sm-9 col-xs-12"> <apex:outputField value="{!curTask.Duration__c}"/></div>
+                                                                </div>        
+                                                            </apex:outputPanel>
+                                                            <apex:actionRegion rendered="{!CurTask.Stage__c == i8.STAGE_IMP && CurTask.Is_Stack__c == false && CurTask.Stage_Level__c == i8.CONTEXT_IMP}">
+                                                                <div class="row">
+                                                                    <div class="col-sm-3 col-xs-12 lbl">
+                                                                        <label><apex:outputLabel rendered="{!CurTask.Critical_Path__c == 'C' }">Critical Path</apex:outputLabel>
+                                                                               <apex:outputLabel rendered="{!CurTask.Critical_Path__c == null ||CurTask.Critical_Path__c == 'UC'}">User Defined CP</apex:outputLabel> 
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="col-sm-9 col-xs-12" >
+                                                                        <apex:inputCheckbox value="{!CurTask.User_Defined_Critical_Path__c}" style="width: 40px;" rendered="{!CurTask.Critical_Path__c != 'C'&&  output == false }"/>
+                                                                        <b><apex:outputField value="{!CurTask.Critical_Path__c}" rendered="{!CurTask.Critical_Path__c == 'C'}"/></b>
+                                                                    </div>                                                   
+                                                                </div>
+                                                            </apex:actionRegion>
+                                                        </div>
+                                            <div class="col-sm-4 ">
+                                                <div class="row">
+                                                    <div class="col-sm-5 col-xs-12 lbl"> <label>Task Status</label> </div>
+                                                    <div class="col-sm-6 col-xs-12"> <apex:outputField value="{!CurTask.State__c}" title="{!CurTask.Status__c}"/></div>
+                                                </div>
+                                                <apex:actionRegion rendered="{!CurTask.Is_Stack__c == false && CurTask.End_Stack__c == false}">
+                                                    <div class="row">
+                                                        <div class="col-sm-5 col-xs-12 lbl"> <label>Dependency</label>  </div>
+                                                        <div class="col-sm-7 col-xs-12"> 
+                                                            <apex:commandLink styleclass="HoverPopup" action="{!OpenDependency}" rendered="{!CurTask.Is_Stack__c == false && CurTask.End_Stack__c == false}"> 
+                                                                <apex:outputPanel rendered="{!CurTask.Dependency_Type__c == i8.NODEP}"><i class="fa fa-chain-broken" style="color:black;" ></i></apex:outputPanel>
+                                                                <apex:outputPanel rendered="{!CurTask.Dependency_Type__c == i8.LINKDEP}"><i class="fa fa-link" style="color:black;" ></i></apex:outputPanel>
+                                                                <apex:outputPanel rendered="{!CurTask.Dependency_Type__c == i8.INTERNALDEP }"><i class="fa fa-link" ></i></apex:outputPanel>
+                                                                <apex:outputPanel rendered="{!CurTask.Dependency_Type__c == i8.EXTERNALDEP }"><i class="fa fa-link" style="color:red;"></i></apex:outputPanel>
+                                                                <div style="width:pixels|%|relative_length" class="popovercontent hide table1" >
+                                                                    <table><tr><td> <b>Predecessors</b></td></tr></table>
+                                                                    <apex:outputLabel value="-- None --" rendered="{!PreDepList.size == 0}"/>
+                                                                    <apex:dataTable value="{!CurTask.Dependencies__r}" var="dep" width="100%" styleClass="table1">
+                                                                        <apex:column value="{!dep.Type__c}" rendered="{!dep.Dependent_Type__c==i8.PREDECESSOR}"/>
+                                                                        <apex:column rendered="{!dep.Dependent_Type__c==i8.PREDECESSOR}">-</apex:column>
+                                                                        <apex:column value="{!CurTask.State__c }" rendered="{!dep.Dependent_Type__c==i8.PREDECESSOR}"/>
+                                                                        <apex:column value="{!dep.Preceeding_Task__r.ID_Text__c}" rendered="{!dep.Dependent_Type__c==i8.PREDECESSOR}"/>
+                                                                        <apex:column rendered="{!dep.Dependent_Type__c==i8.PREDECESSOR}">-</apex:column>
+                                                                        <apex:column value="{!dep.Preceeding_Task__r.Task_Title__c }" rendered="{!dep.Dependent_Type__c==i8.PREDECESSOR}" style="nowrap"/>
+                                                                    </apex:dataTable>&nbsp;
+                                                                    <table ><tr><td> <b>Successors</b></td></tr></table>
+                                                                    <apex:outputLabel value="-- None --" rendered="{!SucDepList.size == 0}"/>
+                                                                    <apex:dataTable value="{!CurTask.Dependencies__r}" var="dep" width="100%" styleClass="table1">
+                                                                        <apex:column value="{!dep.Type__c}" rendered="{!dep.Dependent_Type__c==i8.SUCCESSOR}"/>
+                                                                        <apex:column rendered="{!dep.Dependent_Type__c==i8.SUCCESSOR}">-</apex:column>
+                                                                        <apex:column value="{!CurTask.State__c }" rendered="{!dep.Dependent_Type__c==i8.SUCCESSOR}"/>
+                                                                        <apex:column value="{!dep.Preceeding_Task__r.ID_Text__c}" rendered="{!dep.Dependent_Type__c==i8.SUCCESSOR}"/>
+                                                                        <apex:column rendered="{!dep.Dependent_Type__c==i8.SUCCESSOR}">-</apex:column>
+                                                                        <apex:column value="{!dep.Preceeding_Task__r.Task_Title__c }" rendered="{!dep.Dependent_Type__c==i8.SUCCESSOR}"/>
+                                                                    </apex:dataTable>
+                                                                </div>
+                                                            </apex:commandLink>                                                            
+                                                        </div>  
+                                                    </div>
+                                                </apex:actionRegion>
+                                                <apex:actionRegion >
+                                                    <div class="row">
+                                                        <div class="col-sm-5 col-xs-12 lbl">  <label>Documents</label> </div>                                                        
+                                                        <div class="col-sm-6 col-xs-12">
+                                                            <apex:commandLink action="{!openDocuments}">                                                                        
+                                                                <apex:outputPanel rendered="{! CurTask.Attachments.Size == 0 }"> <i class="fa fa-file-text fa-lg" title="No Documents attached, click to add" style="color:black;"></i></apex:outputPanel>
+                                                                <apex:outputPanel rendered="{! CurTask.Attachments.Size > 0 }"> <i class="fa fa-file-text fa-lg" title="Documents attached, click to add & view" ></i></apex:outputPanel>                                                                        
+                                                            </apex:commandLink>
+                                                        </div>
+                                                    </div>
+                                                </apex:actionRegion>
+                                                <apex:actionRegion rendered="{!CurTask.Is_Stack__c == False && CurTask.End_Stack__c == False}">
+                                                    <div class="row">
+                                                        <div class="col-sm-5 col-xs-12 lbl"> <label>Jump</label> </div>
+                                                        <div class="col-sm-6 col-xs-12">
+                                                            <apex:inputField value="{!CurTask.Jump__c}" rendered="{! output == false && jump == false && CountTask > 3}"/>
+                                                            <apex:outputField value="{!CurTask.Jump__c}" rendered="{! output == true || CountTask <= 3}"/>
+                                                        </div>
+                                                    </div>
+                                                </apex:actionRegion>
+                                                <apex:actionRegion rendered="{!CurTask.Is_Stack__c == false && CurTask.End_Stack__c == false && CurTask.Stage_Level__c == i8.CONTEXT_IMP && CurTask.Stage__c == i8.STAGE_IMP && CurTask.Jump__c == false && CurTask.BO_Process__c == i8.BO_AUTOMATED}">
+                                                    <div class="row">
+                                                        <div class="col-sm-5 col-xs-12 lbl">   <label>Backout</label></div>                                                        
+                                                        <div class="col-sm-6 col-xs-12">
+                                                            <apex:inputField value="{!CurTask.BackOut__c}" rendered="{! CurTask.BackOut__c == false && output == false }"/>
+                                                            <apex:OutputField value="{!CurTask.BackOut__c}" rendered="{!CurTask.BackOut__c == true || output == true }"/>
+                                                        </div>
+                                                    </div>
+                                                </apex:actionRegion>                                                
+                                                <div class="row">
+                                                    <div class="col-sm-5 col-xs-12 lbl"> <label>MI Keyword</label></div>                                                    
+                                                    <div class="col-sm-6 col-xs-12">
+                                                        <apex:inputField value="{!CurTask.MI_Keyword__c}" rendered="{! output == false}"/>
+                                                        <apex:OutputField value="{!CurTask.MI_Keyword__c}" rendered="{!output == true}"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                        
+                                        <apex:actionRegion rendered="{! Curtask.Jump__c == True && CurTask.Is_Stack__c == false && CurTask.End_Stack__c == False}">
+                                            <div class="row">
+                                                <div class="col-sm-2 col-xs-12 lbl"> <label>Jumped Duration</label> </div>                                                
+                                                <div class="col-sm-9 col-xs-12"><span><apex:outputField value="{!CurTask.Jumped_Duration__c}"/></span></div>
+                                            </div>
+                                        </apex:actionRegion>                                        
+                                        <div class="row ">
+                                            <div class="col-sm-2 col-xs-12 lbl"> <label>Description</label></div>                                            
+                                            <div class="col-sm-9 col-xs-12">
+                                                <apex:inputTextarea rows="2" style="padding:0px;" value="{!CurTask.Description__c}" disabled="{!output == true}" styleclass="col-sm-12"/>
+                                            </div>
+                                        </div>
+                                        <div class="row ">
+                                            <div class="col-sm-2 col-xs-12 lbl"> <label>Technical Detail</label> </div>                                            
+                                            <div class="col-sm-9 col-xs-12">
+                                                <apex:inputTextarea rows="2" style="padding:0px;" value="{!CurTask.Technical_Detail__c}" disabled="{!output == true}"  styleclass="col-sm-12"/>
+                                            </div>
+                                        </div>
+                                        <div class="row ">
+                                            <div class="col-sm-2 col-xs-12 lbl"> <label>Technical Skills</label> </div>                                            
+                                            <div class="col-sm-9 col-xs-12">
+                                                <apex:inputTextarea rows="2" style="padding:0px;" value="{!CurTask.Technical_Skills__c}" disabled="{! output == true}" styleclass="col-sm-12"/>
+                                            </div>
+                                        </div>
+                                        <div class="row ">
+                                            <div class="col-sm-2 col-xs-12 lbl"> <label>Comments</label> </div>                                            
+                                            <div class="col-sm-9 col-xs-12">
+                                                <apex:inputTextarea rows="2" id="comments" value="{!CurTask.Comments__c}" disabled="true" styleclass="col-sm-12"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2 col-xs-12 lbl"> <label>Add Comments</label> </div>                                            
+                                            <div class="col-sm-9 col-xs-12">                                                
+                                                <apex:inputField id="textcomm" value="{!CurTask.Add_Comments__c}" styleclass="col-xs-9"/> 
+                                                <apex:commandButton value="Add Comment" action="{!AddNotes}" rerender="comments, textcomm" styleclass="col-xs-3"/>
+                                            </div>
+                                        </div>
+                                        <apex:outputPanel id="review-op" rendered="{!CurTask.SOE__r.Status__c == i8.STATUS_REVIEW && CurTask.SOE__r.QA_Review__c == 'Feedback'}">
+                                            <div class="row ">
+                                                <div class="col-sm-2 col-xs-12 lbl"> <label>Review Comments</label> </div>                                                
+                                                <div class="col-sm-9 col-xs-12">
+                                                    <apex:inputTextarea rows="2" value="{!CurTask.Review_Comments__c}" disabled="true" styleclass="col-sm-12"/>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2 col-xs-12 lbl"><label>Add Review Comments</label></div>                                                
+                                                <div class="col-sm-9 col-xs-12">
+                                                    <apex:inputText value="{!review_comments}" styleclass="col-xs-9"/> 
+                                                    <apex:commandButton value="Add Comment" action="{!AddNotes1}" rerender="review-op" styleclass="col-xs-3"/>
+                                                </div>
+                                            </div>
+                                        </apex:outputPanel>
+                                        <div class="row">
+                                            <div class="col-sm-2 col-xs-12 lbl"> <label>Modified By</label>  </div>                                            
+                                            <div class="col-sm-2 col-xs-12">{!CurTask.LastModifiedBy.Name}</div>
+                                            <apex:outputPanel rendered="{!output == true}">
+                                                <div class="col-sm-2 col-xs-12 lbl"> <label>Activated By</label> </div>
+                                                <div class="col-sm-2 col-xs-12"> <apex:outputField value="{!CurTask.Activated_By__c}"/> </div>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!CurTask.Status__c == I8.STATUS_COMPLETED}">
+                                                <div class="col-sm-2 col-xs-12 lbl"><label>Completed By</label> </div>                                            
+                                                <div class="col-sm-2 col-xs-12"><apex:outputField value="{!CurTask.Completed_By__c}"/> </div>
+                                            </apex:outputPanel>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-2 col-xs-12 lbl" > <label>Secondary User</label> </div>
+                                            <div class="col-md-2 col-xs-12"><apex:inputField value="{!CurTask.Secoundary_User__c}"/> </div>
+                                              <div class="col-md-1"/>
+                                            <div class="col-md-1 col-xs-12 lbl" > <label>Manager</label></div>
+                                            <div class="col-md-2 col-xs-12"> <apex:inputField value="{!CurTask.Manager__c}"/> </div>
+                                            <div class="col-lg-1 col-xs-12 lbl" > <label>Information</label>  </div>
+                                            <div class="col-lg-2 col-xs-12"> <apex:inputField value="{!CurTask.Info__c}"/> </div>                                            
+                                        </div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="col-md-4">
+                                <div>
+                                    <div class="box box-info">
+                                        <div class="box-body" style="padding: 5px; margin-left: 15px;">                                            
+                                            <h4><span> <!-- img src="Images/titleImage.png" / --><i class="fa fa-share-alt"></i>
+                                                <p style="display:inline;font-size:20px"><b>Dependencies</b></p></span></h4>                                            
+                                            <hr />
+                                            <h5>Predecessors</h5>
+                                            <APEX:ACTIONRegion rendered="{! TaskId != null &&  PreDepList.Size==0}">  <center>--None--</center> </APEX:ACTIONRegion>
+                                            <APEX:ACTIONRegion rendered="{! TaskId != null && PreDepList != null && PreDepList.Size>0}">
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover table-condensed table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>TYPE</th>
+                                                                <th>SOE</th>
+                                                                <th>TASK</th>
+                                                                <th>TITLE</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <apex:repeat value="{!PreDepList}" var="dep">
+                                                                <tr>
+                                                                    <td data-label="Type"><CENTER><apex:outputField value="{!dep.Type__c }"/></CENTER></td>
+                                                                    <td data-label="SOE"><CENTER><apex:outputField value="{!dep.Preceeding_SOE__r.Name }"/></CENTER></td>
+                                                                    <td data-label="Task"><CENTER><apex:outputField value="{!dep.Preceeding_Task__r.ID_Text__c }"/></CENTER></td>
+                                                                    <td data-label="Title"><CENTER><apex:outputField value="{!dep.Preceeding_Task__r.Task_Title__C }"/></CENTER></td>
+                                                                </tr>
+                                                            </apex:repeat>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </APEX:ACTIONRegion>                                            
+                                            <h5>Successors</h5>
+                                            <APEX:ACTIONRegion rendered="{! TaskId != null && SucDepList.Size==0}">  <center>--None--</center>   </APEX:ACTIONRegion>
+                                            <APEX:ACTIONRegion rendered="{! TaskId != null && SucDepList != null && SucDepList.Size>0}">
+                                                <div class="table-responsive">
+                                                    <table class="table table-hover table-condensed table-bordered table1">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>TYPE</th>
+                                                                <th>SOE</th>
+                                                                <th>TASK</th>
+                                                                <th>TITLE</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <apex:repeat value="{!SucDepList}" var="dep">
+                                                                <tr>
+                                                                    <td data-label="Type"><CENTER><apex:outputField value="{!dep.Type__c }"/></CENTER></td>
+                                                                    <td data-label="SOE"><CENTER><apex:outputField value="{!dep.Preceeding_SOE__r.Name }"/></CENTER></td>
+                                                                    <td data-label="Task"><CENTER><apex:outputField value="{!dep.Preceeding_Task__r.ID_Text__c }"/></CENTER></td>
+                                                                    <td data-label="Title"><CENTER><apex:outputField value="{!dep.Preceeding_Task__r.Task_Title__C }"/></CENTER></td>
+                                                                </tr>
+                                                            </apex:repeat>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </APEX:ACTIONRegion>                                            
+                                        </div>
+                                    </div>
+                                </div>
+                        <apex:outputPanel id="block">
+                                <div>
+                                    <div class="box box-info">                                       
+                                        <div class="box-body" style="padding: 5px; margin-left: 15px;" id="comm">
+                                            <h4><b><i class="fa fa-commenting-o"></i> &nbsp;Communications</b></h4>                                       
+                                            <hr />
+                                            <div class="container-fluid" >                                               
+                                                <div class="row" style="padding-top:0px;">
+                                                    <apex:inputField value="{!CurTask.Milestone__c}" rendered="{!CurTask.Is_Stack__c != True && output == false && jump == false && locked == false && CONTAINS(ImpMgrMapKey,$User.Id)&& Com_Create  }">
+                                                        <apex:actionSupport event="onchange" action="{!Popup}" rerender="panel3">
+                                                            <apex:param name="Milestone" value="Milestone" assignTo="{!active}"/>
+                                                        </apex:actionSupport>
+                                                    </apex:inputField>
+                                                    <apex:OutputField value="{!CurTask.Milestone__c}" rendered="{!CurTask.Is_Stack__c == True || output == true || jump == true || locked == true || !CONTAINS(ImpMgrMapKey,$User.Id)|| !Com_Create  }"/>
+                                                    &nbsp;<apex:commandLink action="{!Popup}" rerender="panel3" value="Milestone" rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && Com_Create  }">
+                                                        <apex:param value="Milestone" assignTo="{!active}" name="Milestone" />
+                                                        <apex:param value="true" assignTo="{!popup}" name="popup"/>
+                                                    </apex:commandLink>
+                                                    <apex:outputLabel rendered="{! !CONTAINS(ImpMgrMapKey,$User.Id)|| !Com_Create  }">Milestone </apex:outputLabel>
+                                                    
+                                                </div>                                                
+                                                <div class="row" style="padding-top: 0px;">
+                                                    <apex:inputField value="{!CurTask.When_Task_Ready__c}" rendered="{!CurTask.Is_Stack__c != True && output == false && jump == false && locked == false && CONTAINS(ImpMgrMapKey,$User.Id) && Com_Create  }">
+                                                        <apex:actionSupport event="onchange" action="{!Popup}" rerender="panel3" >
+                                                            <apex:param name="Ready" value="Ready" assignTo="{!active}"/>
+                                                        </apex:actionSupport>
+                                                    </apex:inputField>
+                                                    <apex:OutputField value="{!CurTask.When_Task_Ready__c}" rendered="{!CurTask.Is_Stack__c == True || output == true ||jump == true || locked == true || !CONTAINS(ImpMgrMapKey,$User.Id) || !Com_Create  }"/>
+                                                    &nbsp;<apex:commandLink action="{!Popup}" rerender="panel3" value="When Task Ready" rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && Com_Create  }">
+                                                        <apex:param value="Ready" assignTo="{!active}" name="Ready"/>
+                                                        <apex:param value="true" assignTo="{!popup}" name="popup"/>
+                                                    </apex:commandLink>
+                                                     <apex:outputLabel rendered="{! !CONTAINS(ImpMgrMapKey,$User.Id)|| !Com_Create  }">When Task Ready </apex:outputLabel>
+                                                </div>
+                                                <div class="row" style="padding-top: 0px;">
+                                                    <apex:inputField value="{!CurTask.Task_Completed__c}" rendered="{!CurTask.Is_Stack__c != true && output == false && jump == false && locked == false && CONTAINS(ImpMgrMapKey,$User.Id)&& Com_Create  }">
+                                                         <apex:actionSupport event="onchange" action="{!Popup}" rerender="panel3">
+                                                            <apex:param name="Completed" value="Completed" assignTo="{!active}"/>
+                                                        </apex:actionSupport>
+                                                    </apex:inputField>
+                                                    <apex:OutputField value="{!CurTask.Task_Completed__c}" rendered="{!CurTask.Is_Stack__c == True || output == true || jump == true || locked == true || !CONTAINS(ImpMgrMapKey,$User.Id)|| !Com_Create  }"/>
+                                                    &nbsp;<apex:commandLink action="{!Popup}" rerender="panel3" value="Task Complete" rendered="{! CONTAINS(ImpMgrMapKey,$User.Id)&& Com_Create  }">
+                                                        <apex:param value="Completed" assignTo="{!active}" name="Completed"/>
+                                                        <apex:param value="true" assignTo="{!popup}" name="popup"/>
+                                                    </apex:commandLink>
+                                                     <apex:outputLabel rendered="{! !CONTAINS(ImpMgrMapKey,$User.Id)|| !Com_Create  }">Task Complete</apex:outputLabel>
+                                                </div>
+                                                 <div class="row" style="padding-top: 0px;">
+                                                    <apex:inputField value="{!CurTask.Advanced_Notifications__c}" rendered="{!CurTask.Is_Stack__c != True && output == false && jump == false && locked == false && CONTAINS(ImpMgrMapKey,$User.Id)&& Com_Create  }">
+                                                    </apex:inputField>
+                                                    <apex:OutputField value="{!CurTask.Advanced_Notifications__c}" rendered="{!CurTask.Is_Stack__c == True || output == true || jump == true || locked == true || !CONTAINS(ImpMgrMapKey,$User.Id)|| !Com_Create  }"/>
+                                                    &nbsp;<apex:outputLabel >Advanced Notifications</apex:outputLabel>
+                                                 </div>
+                                            </div>   <!--- Communications in Container fluid close---> 
+                                        </div>
+                                    </div>
+                                </div>                                
+                                <div>
+                                    <div class="box box-info">
+                                       <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                            <h4><i class="fa fa-clock-o"></i> &nbsp;<b>Times</b></h4>  <hr /> 
+                                             <div class="row" style="padding-top:0px;">
+                                                <div class="col-md-6 col-sm-4 lbl"> <label>Baseline Start</label> </div>                                                
+                                                <div class="col-md-6 col-sm-3"> <apex:outputText value=" {!CurTask.Baseline_Start__c}"/> </div>
+                                                <div class="col-sm-5"></div>
+                                            </div>
+                                            <div class="row" style="padding-top:0px;">
+                                                <div class="col-md-6 col-sm-4 lbl"><label>Baseline Duration</label></div>                                                
+                                                <div class="col-md-6 col-sm-3"><apex:outputField value="{!CurTask.Baseline_Duration__c}"/></div>
+                                                <div class="col-sm-5"></div>
+                                            </div>
+                                            <div class="row" style="padding-top:0px;">
+                                                <div class="col-md-6 col-sm-4 lbl"> <label>Baseline End</label> </div>                                                
+                                                <div class="col-md-6 col-sm-3"><span><apex:outputText value=" {!CurTask.Baseline_End__c}"/></span> </div>
+                                                <div class="col-sm-5"></div>
+                                            </div>                                                
+                                            <apex:outputPanel rendered="{!CurTask.SOE__r.Status__c != i8.STATUS_BUILD && CurTask.SOE__r.Status__c != i8.STATUS_REVIEW}"> 
+                                            <div class="row"  style="padding-top:8px;">
+                                                <div class="col-md-6 col-sm-4 lbl">  <label>Planned Start</label></div>                                                
+                                                <div class="col-md-6 col-sm-3"><span><apex:outputText value=" {!CurTask.Planned_Start__c}"/></span>  </div>
+                                                <div class="col-sm-5"></div>
+                                            </div>
+                                            <div class="row" style="padding-top:0px;">
+                                                <div class="col-md-6 col-sm-4 lbl"><label>Planned Duration</label> </div>                                                    
+                                                <div class="col-md-6 col-sm-3"> <span><apex:outputField value="{!CurTask.Planned_Duration__c}"/></span> </div>
+                                                <div class="col-sm-5"></div>
+                                            </div>
+                                            <div class="row" style="padding-top:0px;">
+                                                <div class="col-md-6 col-sm-4 lbl"> <label>Planned End</label> </div>                                                
+                                                <div class="col-md-6 col-sm-3"><span><apex:outputText value=" {!CurTask.Planned_End__c}"/></span> </div>
+                                                <div class="col-sm-5"></div>
+                                            </div>
+                                           </apex:outputPanel>
+                                            <apex:outputPanel rendered="{! CurTask.Status__c == i8.STATUS_SUSPENDED || CurTask.Status__c == i8.STATUS_RUNNING  ||  CurTask.Status__c ==I8.STATUS_COMPLETED|| CurTask.Status__c == I8.STATUS_FORCE_COMP  || CurTask.Status__c == I8.STATUS_COMP_JUMP }">
+                                              <div class="row" style="padding-top:8px;">
+                                                    <div class="col-md-6 col-sm-4 lbl"><label>Actual Start</label> </div>                                                    
+                                                    <div class="col-md-6 col-sm-3"> <span><apex:outputText value=" {!CurTask.Actual_Start__c}"/></span> </div>
+                                                    <div class="col-sm-5"></div>
+                                                </div>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!CurTask.Status__c ==I8.STATUS_COMPLETED|| CurTask.Status__c == I8.STATUS_FORCE_COMP  || CurTask.Status__c == I8.STATUS_COMP_JUMP }">
+                                                <div class="row" style="padding-top:0px;">
+                                                    <div class="col-md-6 col-sm-4 lbl"><label>Actual Duration</label> </div>
+                                                    <div class="col-md-6 col-sm-3">  <span><apex:outputField value="{!CurTask.Actual_Duration__c}"/></span> </div>
+                                                    <div class="col-sm-5"></div>
+                                                </div>
+                                                <div class="row" style="padding-top:0px;">
+                                                    <div class="col-md-6 col-sm-3 lbl"> <label>Actual End</label> </div>                                                    
+                                                    <div class="col-md-6 col-sm-4"> <span><apex:outputText value=" {!CurTask.Actual_End__c}"/></span> </div>
+                                                    <div class="col-sm-5"></div>
+                                                </div>
+                                            </apex:outputPanel>
+                                            <apex:outputPanel rendered="{!CurTask.SOE__r.Status__c !=I8.STATUS_BUILD && CurTask.SOE__r.Status__c != I8.STATUS_REVIEW}">
+                                                 <apex:outputPanel rendered="{!CurTask.Status__c != i8.STATUS_SUSPENDED && CurTask.Status__c != i8.STATUS_RUNNING && CurTask.Status__c !=I8.STATUS_COMPLETED && CurTask.Status__c != I8.STATUS_FORCE_COMP  && CurTask.Status__c != I8.STATUS_COMP_JUMP }">
+                                                   <div class="row" style="padding-top:8px;">
+                                                        <div class="col-md-6 col-sm-4 lbl"> <label>Forcast start</label> </div>                                                    
+                                                        <div class="col-md-6 col-sm-3"> <span><apex:outputText value=" {!CurTask.Forecast_Start__c}"/></span>  </div>
+                                                        <div class="col-sm-5"></div>
+                                                    </div>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel rendered="{! CurTask.Status__c !=I8.STATUS_COMPLETED&& CurTask.Status__c != I8.STATUS_FORCE_COMP  && CurTask.Status__c != I8.STATUS_COMP_JUMP }">
+                                                    <div class="row" style="padding-top:0px;">
+                                                        <div class="col-md-6 col-sm-4 lbl"> <label>Forecast Duration</label> </div>                                                    
+                                                        <div class="col-md-6 col-sm-3"> <span><apex:outputField value="{!CurTask.Forecast_Duration__c}"/></span> </div>
+                                                        <div class="col-sm-5"></div>
+                                                    </div> 
+                                                    <div class="row" style="padding-top:0px;">
+                                                        <div class="col-md-6 col-sm-4 lbl"><label>Forecast End</label></div>                                                    
+                                                        <div class="col-md-6 col-sm-3"><span><apex:outputText value=" {!CurTask.Forecast_End__c}"/></span> </div>
+                                                        <div class="col-sm-5"></div>
+                                                    </div>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </div>
+                                    </div>                                    
+                                </div>
+                        </apex:outputPanel>
+                            </div>
+                    </div></apex:outputPanel>
+            </apex:outputPanel>            
+        </form>
+    </section>
+</div>
+<c:PageFooter ></c:PageFooter>
+</div>
+<apex:includescript value="{!$Resource.Jquery1}" />
+<apex:includescript value="{!$Resource.BootstrapJS}" /> 
+<script type="text/javascript">    
+function nexttask(){
+    $('.HoverPopup').popover({
+        placement: 'bottom',  
+        html : true,        
+        trigger:"hover focus",        
+        content: function() {
+            return $('.popovercontent').html();            
+        }
+    });    
+    $('.HoverPopup').tooltip({ placement: 'bottom' });
+}
+$(document).ready(function(){    
+    $('.HoverPopup').popover({
+        placement: 'bottom',  
+        html : true,        
+        trigger:"hover focus",        
+        content: function() {
+            return $('.popovercontent').html();            
+        }
+    });    
+    $('.HoverPopup').tooltip({ placement: 'bottom' });
+});
+</script>
+</apex:form>
+</apex:page>

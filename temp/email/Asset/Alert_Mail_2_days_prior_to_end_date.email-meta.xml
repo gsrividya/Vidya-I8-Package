@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Mail alert to assignee &amp; assigner two days prior to end date</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>Alert Mail 2 days prior to end date</name>
+    <style>none</style>
+    <subject>Asset Expiration</subject>
+    <textOnly>Hi
+
+This is to inform that your access to the Asset is going to expire in 48 Hours. Kindly check below for further details:
+Asset: &apos;{!Asset_Assignment__c.Asset__c}&apos;
+Assignment No. : &apos;{!Asset_Assignment__c.Name}&apos;
+Please click here to review.</textOnly>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

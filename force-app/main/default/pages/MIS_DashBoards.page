@@ -1,0 +1,98 @@
+<apex:page controller="MIS_DashBoards_Cntrl" showHeader="false" standardStylesheets="false">
+<apex:form id="frm">   
+    <style>
+         a.analyticsCordaChart { pointer-events: none; cursor: default; }
+     </style>
+    <apex:actionFunction action="{!OpenReport}" name="showreport" rerender="frm"/> 
+            <div class="wrapper">
+                <!--Header section starts ------>
+                <c:SOEPageHeader object="{!mis.Id}" ></c:SOEPageHeader>  <!--Header section ends------>
+            <!-- =============================================== -->
+                <div  style="min-height:0px!important">
+                    <section class="content">
+                        <form id="frmTasksOverview" class="form-group">
+                            <div class="box box-primary">
+                                <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                            <h4 style="display:inline;">MIS Dashboards</h4>
+                                        </div>
+                                        <div class="col-lg-4" style="text-align: right">
+                                               <apex:commandButton value="Cancel" action="{!OpenCancel}" styleClass="btn btn-primary"  />
+                                        </div>
+                                        <hr/>
+                                    </div>
+                                     <apex:outputPanel rendered="{!statusmsg !=null}"><div class="alert alert-danger" role="alert" id="frm"> {!statusmsg}</div></apex:outputPanel>
+                                  <apex:outputPanel rendered="{!statusmsg ==null}">
+                                    <div style="float:left;height: 250px;">
+                                  <b> 1. Task Status</b>                                    
+                                        <analytics:reportChart reportId="{!TaskReportId}" filter="[{column:'CUST_NAME',operator:'equals',value:'{!SOE_Names}'}]" size="tiny" cacheResults="false" />
+                                    <center><a  href="#" onclick="window.open('/apex/Report?reportid={!JSENCODE(HTMLENCODE(taskreportId))}&pc0=CUST_NAME&pn0=eq&pv0={!JSENCODE(HTMLENCODE(SOE_Names))}','fsdfs','height=550,width=1000');" >Open Report</a></center>
+                                    </div>
+                                    <div style="float:left;">
+                                         <div style="width: 5px; height: 250px;position:relative;">  
+                                         </div>
+                                     </div>
+                                     <div style="float:left;height: 250px;">
+                                      <b> 2. Incidents by Status</b>                                   
+                                        <analytics:reportChart reportId="{!IncidentReportId}" filter="[{column:'I8__Incident__c.I8__MIS__c',operator:'equals',value:'{!MIS.Name}'}]" size="tiny" cacheResults="false"/>
+                                   <center><a  href="#" onclick="window.open('/apex/Report?reportid={!JSENCODE(HTMLENCODE(IncidentReportId))}&pv0={!JSENCODE(HTMLENCODE(SOE_Names))}&pv1={!JSENCODE(HTMLENCODE(MIS.Name))}','fsdfs','height=550,width=1000');" >Open Report</a></center>
+                                    </div>
+                                    <div style="float:left;">
+                                         <div style="width: 5px; height: 250px;position:relative;">  
+                                         </div>
+                                     </div>
+                                     <div style="float:left;height: 250px;">
+                                         <b> 3. Incidents by Type</b>
+                                         <analytics:reportChart reportId="{!IncidentsByType}" filter="[{column:'I8__Incident__c.I8__MIS__c',operator:'equals',value:'{!MIS.Name}'}]" size="tiny" cacheResults="false"/>
+                                         <center><a  href="#" onclick="window.open('/apex/Report?reportid={!JSENCODE(HTMLENCODE(IncidentsByType))}&pv0={!JSENCODE(HTMLENCODE(SOE_Names))}&pv1={!JSENCODE(HTMLENCODE(MIS.Name))}','fsdfs','height=550,width=1000');" >Open Report</a></center>
+                                    </div>
+                                    <div style="float:left;">
+                                         <div style="width: 5px; height: 250px;position:relative;">  
+                                         </div>
+                                     </div>
+                                     <div style="float:left;height: 250px;">
+                                         <b> 4. Critical Path</b>
+                                        <analytics:reportChart reportId="{!CPReportId}" filter="[{column:'CUST_NAME',operator:'equals',value:'{!SOE_Names}'}]" size="tiny" cacheResults="false" />
+                                        <center><a  href="#" onclick="window.open('/apex/Report?reportid={!JSENCODE(HTMLENCODE(CPReportId))}&pc0=CUST_NAME&pn0=eq&pv0={!JSENCODE(HTMLENCODE(SOE_Names))}','fsdfs','height=550,width=1000');" >Open Report</a></center>
+                                    </div>
+                                    <div style="float:left;height: 250px;">
+                                         <div style="width: 5px; height: 250px;position:relative;">  
+                                         </div>
+                                     </div>
+                                     
+                                     <div style="float:left;height: 250px;">
+                                    <b> 5. Milestone Tasks</b>
+                                        <analytics:reportChart reportId="{!MileStoneReportId}" filter="[{column:'CUST_NAME',operator:'equals',value:'{!SOE_Names}'}]" size="tiny" cacheResults="false"/>
+                                        <center><a  href="#" onclick="window.open('/apex/Report?reportid={!JSENCODE(HTMLENCODE(MileStoneReportId))}&pc0=CUST_NAME&pn0=eq&pv0={!JSENCODE(HTMLENCODE(SOE_Names))}','fsdfs','height=550,width=1000');" >Open Report</a></center>
+                                    </div>
+                                    <div style="float:left;">
+                                         <div style="width: 5px; height: 250px;position:relative;">  
+                                         </div>
+                                     </div>                                   
+                                     <div style="float:left;height: 250px;">
+                                         <b> 6. Lessons Learned</b>
+                                         <analytics:reportChart reportId="{!LessonsLearned }" filter="[{column:'I8__SOE__c.Name',operator:'equals',value:'{!SOE_Names}'}]" size="tiny" cacheResults="false" />
+                                         <center><a  href="#" onclick="window.open('/apex/Report?reportid={!JSENCODE(HTMLENCODE(LessonsLearned ))}&pc0=SOE__c.Name&pn0=eq&pv0={!JSENCODE(HTMLENCODE(SOE_Names))}','fsdfs','height=550,width=1000');" >Open Report</a></center> 
+                                    </div>
+                                    <div style="float:left;">
+                                <div style="width: 5px; height: 200px;position:relative;">  
+                                </div>
+                            </div>
+                            <div style="float:left;">
+                                <b> 7. Access Requests by Status</b>
+                                <analytics:reportChart reportId="{!AccessRequest}" filter="[{column:'FK_NAME',operator:'equals',value:'{!SOE_Names}'}]" size="tiny" cacheResults="false" />
+                                <center><a  href="#" onclick="window.open('/apex/Report?reportid={!JSENCODE(HTMLENCODE(AccessRequest))}&pc0=FK_NAME&pn0=eq&pv0={!JSENCODE(HTMLENCODE(SOE_Names))}','fsdfs','height=550,width=1000');" >Open Report</a></center> 
+                            </div>      </apex:outputPanel>                               
+                                </div>
+                            </div>
+                            
+                        </form>
+                    </section>
+                </div> <!-- Content Wrapper ends---->
+                <!-- Footer section starts------>
+                <c:PageFooter ></c:PageFooter><!-- Footer section ends------>                
+            </div>     
+    </apex:form>            
+</apex:page>

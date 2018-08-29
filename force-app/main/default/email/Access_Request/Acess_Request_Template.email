@@ -1,0 +1,8 @@
+Dear {!ApprovalRequest.Process_Approver},<br/>
+This mail is regarding approval request of {!Access_Request__c.00N28000004eQY1} to complete assigned TASK, brief details as follows:<br/>
+SOE : '{!Access_Request__c.SOE__c}'<br/>
+TASK: '{!Access_Request__c.Task__c}'<br/>
+Description:' {!Access_Request__c.Request_Description__c}'<br/>
+<a href="https://ap2.salesforce.com/{!Access_Request__c.Id}">Please click here to review the request</a> <br/><br/>
+Regards, <br/>
+{!Access_Request__c.OwnerFullName}

@@ -1,0 +1,126 @@
+<apex:page showheader="false" standardstylesheets="false" controller="Add_Task_cntrl"> 
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar {  background-color:#CFEEF8; border-color: #303260;   }  
+        b{ color:grey;  }
+    </style>   
+    <apex:form id="frm">
+        <div class="wrapper">
+            <!--Header section starts ------>
+            <c:SOEPageHeader sid="{!SOEObj.Id}" ></c:SOEPageHeader> 
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <form id="frmTasksOverview" class="form-group">
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                <div class="row">
+                                    <div class="col-sm-8">
+                                        <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                        <h4 style="display:inline;">ADD TASK
+                                        </h4> 
+                                    </div>
+                                    <div class="col-sm-4" style="text-align: right"> 
+                                        <apex:commandButton styleClass="btn btn-primary" value="Save" action="{!CreateTask}" rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && errorbool  = false && SOEobj.Status__c != I8.STATUS_IMP_COMP && SOEobj.Status__c != I8.STATUS_SOE_COMP && SOEobj.Status__c != I8.STATUS_SUSPENDED && SOEobj.Status__c != I8.STATUS_ABANDONED &&  SOEobj.Status__c != I8.STATUS_IMPINPROGRESS  &&  SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress'}" style="padding-left: 15px; padding-right:15px;"/>
+                                        <apex:commandButton value="Cancel" styleClass="btn btn-primary" action="{!CancelTask}" style="padding-left: 15px; padding-right:15px;"/>
+                                    </div>
+                                </div>  <hr />  
+                                <apex:actionRegion rendered="{!!(CONTAINS(ImpMgrMapKey,$User.Id))}">
+                                    <b><center><h3>{!$Label.i8__addtask001} </h3></center></b>
+                                </apex:actionRegion>
+                                <apex:actionRegion rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && (SOEobj.Status__c == I8.STATUS_IMP_COMP || SOEobj.Status__c == I8.STATUS_SOE_COMP || SOEobj.Status__c == I8.STATUS_IMPINPROGRESS|| SOEobj.Status__c == I8.STATUS_SUSPENDED|| SOEobj.Status__c == I8.STATUS_ABANDONED)}"><b><center><h3>{!$Label.i8__addtask002}</h3></center></b></apex:actionRegion>
+                                <apex:actionRegion rendered="{! CONTAINS(ImpMgrMapKey,$User.Id)&& ( (SOEobj.QA_Review_Required__c == true &&  SOEobj.QA_Review__c == 'In Progress')|| (SOEobj.WalkThrough_Required__c == true && SOEobj.WalkThrough__c == 'In Progress'))}">
+                                    <b><center><h3>{!$Label.i8__addtask003}</h3></center></b>
+                                </apex:actionRegion>
+                                <apex:actionRegion rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && !( SOEobj.Status__c == I8.STATUS_IMP_COMP || SOEobj.Status__c == I8.STATUS_SUSPENDED ||SOEobj.Status__c == I8.STATUS_ABANDONED || SOEobj.Status__c == I8.STATUS_SOE_COMP || SOEobj.Status__c == I8.STATUS_IMPINPROGRESS || (SOEobj.QA_Review_Required__c == true &&  SOEobj.QA_Review__c == 'In Progress')|| (SOEobj.WalkThrough_Required__c == true && SOEobj.WalkThrough__c == 'In Progress'))}">
+                                    <apex:outputPanel rendered="{!errorbool == true}">
+                                        <div class="row">
+                                            <div class="col-md-12"> <div class="alert alert-danger" role="alert" id="err"> {!errormessage} </div> </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                     <apex:outputPanel rendered="{!statusmsg != null }">
+                                        <div class="row">
+                                            <div class="col-md-12"> <div class="alert alert-danger" role="alert" id="err"> {!statusmsg } </div> </div>
+                                        </div>
+                                    </apex:outputPanel>                                                                     
+                                    <apex:outputPanel rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && errorbool = false &&  SOEobj.Status__c != I8.STATUS_IMP_COMP &&  SOEobj.Status__c != I8.STATUS_SUSPENDED && SOEobj.Status__c != I8.STATUS_ABANDONED && SOEobj.Status__c != I8.STATUS_SOE_COMP && SOEobj.Status__c != I8.STATUS_IMPINPROGRESS  &&  SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress'}">
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <div class="box box-info">
+                                                    <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                                        <div class="row">
+                                                            <div class="col-sm-3">  <b>Stage Level</b>     </div>
+                                                            <div class="col-sm-7"> {!taskObj.Stage_Level__c} </div>
+                                                            <div class="col-sm-2">          </div>
+                                                        </div> 
+                                                        <div class="row">
+                                                            <div class="col-sm-3">  <span><b>Stack</b></span>     </div>
+                                                            <div class="col-sm-7">  {!taskObj.Task_Title__c}</div>
+                                                            <div class="col-sm-2">   </div>
+                                                        </div> 
+                                                        <div class="row">
+                                                            <div class="col-sm-3">  <span><b>New Task ID</b></span>  </div>
+                                                            <div class="col-sm-7">  {!NewtaskId}    </div>
+                                                            <div class="col-sm-2">     </div>
+                                                        </div> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7" >
+                                                <div class="box box-info">
+                                                    <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                                        <div class="row">
+                                                            <div class="col-sm-3"> <span><b>Task Title</b></span>  <Span style="color:red;font-size:1.4em;">*</span></div>
+                                                            <div class="col-sm-7"> <input type="text" name="tasktitle" class="col-sm-7" style="padding:0px;" id="Stackowner"/>   </div>
+                                                            <div class="col-sm-2">     </div>  
+                                                        </div>                                                     
+                                                        <div class="row">
+                                                            <div class="col-sm-3">  <span><b>Team</b></span>   </div>
+                                                            <div class="col-sm-7">   <apex:inputField value="{!NewTask.Team__c}"/>  </div>
+                                                            <div class="col-sm-2">  </div>  
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-sm-3"> <span><b>Owner</b></span>   </div>
+                                                            <div class="col-sm-7">  <apex:inputField value="{!NewTask.Owner__c}"/>  </div>
+                                                            <div class="col-sm-2">    </div>  
+                                                        </div> 
+                                                        <div class="row">
+                                                            <div class="col-sm-3"><span><b>Duration</b></span>  </div>
+                                                            <div class="col-sm-7">
+                                                                <input type="number" id="days" name="days" class="spin-button_days spin-button" value="0"  min="0"> Days </input>
+                                                                <input type="number" id="hours" name="hours" class="spin-button_days spin-button" value="0"  max="23" min="0">  Hours</input>
+                                                                <input type="number" id="minutes" name="minutes" class="spin-button_days spin-button" value="{!SOEobj.Task_Late_Threshold_Mins__c }"  max="59" min="0">  Minutes </input>
+                                                            </div>
+                                                            <div class="col-sm-2">  </div>  
+                                                        </div>   
+                                            <div class="row">
+                                                <div class="col-sm-3"><span><b>Link Task</b></span>    </div>
+                                                <div class="col-sm-7">  <apex:inputCheckbox value="{!NewTask.Link__c}"/>   </div>
+                                                <div class="col-sm-2">    </div>  
+                                            </div>    
+                                            <div class="row">
+                                                <div class="col-sm-3">  <span><b>Description</b></span>  </div>
+                                                <div class="col-sm-7"> <textarea name="limitedtextarea1" id="data1" style="padding:0px;" class="col-md-12" maxlength='4000'></textarea>  </div>
+                                                <div class="col-sm-2">       </div>  
+                                            </div>   
+                                            <div class="row">
+                                                <div class="col-sm-3"> <span><b>Technical Detail</b></span>       </div>
+                                                <div class="col-sm-7">  <textarea name="limitedtextarea2" id="data2" class="col-md-12" style="padding:0px;" maxlength='4000'></textarea> </div>
+                                                <div class="col-sm-2">   </div>  
+                                            </div>              
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:actionRegion>
+                </div>
+            </div>
+        </form>
+    </section>
+</div> <!-- Content Wrapper ends---->
+<!-- Footer section starts------>
+<c:PageFooter ></c:PageFooter><!-- Footer section ends------>
+</div>
+</apex:form>
+</apex:page>

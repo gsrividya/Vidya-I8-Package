@@ -1,0 +1,2 @@
+<apex:page controller="Report_Cntrl" action="{!URLFOR('/'+reportURL )}">
+</apex:page>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Comp_BO_Post_Stacks__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <label>Comp BO Post Stacks</label>
+    <summaryFilterItems>
+        <field>Task__c.Is_Stack__c</field>
+        <operation>equals</operation>
+        <value>True</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>Task__c.Stage__c</field>
+        <operation>equals</operation>
+        <value>Post</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>Task__c.Stage_Level__c</field>
+        <operation>equals</operation>
+        <value>BackOut</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>Task__c.Status__c</field>
+        <operation>equals</operation>
+        <value>Completed, Completed-Jump</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Task__c.SOE__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

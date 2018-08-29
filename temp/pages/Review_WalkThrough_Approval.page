@@ -1,0 +1,130 @@
+<apex:page Controller="Review_Cntrl" ShowHeader="false" standardStylesheets="false">
+    <style>
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {
+        margin-left: 0px !important;
+        background-color: #CFEFFA;
+        }
+        hr {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        }
+    </style>
+    <head>
+         <apex:includescript value="{!$Resource.JQuery_Min}" />     
+         <apex:includescript value="{!$Resource.JQuery_DataTable_Min}" />   
+         <apex:stylesheet value="{!$Resource.JQuery_DataTable_CSS}" />
+            <script>
+            j$ = jQuery.noConflict();
+            j$(document).ready( function () {
+                var contactTable = j$('[id$="contacttable"]').DataTable({
+                    order: [[1, 'asc']],
+                    
+                    initComplete: function() {
+                        var api = this.api();
+                        var select = j$('[id$=accountSelect]');
+                        api.column(0).data().unique().sort().each( function ( d, j ) {
+                            select.append( '<option value="'+d+'">'+d+'</option>' )
+                        } );   
+                    }
+                });
+                
+                j$('[id$=accountSelect]').change(function() {
+                    var val = j$.fn.dataTable.util.escapeRegex(
+                        j$(this).val()
+                    );
+                    contactTable.column(0)
+                    .search( val == 'All' ? '' : '^'+val+'$', true, false )
+                    .draw();
+                });
+            });
+            </script>
+        </head>
+        <apex:form id="frm">
+            <div class="wrapper">
+                
+                <c:SOEPageHeader sid="{!SOe.Id}"></c:SOEPageHeader>
+                <!-- =============================================== -->
+                <!-- Content Wrapper. Contains page content -->
+                <div  style="min-height:0px!important">
+                    <!-- Content Header (Page header) -->
+                    <!-- Main content -->
+                    <section class="content">
+                        
+                        <form id="frmTasksOverview" class="form-group">
+                            <div class="box box-info">
+                                <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                   <apex:outputPanel rendered="{!statusmsg !=null}" >
+                                     <div class="alert alert-danger" role="alert"  style="width:100%;"> {!statusmsg } </div>
+                                   </apex:outputPanel>   
+                                    <div class="row">
+                                        <div class="col-md-6"></div>
+                                        <div class="col-md-6" style="text-align: right">
+                                            <apex:commandButton value="Prev" action="{!Prev}" styleClass="btn btn-primary" rendered="{!TaskList.size > 1000 && NextPage != 1000 && PrevPage >= 1000}"/>&nbsp;
+                                            <apex:commandButton value="Next" action="{!Next}" styleClass="btn btn-primary" id="Next" rendered="{!Next}"/>&nbsp;
+                                            <apex:commandButton value="Walkthrough Complete" action="{!WalkThroughComplete}" styleClass="btn btn-primary" rendered="{!(SOE.WalkThrough_Required__c == True && SOE.WalkThrough__c == 'In Progress')}"/>&nbsp;
+                                            <apex:commandButton value="QA Feedback" action="{!QAFeedBack}" styleClass="btn btn-primary" rendered="{!(SOE.QA_Review_Required__c == True && SOE.QA_Review__c == 'In Progress' )}"/>&nbsp;
+                                            <apex:commandButton value="QA Complete" action="{!QAComplete}" styleClass="btn btn-primary" rendered="{!(SOE.QA_Review_Required__c == True && SOE.QA_Review__c == 'In Progress' )}"/>&nbsp;
+                                            <apex:commandButton value="Cancel" action="{!Cancel}" styleClass="btn btn-primary"/>
+                                        </div>
+                                    </div>
+                                    <body>
+                                        <option value="All"></option>    <br/>
+                                        <div class="table-responsive">
+                                            <table id="contacttable" class="display"  border='1'>
+                                                <thead>
+                                                    <tr>
+                                                        <th>State</th>
+                                                        <th>Stage</th>
+                                                        <th>ID</th>
+                                                        <th>Task Title</th>
+                                                        <th>Start Time</th>
+                                                        <th>Duration</th>
+                                                        <th>End Time</th>
+                                                        <th>Owner</th>
+                                                        <th>Team</th>
+                                                        <th>Description</th>
+                                                        <th>Technical Detail</th>
+                                                        <th>Technical Skills</th>
+                                                        <th>
+                                                            <apex:outputLabel value="Review Comments" rendered="{!(SOE.QA_Review_Required__c == True && SOE.QA_Review__c == 'In Progress')}"/>
+                                                            <apex:outputLabel value="Walkthrough Comments" rendered="{!(SOE.WalkThrough_Required__c == True && SOE.WalkThrough__c == 'In Progress')}"/>
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <apex:repeat value="{!QA_TaskList}" var="TL">
+                                                        <tr>
+                                                            <td><apex:outputfield value="{!TL.State__c}"/></td>
+                                                            <td><apex:outputfield value="{!TL.Stage__c}"/></td>
+                                                            <td><apex:outputfield value="{!TL.ID_Text__c}"/></td>
+                                                            <td>{!TL.Task_Title__c}</td>
+                                                            <td>{!TL.Start_Time__c}</td>
+                                                            <td>{!TL.Duration__c}</td>
+                                                            <td>{!TL.End_Time__c}</td>
+                                                            <td><apex:outputfield value="{!TL.Stack_Owner_Name__c}"/></td>
+                                                            <td><apex:outputfield value="{!TL.Team__c}"/></td>
+                                                            <td><apex:outputfield value="{!TL.Description__c}"/></td>
+                                                            <td><apex:outputfield value="{!TL.Technical_Detail__c}"/></td>
+                                                            <td><apex:outputfield value="{!TL.Technical_Skills__c}"/></td>                                                            
+                                                            <td width="30%">
+                                                                <apex:inputfield value="{!TL.RV_Comments__c}" rendered="{!(SOE.QA_Review_Required__c == True && SOE.QA_Review__c == 'In Progress')}" styleclass="col-md-11" style="padding:0px;"/>
+                                                                <apex:inputfield value="{!TL.WalkThrough_Comments__c}" rendered="{!(SOE.WalkThrough_Required__c == True && SOE.WalkThrough__c == 'In Progress')}" styleclass="col-md-11" style="padding:0px;"/>
+                                                            </td>
+                                                        </tr>
+                                                    </apex:repeat>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </body>
+                                    <div class="row" style="padding: 15px;font-color: red;">
+                                        <span>Note: Showing only 1000 Tasks out of {!tasklist.size}. To view more navigate through Next and Prev Buttons.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+                <c:PageFooter ></c:PageFooter>
+            </div>
+        </apex:form>
+    </apex:page>

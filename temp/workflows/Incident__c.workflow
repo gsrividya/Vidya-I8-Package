@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <alerts>
+        <fullName>Email_alert_to_Incident_Assignee</fullName>
+        <description>Email alert to Incident Assignee</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Assignee_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>Notifications/Incident_Assignee_Template</template>
+    </alerts>
+    <alerts>
+        <fullName>Send_a_mail_to_Assignee_when_Incident_closed</fullName>
+        <description>Send a mail to Assignee when Incident closed.</description>
+        <protected>false</protected>
+        <recipients>
+            <field>Assignee_Email__c</field>
+            <type>email</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>Notifications/Mail_to_Assignee_when_Incident_Closed</template>
+    </alerts>
+    <fieldUpdates>
+        <fullName>Incident_Assignee_Email</fullName>
+        <field>Assignee_Email__c</field>
+        <formula>Assignee__r.Email__c</formula>
+        <name>Incident Assignee Email</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>true</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>When Incident Created Assigne Will Receive an Email Alert</fullName>
+        <actions>
+            <name>Email_alert_to_Incident_Assignee</name>
+            <type>Alert</type>
+        </actions>
+        <actions>
+            <name>Incident_Assignee_Email</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>AND(Assignee__c != null , ISPICKVAL( Inc_Type__c , &apos;Suspended&apos;) )</formula>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+</Workflow>

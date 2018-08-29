@@ -1,0 +1,173 @@
+@istest
+public class Test_CloneTask_Cntrl{
+    Public static i8Constants i8 = new I8Constants();
+    @testSetup static void setup() {
+        SOEUtility.SystemSettings_Insert();
+        Department__c service = SOEUtility.Dep_Insert('Service2');
+        Role__c  Role = SOEUtility.Role_Insert('Imp Manager');
+        SOE__c SOE = SOEUtility.SOE_Insert('SOE Clone Task 1',service.id,true,true,true,false,false); 
+        SOE__c SOE1 = SOEUtility.SOE_Insert('SOE Clone Task 2',service.Id,false,false,false,false);
+        System.assertEquals(SOE.SOE_Title__c , 'SOE Clone Task 1');
+    }
+    Static testmethod void CloneTask_Cntrl(){      
+        SOE__c SOE =  [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE Clone Task 1']; 
+        SOE__c SOE1 = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE Clone Task 2']; 
+        System.assertEquals(SOE.SOE_Title__c , 'SOE Clone Task 1');
+        SOE.Status__c = I8.STATUS_FREEZE;
+        Update SOE;
+        list<task__c> Tas = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where Stage__c =: 'Pre' and SOE__c =: soe.id order by Id_After_Decimal__c];
+        ApexPages.CurrentPage().getparameters().put('SOEId',SOE.Id);
+        ApexPages.CurrentPage().getparameters().put('Id', TAS[1].Id);
+        Add_Task_cntrl Add = new Add_Task_cntrl ();
+        ApexPages.CurrentPage().getparameters().put('days', '2');
+        ApexPages.CurrentPage().getparameters().put('hours', '2');
+        ApexPages.CurrentPage().getparameters().put('minutes', '2');
+        ApexPages.CurrentPage().getparameters().put('limitedtextarea1', 'qwerty');
+        ApexPages.CurrentPage().getparameters().put('limitedtextarea2', 'qwertyqwerty');
+        ApexPages.CurrentPage().getparameters().put('tasktitle', 'task1.1');
+        Add.NewTask.Link__c = True;
+        Add.CreateTask();
+        Tas = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where Stage__c =: 'Pre' and SOE__c =: soe.id order by Id_After_Decimal__c];
+    Test.StartTest();
+        ApexPages.CurrentPage().getparameters().put('Sid',SOE1.Id);  
+        CloneTask_Cntrl Clone = new CloneTask_Cntrl();
+        Clone.getSourceSOEs();
+        Clone.selectedSourceSOE = SOE.Id;
+        Clone.SourceStageList();
+        ApexPages.CurrentPage().getparameters().put('Sid',SOE.Id);  
+        Clone = new CloneTask_Cntrl();
+        Clone.openCancel();
+        Clone.getSourceSOEs();
+        Clone.getSelectbefore_or_after();  
+        Clone.selectedSourceSOE=soe.id;       
+        Clone.Selectedoption='Below';
+        Tas = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where SOE__c =:soe.id order by Id_Before_Decimal__c, Id_After_Decimal__c]; 
+        Clone.TargetStage = Tas[1].stage__c;
+        Clone.TargetTask = Tas[1].id;
+        Clone.SourceStage = Tas[1].stage__c;
+        Clone.SourceTask = Tas[1].id;
+        Clone.clone_task();
+        ApexPages.CurrentPage().getparameters().put('SOEId',SOE.Id);
+        ApexPages.CurrentPage().getparameters().put('Id', TAS[2].Id);
+        Add = new Add_Task_cntrl ();
+        ApexPages.CurrentPage().getparameters().put('days', '2');
+        ApexPages.CurrentPage().getparameters().put('hours', '2');
+        ApexPages.CurrentPage().getparameters().put('minutes', '2');
+        ApexPages.CurrentPage().getparameters().put('limitedtextarea1', 'qwerty');
+        ApexPages.CurrentPage().getparameters().put('limitedtextarea2', 'qwertyqwerty');
+        ApexPages.CurrentPage().getparameters().put('tasktitle', 'task1.1');
+        Add.NewTask.Link__c = True;
+        Add.CreateTask();
+        Tas = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where SOE__c =:soe.id order by Id_Before_Decimal__c, Id_After_Decimal__c ]; 
+        Clone.selectedSourceSOE=soe.id;      
+        Clone.Selectedoption='Above';
+        Clone.SourceStage = Tas[1].stage__c;
+        Clone.SourceTask = Tas[1].id;
+        Clone.TargetStage = Tas[1].stage__c;
+        Clone.TargetTask = Tas[3].id;
+        Clone.clone_task();    
+    Test.StopTest();      
+    }
+    Static testmethod void CloneTask_Cntrl2(){
+        SOE__c SOE =  [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE Clone Task 1']; 
+        SOE__c SOE1 = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE Clone Task 2']; 
+        Role__c role = [select id from Role__c where Reference_Role__c = 'Imp Manager' limit 1];
+        System.assertEquals(SOE.SOE_Title__c , 'SOE Clone Task 1');
+        list<task__c> Tas = [select id,name,Task_Title__c,SOE__c,Id_Before_Decimal__c,Id_After_Decimal__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where SOE__c =: soe.id order by Id_Before_Decimal__c,Id_After_Decimal__c];
+        test.starttest();
+        User user1 = SOEUtility.USer_Insert('user--35--@gmail.com');
+        Member__c member1 = [select id from Member__c where Email__c ='user--35--@gmail.com'];
+        SOE_Team_Member__c stm1 = SOEUtility.teammember_insert(member1.id,'Read',soe.id,role.id);
+        ApexPages.CurrentPage().getparameters().put('Sid',SOE.Id);  
+        CloneTask_Cntrl Clone = new CloneTask_Cntrl();
+        Clone.selectedSourceSOE = SOE.id;      
+        Clone.Selectedoption='Below';
+        Clone.SourceStage = Tas[1].stage__c;
+        Clone.SourceTask = Tas[1].id;
+        tas[3].Jump__c = true;
+        tas[3].Status__c = tas[3].Status__c  + i8.JUMP;
+        update tas[3];
+        Clone.TargetStage = Tas[3].stage__c;
+        Clone.TargetTask = Tas[4].id;
+        Clone.clone_task();    
+        test.stoptest();
+    }
+     Static testmethod void CloneTask_Cntrl3(){
+        SOE__c SOE =  [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE Clone Task 1']; 
+        Role__c role = [select id from Role__c where Reference_Role__c = 'Imp Manager' limit 1];
+        System.assertEquals(SOE.SOE_Title__c , 'SOE Clone Task 1');
+        list<task__c> Tas = [select id,name,Task_Title__c,SOE__c,Id_Before_Decimal__c,Id_After_Decimal__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where SOE__c =: soe.id order by Id_Before_Decimal__c,Id_After_Decimal__c];
+        test.starttest();
+            ApexPages.CurrentPage().getparameters().put('Sid',SOE.Id);  
+            CloneTask_Cntrl Clone = new CloneTask_Cntrl();
+            clone.taskobj.Stage_Level__c = i8.CONTEXT_BO;
+            clone.SourceStageList();
+            clone.taskobj1.Stage_Level__c = i8.CONTEXT_BO;
+            clone.TargetStageList();
+            clone.SourceTask = null;
+            clone.clone_task();
+            clone.SourceTask = tas[1].Id;
+            clone.TargetTask = null;
+            clone.clone_task();           
+            clone.SourceTask = tas[4].Id;
+            clone.TargetTask = tas[1].Id ;
+            clone.clone_task();
+            clone.SourceTask = 'more';
+            clone.TargetTask = 'more' ;
+            clone.ViewMore();
+        Test.StopTest();
+     }
+      Static testmethod void CloneTask_Cntrl4(){
+        SOE__c SOE =  [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE Clone Task 1']; 
+        Role__c role = [select id from Role__c where Reference_Role__c = 'Imp Manager' limit 1];
+        System.assertEquals(SOE.SOE_Title__c , 'SOE Clone Task 1');
+        list<task__c> Tas = [select id,name,Task_Title__c,SOE__c,Id_Before_Decimal__c,Id_After_Decimal__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where SOE__c =: soe.id and Stage__c = 'Pre' order by Id_Before_Decimal__c,Id_After_Decimal__c];
+        test.starttest();
+            ApexPages.CurrentPage().getparameters().put('SOEId',SOE.Id);
+            ApexPages.CurrentPage().getparameters().put('Id', TAS[1].Id);
+            Add_Task_cntrl Add = new Add_Task_cntrl ();
+            ApexPages.CurrentPage().getparameters().put('days', '2');
+            ApexPages.CurrentPage().getparameters().put('hours', '2');
+            ApexPages.CurrentPage().getparameters().put('minutes', '2');
+            ApexPages.CurrentPage().getparameters().put('limitedtextarea1', 'qwerty');
+            ApexPages.CurrentPage().getparameters().put('limitedtextarea2', 'qwertyqwerty');
+            ApexPages.CurrentPage().getparameters().put('tasktitle', 'task1.1');
+            Add.NewTask.Link__c = True;
+            Add.CreateTask();
+            Tas = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Owner__c,Link__c from task__c where Stage__c =: 'Pre' and SOE__c =: soe.id order by Id_After_Decimal__c];
+            ApexPages.CurrentPage().getparameters().put('Sid',SOE.Id);  
+            CloneTask_Cntrl Clone = new CloneTask_Cntrl();
+            clone.SourceTAsk = tas[1].Id;
+            clone.TargetTask = tas[2].Id;
+            clone.Selectedoption = 'Above' ;
+            clone.clone_task();
+        test.StopTest();
+     }
+     Static testmethod void CloneTask_Cntrl5(){
+        SOE__c SOE =  [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE Clone Task 1']; 
+        Role__c role = [select id from Role__c where Reference_Role__c = 'Imp Manager' limit 1];
+        System.assertEquals(SOE.SOE_Title__c , 'SOE Clone Task 1');
+        list<task__c> Tas = [select id,name,Task_Title__c,SOE__c,Id_Before_Decimal__c,Id_After_Decimal__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where SOE__c =: soe.id and Stage__c = 'Pre' order by Id_Before_Decimal__c,Id_After_Decimal__c];
+        test.starttest();
+            ApexPages.CurrentPage().getparameters().put('SOEId',SOE.Id);
+            ApexPages.CurrentPage().getparameters().put('Id', TAS[1].Id);
+            Add_Task_cntrl Add = new Add_Task_cntrl ();
+            ApexPages.CurrentPage().getparameters().put('days', '2');
+            ApexPages.CurrentPage().getparameters().put('hours', '2');
+            ApexPages.CurrentPage().getparameters().put('minutes', '2');
+            ApexPages.CurrentPage().getparameters().put('limitedtextarea1', 'qwerty');
+            ApexPages.CurrentPage().getparameters().put('limitedtextarea2', 'qwertyqwerty');
+            ApexPages.CurrentPage().getparameters().put('tasktitle', 'task1.1');
+            Add.NewTask.Link__c = True;
+            Add.CreateTask();
+            Tas = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Owner__c,Link__c from task__c where Stage__c =: 'Pre' and SOE__c =: soe.id order by Id_After_Decimal__c];
+            ApexPages.CurrentPage().getparameters().put('Sid',SOE.Id);  
+            CloneTask_Cntrl Clone = new CloneTask_Cntrl();
+            clone.SourceTAsk = tas[2].Id;
+            clone.TargetTask = tas[1].Id;
+            clone.Selectedoption = 'Below' ;
+            clone.clone_task();
+        test.StopTest();
+     }
+     
+}

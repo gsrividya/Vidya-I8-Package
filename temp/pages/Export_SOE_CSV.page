@@ -1,0 +1,23 @@
+<apex:page controller="Export_SOE_CSV_Cntrl"  readOnly="true" contentType="application/vnd.ms-excel#{!Task_List[0].SOE__r.Name}:{!Task_List[0].SOE__r.SOE_Title__c}.xls" cache="true" expires="5">
+<apex:pageBlock >
+      <table> <tr><td colspan="11" width="100%" align="center" style="font-size:20px;color:blue;"><b>{!Task_List[0].SOE__r.Name}:{!Task_List[0].SOE__r.SOE_Title__c}</b></td></tr>
+          <tr><td width="100%" colspan="10"><font color="red"> Note: Please enter '#' in 'ID' Field when you create new Task and do not enter the value in 'Record ID' field.<br/> Please save the file as <b><u>.CSV </u></b> and then upload the file</font> </td></tr>
+      </table>
+      <apex:pageMessages />
+        <apex:pageBlockTable value="{!Task_List}" var="tas">
+            <apex:column value="{!tas.Stage_Level__c}"/>
+            <apex:column value="{!tas.Status__c}"/>
+            <apex:column value="{!tas.Stage__c}"/>
+            <apex:column headerValue="ID">#{!tas.ID_Text__c}</apex:column>
+            <apex:column value="{!tas.Task_Title__c}"/>
+            <apex:column value="{!tas.Days__c}"/>
+            <apex:column value="{!tas.Hours__c}"/>
+            <apex:column value="{!tas.Minutes__c}"/>
+            <apex:column headerValue="Is Stack">{!tas.Is_Stack__c}</apex:column>
+            <apex:column headerValue=" End Stack">{!tas.End_Stack__c}</apex:column>
+            <apex:column value="{!tas.Description__c}"/>
+            <apex:column value="{!tas.Technical_Detail__c}"/>
+            <apex:column value="{!tas.Id}"/><br/>
+        </apex:pageBlockTable>
+    </apex:pageBlock>
+</apex:page>

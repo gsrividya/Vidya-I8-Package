@@ -1,0 +1,141 @@
+@istest
+public class Test_Clone_SOE_Cntrl{
+  Public static i8Constants i8 = new I8Constants();
+   @testSetup static void setup() {
+        SOEUtility.SystemSettings_Insert();
+        Department__c service = SOEUtility.Dep_Insert('Service2');
+        Role__c  Role = SOEUtility.Role_Insert('Imp Manager');
+        SOE__c SOE = SOEUtility.SOE_Insert('Clone SOE 1',service.id,true,true,false,false);   
+        SOE__c SOE2 = SOEUtility.SOE_Insert('Clone SOE 2',service.id,true,true,false,false); 
+        System.assertEquals(SOE.SOE_Title__c , 'Clone SOE 1');     
+    }
+  Static testmethod void  T_Clone_SOE_Cntrl1 (){
+   Test.StartTest(); 
+        SOE__c soe = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='Clone SOE 1'];     
+        System.assertEquals(SOE.SOE_Title__c , 'Clone SOE 1');
+        ApexPages.CurrentPage().getParameters().put('Page','tab');
+        ApexPages.StandardController sc = new ApexPages.StandardController( new SOE__c());
+        Clone_SOE_cntrl  clone = new Clone_SOE_cntrl(sc); 
+        clone.Seact_ip = 'soe';  
+        clone.SOE_List();
+        clone.ClrStr();  
+        clone.Select_CloneSOE();
+        clone.ClearSelection();
+        clone.getPlus_Minus_values();
+        clone.getExtnl_depndcy();
+        clone.CloneSOE = string.valueof(soe.id);
+        clone.Select_CloneSOE();
+        clone.CloneSOE();
+        clone.NewSOE1.SOE_Title__c = 'SOE2';
+        clone.Contingency = 15;
+        clone.Plus_Minus_value = '+';
+        clone.PopUpCancel();
+         user user1 = SOEUtility.user_insert('user--8@gmail.com');
+        Member__c member2 = [select id from Member__c where Email__c ='user--8@gmail.com'];
+        Role__c role = [select id from ROle__c where Reference_Role__c = 'Imp Manager' limit 1];
+        SOE_Team_Member__c SOETeam =SOEUtility.teammember_insert(member2.id,'Read',soe.id,role.Id);
+        clone.NewSOE1.SOE_Title__c = 'SOE-1';
+        clone.Extnl_depcy_selct = '0';
+        clone.Jump = false;
+        clone.TimeBound = false;
+        clone.imp = true;           
+        //with link and internal dependencies
+        list<task__c> Tas = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where SOE__c =: SOE.id order by Id_Before_decimal__c,Id_After_Decimal__c];
+         ApexPages.CurrentPage().getparameters().put('SOEId' , SOE.id);
+        ApexPages.CurrentPage().getparameters().put('Id', TAS[1].Id);
+        Add_Task_cntrl Add = new Add_Task_cntrl ();
+            ApexPages.CurrentPage().getparameters().put('days', '2');
+            ApexPages.CurrentPage().getparameters().put('hours', '2');
+            ApexPages.CurrentPage().getparameters().put('minutes', '2');
+            ApexPages.CurrentPage().getparameters().put('tasktitle', 'T3');
+            Add.NewTask.Link__c = true;
+            Add.CreateTask();
+            Tas = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where SOE__c =: SOE.id order by Id_Before_decimal__c,Id_After_Decimal__c];
+            ApexPages.CurrentPage().getparameters().put('Id', TAS[1].Id);
+            Add = new Add_Task_cntrl ();
+            ApexPages.CurrentPage().getparameters().put('days', '2');
+            ApexPages.CurrentPage().getparameters().put('hours', '2');
+            ApexPages.CurrentPage().getparameters().put('minutes', '2');
+            ApexPages.CurrentPage().getparameters().put('tasktitle', 'T3');
+            Add.NewTask.Link__c = true;
+            Add.CreateTask();
+            Tas = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Owner__c from task__c where SOE__c =: SOE.id order by Id_Before_decimal__c,Id_After_Decimal__c];
+            Tas[3].Dependency_Type__c = i8.EXTERNALDEP;
+            update Tas[3];
+            Tas[2].Internal_task__c =true;
+            Tas[2].Dependency_Type__c = i8.EXTERNALDEP;
+            update Tas[2];            
+            clone.Jump = false;
+            clone.TimeBound = false;
+            Attachment attach=new Attachment();    
+            attach.Name='Unit Test Attachment';
+            Blob bodyBlob=Blob.valueOf('Unit Test Attachment Body');
+            attach.body=bodyBlob;
+            attach.parentId=tas[1].Id;
+            insert attach;
+            Communication__c com = SOEUtility.COMM_Insert(tas[2].Id,soe.id,false,'sas@gmail.com','','','');
+            clone.CloneSOE();        
+            clone.PopUpOk();
+            clone.CancelSOE();
+         Test.StopTest();
+  }
+  Static testmethod void  T_Clone_SOE_Cntrl2 (){
+        SOE__c soe = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='Clone SOE 1'];     
+        System.assertEquals(SOE.SOE_Title__c , 'Clone SOE 1');
+        ApexPages.StandardController sc = new ApexPages.StandardController( new SOE__c());
+        Test.StartTest();
+        // for external dependencies       
+        list<task__c> Tas = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Stack_Owner_Name__c from task__c where SOE__c =: SOE.id order by Id_Before_Decimal__c,Id_After_Decimal__c ];
+        list<Dependency__c> DepList1 = new list<Dependency__c>();
+        DepList1.add(SOEUtility.Dependency_Insert(i8.EXTERNALDEP,tas[1].Id,tas[1].SOE__c,tas[1].Id,tas[1].SOE__c,i8.PREDECESSOR));
+        DepList1.add(SOEUtility.Dependency_Insert(i8.EXTERNALDEP,tas[1].Id,tas[1].SOE__c,tas[1].Id,tas[1].SOE__c,i8.SUCCESSOR));
+        insert deplist1;           
+        ApexPages.CurrentPage().getParameters().put('Page',null);
+         ApexPages.CurrentPage().getParameters().put('Id',soe.Id);
+         Clone_SOE_cntrl clone = new Clone_SOE_cntrl(sc);
+         clone.NewSOE1.SOE_Title__c = 'SOE3';
+         clone.Extnl_depcy_selct = '0';
+         clone.Plus_Minus_value  = '-';
+         Tas[1].Time_Bound__c = System.Now()+2;
+         update Tas[1];
+         clone.TimeBound = true;
+         clone.Imp = true;
+         user user1 = SOEUtility.user_insert('user--9@gmail.com');
+         Member__c member2 = [select id from Member__c where Email__c ='user--9@gmail.com'];
+         Role__c role = [select id from ROle__c where Reference_Role__c = 'Imp Manager' limit 1];
+         SOE_Team_Member__c SOETeam =SOEUtility.teammember_insert(member2.id,'Read',soe.id,role.Id);
+         clone.CloneSOE();
+         clone.CancelSOE();
+    Test.StopTest();   
+  }
+  Static testmethod void  T_Clone_SOE_Cntrl3 (){
+        SOE__c soe1 = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='Clone SOE 1'];     
+        System.assertEquals(SOE1.SOE_Title__c , 'Clone SOE 1');
+        ApexPages.StandardController sc = new ApexPages.StandardController( new SOE__c());
+        Test.StartTest();    
+        list<task__c> Tas1 = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Stack_Owner_Name__c from task__c where SOE__c =: SOE1.id order by Id_Before_Decimal__c,Id_After_Decimal__c ];
+        SOE__c soe2 = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='Clone SOE 2'];     
+        list<task__c> Tas2 = [select id,name,Task_Title__c,SOE__c,Stage_Level__c,Stage__c,Team__c,Stack_Owner_Name__c from task__c where SOE__c =: SOE2.id order by Id_Before_Decimal__c,Id_After_Decimal__c ];
+        list<Dependency__c> DepList1 = new list<Dependency__c>();
+        DepList1.add(SOEUtility.Dependency_Insert(i8.EXTERNALDEP,tas1[1].Id,tas1[1].SOE__c,tas2[1].Id,tas2[1].SOE__c,i8.PREDECESSOR));
+        DepList1.add(SOEUtility.Dependency_Insert(i8.EXTERNALDEP,tas2[1].Id,tas2[1].SOE__c,tas1[1].Id,tas1[1].SOE__c,i8.SUCCESSOR));
+        insert deplist1;
+        tas1[1].Dependency_Type__c = i8.EXTERNALDEP;
+        update tas1[1]; 
+        tas2[1].Dependency_Type__c = i8.EXTERNALDEP;
+        update tas2[1];          
+        ApexPages.CurrentPage().getParameters().put('Page',null);
+        ApexPages.CurrentPage().getParameters().put('Id',soe1.Id);
+        Clone_SOE_cntrl clone = new Clone_SOE_cntrl(sc);
+        clone.Plus_Minus_value  = '-';
+         clone.Extnl_depcy_selct = '2';
+        clone.CloneSOE();
+        clone.PopUpOk();
+        clone.WrapperList[0].newSOE.SOE_Title__c = 'soe-clone1';
+        clone.PopUpOK();
+        clone.CloneSOE();
+        clone.PopUpOk();
+        clone.WrapperList[0].newSOE.SOE_Title__c = 'soe-clone1';
+        clone.PopUpOK();
+    }
+}

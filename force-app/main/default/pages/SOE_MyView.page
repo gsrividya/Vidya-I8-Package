@@ -1,0 +1,62 @@
+<apex:page showHeader="false" standardStylesheets="false" controller="SOE_MyView_cntrl">
+    <style>       
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar {background-color:#CFEEF8;border-color: #303260;}  
+    </style>
+    <apex:form id="frm1">             
+        <div class="wrapper">
+            <!--Header section starts ------>
+            <apex:outputPanel rendered="{!soe == true}"> <c:SOEPageHeader sid="{!SOEID}"></c:SOEPageHeader> </apex:outputPanel>
+            <apex:outputPanel rendered="{!soe == false}"> <c:SOEPageHeader object="{!SOEId}"></c:SOEPageHeader> </apex:outputPanel>
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                          <apex:outputPanel rendered="{!statusmsg !=null}" >
+                                <div class="alert alert-danger" role="alert"  style="width:100%;"> {!statusmsg} </div>
+                            </apex:outputPanel>
+                            <div class="row">
+                                <div class="col-sm-5">
+                                    <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                    <h3 style="display:inline;COLOR:#093E4F;">Edit View</h3>                                        
+                                </div>                                    
+                                <div class="col-sm-7" style="text-align: right">
+                                    <apex:commandButton value="Save" Action="{!save}" styleclass="btn btn-primary btn-sm" style="padding-left: 15px; padding-right:15px;"/>
+                                    <apex:commandButton value="Cancel" action="{!cancel}" rendered="{! $User.UIThemeDisplayed == 'Theme3'}" styleclass="btn btn-primary btn-sm" style="padding-left: 15px; padding-right:15px;"/>                                                                                               
+                                </div>
+                            </div>  
+                            <hr />
+                            <center><table>
+                                <tr>
+                                    &nbsp;
+                                    <th scope="col"><center>Available Fields</center></th>
+                                    <th></th>
+                                    <th scope="col"><center>Selected Fields</center></th>
+                                </tr>
+                                <tr>
+                                    <td scope="row">
+                                        <apex:selectList value="{!leftselected}" id="leftlist" styleClass="form-control" multiselect="true" size="10" style="width:200px;height:220px;">
+                                            <apex:selectOptions value="{!ObjectFields}"/>
+                                        </apex:selectList>
+                                    </td>
+                                    <td>
+                                        <apex:commandLink title="Add Selected" action="{!AddFields}" reRender="leftlist,rightlist"><i class="fa fa-caret-right fa-2x" style="padding: 5px;color:#009999;"></i></apex:commandLink><br/>
+                                        <apex:commandLink title="Remove Selected" action="{!removefields}" reRender="leftlist,rightlist"><i class="fa fa-caret-left fa-2x" style="padding: 5px;color:#009999;"></i></apex:commandLink>
+                                    </td>
+                                    <td>
+                                        <apex:selectList value="{!rightselected}" styleClass="form-control" id="rightlist" multiselect="true" size="10" style="width:200px;height:220px;">
+                                            <apex:selectOptions value="{!rightFields}"/>
+                                        </apex:selectList>
+                                    </td>                      
+                                </tr>
+                                </table> </center>                                                                                                                                
+                        </div>
+                    </div>  
+                </section>
+            </div> <!-- Content Wrapper ends---->
+            <!-- Footer section starts------>
+            <c:PageFooter ></c:PageFooter><!-- Footer section ends------>
+        </div>
+    </apex:form>
+</apex:page>

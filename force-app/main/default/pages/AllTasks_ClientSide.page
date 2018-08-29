@@ -1,0 +1,1651 @@
+<apex:page showheader="false" standardstylesheets="false" controller="AllTasks_ClientSide_Cntrl" showChat="true">
+<apex:form >
+    <apex:stylesheet value="{!$Resource.CSSPlugins}" />
+    <apex:stylesheet value="{!URLFOR($Resource.FontAwesome, '/font-awesome-4.7.0/css/font-awesome.min.css')}" />
+    <apex:includescript value="{!$Resource.Jquery1}" />
+    <apex:includeScript value="{!$Resource.SecureFilters}"/>
+    <style>
+        .sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > a > span:not(.pull-right), .sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > .treeview-menu {
+            display: block !important; position: absolute;width: 240px; left: 50px;
+        }
+        sidebar-menu .treeview-menu > li > a {
+            padding: 5px 5px 5px 15px;display: block;font-size: 14px;  white-space: nowrap;
+        }
+        .se-pre-con {
+            position: fixed;left: 0px; top: 0px; width: 100%;  height: 100%; z-index: 9999; background: url(/resource/LoaderImg) center no-repeat #000;opacity: 0.9;cursor: wait;
+        }
+        .loader {
+            position: fixed; top: 0;left: 0;width: 100%;height: 100%;background-color: #d9d9d9;z-index: 9999;opacity: 1.0;cursor: wait;
+        }
+        .loader_html {
+            position: fixed;top: 50%; left: 50%;margin: -25px 0 0 -25px;width: 50px; height: 50px;border-width: 8px;border-style: solid;border-right-color: rgba(0, 0, 0, 0) !important; border-radius: 50%;
+            -webkit-border-radius: 50%;-moz-border-radius: 50%; background-color: rgba(0, 0, 0, 0);-webkit-animation: spin 1s linear infinite;
+            -moz-animation: spin 1s linear infinite;-ms-animation: spin 1s linear infinite;-o-animation: spin 1s linear infinite;animation: spin 1s linear infinite;
+        }
+        .alert {padding: 6px;border-left-width: 0px; }
+        .bwizard-steps .heighlightWizard {color: white;background: #008000;  }
+        .bwizard-steps .heighlightWizard:after { border-left-color: #008000;  }
+        .bwizard-steps .heighlightWizard a {color: #fff;cursor: help; padding-top: 2px; }
+        .bwizard-steps .heighlightWizard .label {background-color: #fff;}
+        .bwizard-steps {background-color: #ECF0F5; }
+        .bwizard-steps li:before {position: absolute;left: 0; top: 0;height: 0;width: 0;border-bottom: 15px inset transparent;border-left: 15px solid #ECF0F5; border-top: 15px inset transparent;content: "";}
+        .bwizard-steps li { display: inline-block;position: relative;padding: 11px 3px 7px 18px;background: #959592;line-height: 13px;list-style: none;zoom: 1;margin-bottom: 10px; }
+        .bwizard-steps .active {color: #fff; }
+        .bwizard-steps {cursor: help; }
+        #rootwizard span {color: white !important;  }
+        .bwizard-steps li:first-child {padding-left: 12px; -moz-border-radius: 4px 0 0 4px;-webkit-border-radius: 4px 0 0 4px; border-radius: 0px !important; }
+        .dependencyImg img { height: 15px !important;}
+        .popover {background-color: #e3f3ff !important; display: inline-block;min-width:100px;max-width: 240px;}
+        .table.dataTable thead .sorting {background: none !important; }
+        .IsStack {background-color: #87AFC7;color: white; }
+        .togglebuttonclass {color: blue !important;background-color: #CFEEF8 !important;}
+        .skin-blue .main-header .navbar {background-color: #CFEEF8 !important;  }
+        skin-blue .main-header .navbar .sidebar-toggle {color: black !important;  }
+        skin-blue .main-header .navbar .sidebar-toggle .sidebar:hover {background-color: none !important; }
+        #example_length label {width: 100%; }
+        #example_length select[name="example_length"] {display: inline-block; }
+        ul.mainviewdropdown li a:hover, ul.mainviewdropdown li a:active {color: #fff;text-decoration: none;background-color: #337ab7;outline: 0;}
+        .EndStack {background: #A0CFEC;   }
+        .skin-blue .main-header .logo {color: #fff;border-bottom: 0 solid transparent; }
+        .skin-blue .main-header .logo {background-color: #CFEEF8 !important; }
+        .actionbuttons {text-align: right; margin-top: 5px;}
+        .highlight {background: #367fa9;color: #e5ffff !important; }
+        a {color: #0070d2;}
+        a:hover, a:active, a:focus {outline: none;text-decoration: underline;color: #005fb2; }
+        .sidebar-menu, .main-sidebar .user-panel, .sidebar-menu > li.header {white-space: normal !important;overflow: visible !important;}
+        .sidebar-menu:hover {overflow: visible !important;   }
+        .main-sidebar {background-color: #CFEEF8 !important;   }
+        li.selectedli { background-color: #337AB7;  }
+        li.selectedli a {color: #fff !important; text-decoration: none;}
+        .sidebar-mini.sidebar-collapse .sidebar-menu > li > a {margin-right: 0;height: 40px !important;}        
+        .treeview{top:20px;}
+        @media (min-width: 200px) and (max-width: 849px){
+            .sidebar-mini.sidebar-collapse .sidebar-menu > li > a { height:65px;}
+            .treeview{top:50px;}
+            a{padding-top:5px;padding-bottom;5px;}
+            .main-header .sidebar-toggle {
+                padding-top: 5px; padding-bottom: 5px;
+            }
+        }   
+        table { border-collapse: collapse; }
+        tr { border: none; }
+        td { border-right: solid 1px #BCC4C6;   border-left: solid 1px gray;  } 
+        table td:first-child { border-left: none; }
+        table td:last-child { border-right: none; }
+        .table1 td{border-left: none;border-right: none;}
+        .table1 td:first-child { border-right: solid 1px #BCC4C6; }
+        .custPopup{ width:50%;   height:300px; top:50px; background-color: #f9ffe6;  border:2px solid grey; z-index: 9999;left:20%; padding:10px;  position: fixed;  }
+        .custPopup1{ width:50%;   height:150px; top:50px; background-color: #f9ffe6;  border:2px solid grey; z-index: 9999;left:20%; padding:10px;  position: fixed;  }
+        .popupBackground{background-color:black; opacity: 0.20; filter: alpha(opacity = 20);  position: fixed;width: 100%; height: 100%; top: 0;  left: 0; z-index: 9998;}  
+        .my_class_wrap { white-space:nowrap;  text-align : left;}  
+        .not-active { pointer-events: none; cursor: default;  opacity: 0.3;}  
+        .hidden { display: none; }
+        .table-responsive {  overflow-x: auto;}
+        .input-group-btn:last-child > .btn, .input-group-btn:last-child > .btn-group {   z-index: 2; margin-left: -1px;  width: 50px;   height: 34px; font-size: small;}
+         body .btnstyle{ color: #fff;   padding : 4px 15px 4px 15px; background :#529dc8 ; border-radius : 16px; border : 1px;font-size : 14px;}
+         body .btn{ color: #fff;background :#529dc8 ; border : 1px;font-size : 14px;}
+        .btnstyle:hover,.btn:hover, .btn:focus, .btn.focus { background :  #367fa9;  }        
+        .main-header {  max-height: none; }
+    </style>
+    <div class="wrapper" id="div1">
+        <!-- pre-loader division -->
+        <div class="loader"><div class="loader_html"></div></div>
+        <!-- Main Header -->
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="#" class="logo">
+                <!-- mini logo for sidebar mini 50x50 pixels for mobile size view or when side bar collapsed-->
+                <span class="logo-mini">
+                    <img height="40" id="Img1" src="{!$Resource.Company_Logo}" width="40" style="margin-top: 8px;" />
+                </span>
+                <!-- logo for regular state and mobile devices -->
+                <span class="logo-lg">
+                    <img src="{!$Resource.Company_Logo}" alt="" id="phHeaderLogoImage" title="" width="55" height="50" style="margin-top: 0px;"/>
+                </span>
+            </a>
+            <!-- Logo division End-->
+            <!-- Navbar-->            
+            <nav class="navbar navbar-static-top" role="navigation">                  
+                <!-- Sidebar toggle button-->
+                <a href="#" class="padding5 sidebar-toggle togglebuttonclass" data-toggle="offcanvas" role="button" >
+                    <span class="sr-only">Toggle navigation</span>
+                </a>               
+                <!-- custom division to show status and details in navbar-->
+                <div >                  
+                    <div style="text-align:right;">
+                        <!-- Logo division End-->
+                        <div id="divTaskDetails" class="alert" style="padding: 0px; margin: 0px; font-size: 12px; margin-top: 5px;margin-bottom: 5px; margin-right: 5px;">
+                        </div>                                              
+                    </div>
+                </div>
+            </nav>
+        </header>        
+        <!-- =============================================== -->
+        <!-- Left side column. contains the sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">        
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <input type="hidden" id="hfSideBarSelectedView" value="mainview" />
+                <input type="hidden" id="hSOEStatus" />
+                <input type="hidden" id="taskid" />
+                <input type="hidden" id="hUserSelectedView" />
+                <!-- Side bar menu Items -->
+                <ul class="sidebar-menu">
+                    <li class="treeview">
+                        <a href="#collapse1"> <i class="fa fa-dashboard"></i><span>Stages</span> <i class="fa fa-angle-left pull-right"></i>  </a>
+                        <ul class="treeview-menu">
+                            <li><a href="#" rel="preImplementation" class="sidebarclick"><i class="fa fa-hand-o-right"></i>Pre-Implementation</a></li>
+                            <li><a href="#" rel="impleMentation" class="sidebarclick"><i class="fa fa-hand-o-right"></i>Implementation</a></li>
+                            <li><a href="#" rel="postImplementation" class="sidebarclick"><i class="fa fa-hand-o-right"></i>Post-Implementation</a></li>
+                            <li><a href="#" rel="allImplementation" class="sidebarclick"><i class="fa fa-hand-o-right"></i>All Implementations</a></li>
+                            <li><a href="#" rel="backOut" class="sidebarclick"><i class="fa fa-hand-o-right"></i>BackOut</a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">                        
+                        <a href="#collapse1"> <i class="fa fa-puzzle-piece"></i><span>Add-Ons</span> <i class="fa fa-angle-left pull-right"></i>  </a>
+                        <ul class="treeview-menu">
+                            <li><apex:commandLink action="{!openNewBroadcast}" rendered="{!CurSOE != null}"><i class="fa fa-hand-o-right"></i>New Broadcast</apex:commandLink></li>
+                            <li><apex:commandLink action="{!openSearchReplace}" rendered="{!CurSOE != null}"><i class="fa fa-hand-o-right"></i>Search  &amp; Replace</apex:commandLink></li>
+                            <li><apex:commandLink action="{!openAllDocuments}" rendered="{!CurSOE != null}"><i class="fa fa-hand-o-right"></i>Documents</apex:commandLink></li>
+                            <li><apex:commandLink action="{!openAttachments}" rendered="{!CurSOE != null}"><i class="fa fa-hand-o-right"></i>Upload Audio Files</apex:commandLink></li>
+                            <li><apex:commandLink action="{!openResourceROTA}" rendered="{!CurSOE != null}"><i class="fa fa-hand-o-right"></i>Resource ROTA</apex:commandLink></li>
+                            <li><apex:commandLink action="{!openHistoryPage}" rendered="{!CurSOE != null}"><i class="fa fa-hand-o-right"></i>History Tracking</apex:commandLink></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#collapse1">  <i class="fa fa-file-text"></i><span>Summary</span> <i class="fa fa-angle-left pull-right"></i>    </a>
+                        <ul class="treeview-menu">
+                            <li><a href="#" rel="stackSummary" onclick="ShowDescriptionColumn()"><i class="fa fa-hand-o-right"></i>Stack Description</a></li>
+                            <li><a href="#" rel="technicalSummary" onclick="ShowTechDetailColumn()"><i class="fa fa-hand-o-right"></i>Technical Summary</a></li>
+                            <li><a href="#" rel="qareviewComments" onclick="ShowReviewColumn()"><i class="fa fa-hand-o-right"></i>QA Review Comments</a></li>
+                            <li><a href="#" rel="walkthroughComments" onclick="ShowWalkThroughColumn()"><i class="fa fa-hand-o-right"></i>Walkthrough Comments</a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#collapse1">  <i class="fa fa-thumb-tack"></i><span>Dependencies</span> <i class="fa fa-angle-left pull-right"></i>  </a>
+                        <ul class="treeview-menu">
+                            <li><a href="#" rel="brokenTasks" class="sidebarclick"><i class="fa fa-hand-o-right"></i>Broken Tasks</a></li>
+                            <li><a href="#" rel="linkedTasks" class="sidebarclick"><i class="fa fa-hand-o-right"></i>Linked Tasks</a></li>
+                            <li><a href="#" rel="intDepTasks" class="sidebarclick"><i class="fa fa-hand-o-right"></i>Internal Dependency Tasks</a></li>
+                            <li><a href="#" rel="timeTasks" class="sidebarclick"><i class="fa fa-hand-o-right"></i>TimeBound Tasks</a></li>
+                        </ul>
+                    </li>                   
+                </ul>
+                <!-- /Side bar menu Items -->
+            </section>
+            <!-- /.sidebar -->
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper" style="min-height:0px!important">
+            <div></div>
+            <div >
+                      <apex:outputPanel id="frm2">                    
+                            <div  >
+                        <apex:outputPanel rendered="{!BroadCast}">                                          
+                            <marquee  width="93%">{!BroadCastMsg}</marquee>
+                            <apex:commandLink rendered="{!BroadCast}" action="{!BroadCastOnOff}" reRender="frm2" > <img src="{!$Resource.Broadcast_On}" height="20" width="2%" title="Click, to stop "/></apex:commandLink> &nbsp;
+                            <apex:commandLink action="{!audioclip}"><i class="fa fa-volume-up fa-lg" title="Click to listen "></i></apex:commandLink>
+                        </apex:outputPanel>
+                       </div>
+                       <apex:outputPanel rendered="{!!BroadCast}">
+                        <div style="text-align:right;width:97%" id="br2" >
+                            <apex:commandLink action="{!BroadCastOnOff}" reRender="frm2">   <img src="{!$Resource.Broadcast_On}" height="20" width="2%" title="Click, to show the message"/>    </apex:commandLink>
+                            <apex:commandLink action="{!audioclip}"><i class="fa fa-volume-up fa-lg " title="Click to listen "></i></apex:commandLink>
+                        </div>
+                        </apex:outputPanel> 
+                         <apex:outputpanel rendered="{!errmsg!= null}" id="msg">
+                                        <div class="row" style="padding-top:0px;padding-bottom:0px;padding-left:20px;padding-right:20px;">
+                                            <div class="alert alert-danger  alert-dismissible fade in" role="alert" id="err" style="margin-bottom:0px;">
+                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><center>{!errmsg}</center>
+                                            </div>
+                                        </div>
+                        </apex:outputpanel>                       
+                      </apex:outputPanel> </div>
+            <!-- Content Header (Page header) -->
+            <section class="content-header" style="padding-top:0px">
+                <div class="row" style="padding-top:5px">
+                    <div class="col-lg-3 col-md-12">
+                        <span style="font-size: 24px; font-weight: bold">Overview of Tasks</span>
+                    </div>
+                    <div class="col-lg-9 col-md-12 pull-right" style="text-align:right">
+                        <!--rootWizard division -->
+                        <div id="rootwizard" style="padding: 10px">
+                            <ul id="statusbar" class="hidden">
+                                <li class="Suspended Abandoned SOEBOCompleted BOCompleted BOInProgress SOECompleted ImpCompleted ImpInProgress Freeze Scheduled Review Build" title="Build"><span>Build</span></li>
+                                <li class="Suspended Abandoned SOEBOCompleted BOCompleted BOInProgress SOECompleted ImpCompleted ImpInProgress Freeze Scheduled Review" title="Review"><span>Review</span></li>
+                                <li class="Suspended Abandoned SOEBOCompleted BOCompleted BOInProgress SOECompleted ImpCompleted ImpInProgress Freeze Scheduled" title="Scheduled"><span>Schedule</span></li>
+                                <li class="Suspended Abandoned SOEBOCompleted BOCompleted BOInProgress SOECompleted ImpCompleted ImpInProgress Freeze" title="Freeze"><span>Freeze</span></li>
+                                <li class="SOECompleted ImpCompleted ImpInProgress" title="In Progress" id="li1"><span>In Prog</span></li>
+                                <li class="SOECompleted ImpCompleted" title="Imp Completed" id="li2"><span >Imp Comp</span></li>  
+                                <li class="SOECompleted" title="SOE Completed" id="li3"><span>SOE Comp</span></li>
+                                <li class="SOEBOCompleted BOCompleted BOInProgress" title="BO In Progess" id="li4"><span>BO IN Prog</span></li>
+                                <li class="SOEBOCompleted BOCompleted" title="BO Completed" id="li5"><span>BO Comp</span></li>                               
+                                <li class="SOEBOCompleted" title="SOE BO Completed" id="li6"><span>SOE BO Comp</span></li>
+                                <li class="Suspended Freeze" title="Suspended" id="li7"><span>Suspended</span></li>
+                                <li class="Abandoned Freeze" title="Abandoned" id="li8"><span>Abandoned</span></li>
+                            </ul>
+                        </div>
+                        <!--/rootWizard division -->
+                    </div>
+                </div>                
+            </section>            
+            <!-- Main content -->
+            <section class="content" style="padding-top:0px">
+                <div id="frmTasksOverview">
+                    <div id="showdiv2">
+                        <div class="box box-info">
+                            <div class="box-header  with-border" style="padding-top:0px;padding-bottom:0px;">
+                                <div class="btn-group btn-group-justified" style="border: 0px solid">
+                                    <div class="row" id="btn">
+                                        <div class="col-lg-7 col-md-12 col-sm-12">
+                                            <div class="btn-group" style="border: 0px solid; padding-top: 5px">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-info btnSpace dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        Main View  <span class="caret"></span>  </button>
+                                                    <ul id="mainviewdropdown" class="dropdown-menu mainviewdropdown" aria-labelledby="dropdownMenu1">
+                                                        <li><a href="#" rel="defaultView" data-value="1">Main View</a></li>
+                                                        <li><a href="#" rel="myView" data-value="2">My View</a></li>
+                                                        <li><a href="#" rel="runreadysusTasks" data-value="3">Ready,Run and Suspended Tasks</a></li>
+                                                        <li><a href="#" rel="nonCompletedTasks" data-value="4">Non-Completed Tasks</a></li>
+                                                        <li><a href="#" rel="plannedForecastTimes" data-value="5">Planned, Forecast and Actual times</a></li>
+                                                        <li><a href="#" rel="criticalPathTasks" data-value="6">Critical path Tasks</a></li>
+                                                        <li><a href="#" rel="externalDependencyTasks" data-value="7">External Dependency Tasks</a></li>
+                                                        <li><a href="#" rel="milestonesTasks" data-value="8">Milestones &amp; Comms Tasks</a></li>
+                                                    </ul>
+                                                </div>
+                                                <apex:outputPanel id="panel1" rendered="{! CONTAINS(ImpMgrMapKey,$User.Id)  && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CurSOE.Status__c != 'Imp In Progress' && CurSOE.Status__c != 'Imp Completed' && CurSOE.Status__c != 'SOE Completed' && CurSOE.Status__c != 'SOE BO Completed' && CurSOE.Status__c != 'Suspended' && CurSOE.Status__c != 'Abandoned'}">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-info btnSpace  dropdown-toggle" type="button" id="Button1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        Stack &amp;Task  <span class="caret"></span>   </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">                                                        
+                                                        <li><apex:commandLink value="Create Stack" action="{!openCreateStack}"/></li>
+                                                        <li><apex:commandLink value="Clone Stack" action="{!openCloneStack}"/></li>
+                                                        <li><apex:commandLink value="Drop Stack" action="{!openDropStack}"/></li>
+                                                        <li><apex:commandLink value="Jump Stack" action="{!openJumpStack}"/></li>
+                                                        <li><apex:commandLink value="Move Stack" action="{!openMoveStack}"/></li>
+                                                        <li><apex:commandLink value="Clone Task" action="{!openCloneTask}"/></li>
+                                                        <li><apex:commandLink value="Drop Task" action="{!openDropTask}"/></li>
+                                                   </ul>
+                                                </div>
+                                                </apex:outputPanel>
+                                                <apex:outputPanel id="panel2" rendered="{! !CONTAINS(QAMgrMapKey,$User.Id) && CurSOE != null}"> 
+                                                <div class="dropdown">
+                                                    <button class="btn btn-info btnSpace dropdown-toggle" type="button" id="Button2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        Incidents <span class="caret"></span>  </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
+                                                        <li><apex:commandLink value="View All" action="{!openListIncidents}"/></li>
+                                                        <li><apex:commandLink value="Create" action="{!openCreateIncident}"/></li>
+                                                        <li><apex:commandLink value="Open Incidents" action="{!openListOpenIncidents}"/></li>
+                                                        <li><apex:commandLink value="Closed Incidents" action="{!openListClosedIncidents}"/></li>
+                                                    </ul>
+                                                </div>
+                                                </apex:outputPanel>
+                                                 <apex:outputPanel rendered="{!CurSOE != null}" >
+                                                <div class="dropdown">
+                                                    <button class="btn btnSpace btn-info dropdown-toggle" type="button" id="Button3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        Dashboards &amp; Reports <span class="caret"></span>   </button>
+                                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu4">                                                        
+                                                        <li><apex:commandLink value="SOE Status" action="{!openSOEStatus}"/></li>
+                                                        <li><apex:commandLink value="MI Dashboards & Reports" action="{!openSOEDashboards}"/></li>
+                                                        <li><apex:commandLink value="IOAP" action="{!openIOAP}"/></li>
+                                                        <li><apex:commandLink value="Task GanttChart" action="{!openTaskGanttChart}"/></li>
+                                                        <li><apex:commandLink value="Resource GanttChart" action="{!openResourceGanttChart}"/></li>
+                                                    </ul>
+                                                </div>
+                                                 </apex:outputPanel>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-1 col-md-12 col-sm-12" id="loading">                                            
+                                            <apex:actionStatus id="updateStatus">
+                                                    <apex:facet name="start">  <img src="{!$Resource.Running}" alt="" height="25" width="25" /> Processing...  </apex:facet>
+                                            </apex:actionStatus>                                                                                                                                  
+                                        </div>
+                                        <div class="col-lg-4 col-md-12 col-sm-12 actionbuttons" id="btn1">
+                                                <div class="btn-group">                                                
+                                                <apex:outputPanel id="frm1"> 
+                                                    <apex:actionfunction action="{!openAddDocuments}" name="adddocuments" rerender="frm1" >
+                                                        <apex:param value="" name="ActiveId" />
+                                                    </apex:actionfunction>
+                                                    <apex:actionFunction action="{!openMyView}" name="myview" rerender="frm1"/>
+                                                    <apex:actionfunction action="{!openAddTask}" name="addtask" rerender="frm1" >
+                                                        <apex:param value="" name="ActiveId" />
+                                                    </apex:actionfunction>
+                                                     <apex:actionfunction action="{!openEmailPage}" name="openemail" rerender="frm1" >
+                                                        <apex:param value="" name="ActiveId" />
+                                                    </apex:actionfunction>
+                                                    <apex:actionfunction action="{!openEditStack}" name="editstack" rerender="frm1" >
+                                                        <apex:param value="" name="ActiveId" />
+                                                    </apex:actionfunction>
+                                                    <apex:actionfunction action="{!openManageDependencies}" name="managedeps" rerender="frm1" >
+                                                        <apex:param value="" name="ActiveId" />
+                                                    </apex:actionfunction>
+                                                     <apex:actionfunction action="{!openModifyTask}" name="modifytask" rerender="frm1" >
+                                                        <apex:param value="" name="ActiveId" />
+                                                        <apex:param value="" name="Level" />
+                                                    </apex:actionfunction>
+                                                    <apex:actionfunction action="{!UpdateTasks}" name="refreshgrid" rerender="frm1,loading,frm2" oncomplete="activecomplete();" status="updateStatus"/>
+                                                    <apex:actionfunction action="{!SOESuspend}" name="SOESuspended1" rerender="loading"  status="updateStatus">
+                                                        <apex:param value="" name="ActiveId" />
+                                                    </apex:actionfunction>
+                                                    <apex:actionfunction action="{!CreateCall}" name="SendCall2" rerender="loading,frm2"  status="updateStatus">
+                                                        <apex:param value="" name="ActiveId" />
+                                                    </apex:actionfunction>
+                                                    <apex:actionfunction action="{!CreateSMS}" name="SendSMS2" rerender="frm1,frm2"  status="updateStatus">
+                                                        <apex:param value="" name="ActiveId" />
+                                                        <apex:param value="" name="body1" />
+                                                    </apex:actionfunction> 
+                                                    <apex:actionfunction action="{!AddPINtoTask}" name="SendPIN2" rerender="loading,frm2" oncomplete="activecomplete();"  status="updateStatus">
+                                                        <apex:param value="" name="tas" />
+                                                        <apex:param value="" name="body1" />
+                                                    </apex:actionfunction>                                                   
+                                                    <apex:actionfunction action="{!ActivateTask1}" name="runthetask" rerender="frm1,loading,frm2" oncomplete="activecomplete();" status="updateStatus">
+                                                        <apex:param value="" name="ActiveId" />
+                                                    </apex:actionfunction>
+                                                    <apex:actionfunction action="{!ReRunTask}" name="rerunthetask" rerender="frm1,loading,frm2" oncomplete="activecomplete();" status="updateStatus">
+                                                        <apex:param value="" name="ActiveId" />
+                                                    </apex:actionfunction>
+                                                    <apex:actionfunction action="{!CompleteTask}" name="completethetask" rerender="frm1,loading,frm2" oncomplete="activecomplete();" status="updateStatus">
+                                                        <apex:param value="" name="ActiveId" />
+                                                    </apex:actionfunction>                                                    
+                                                    <a href="#" id="aEditMyView" onclick="myview();" style="display:none;border-radius:15px;" class="btn btn-sm btn-primary">Edit</a> 
+                                                    <apex:commandbutton value="Refresh" styleclass="btn btn-sm btn-primary btnstyle" onclick="refreshgrid()" rerender="example,loading"  rendered="{! (CONTAINS(ImpMgrMapKey,$User.Id) || CONTAINS(IncMgrMapKey,$User.Id)) && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CurSOE.Status__c != 'SOE Completed' && CurSOE.Status__c != 'SOE BO Completed'}" style="padding-left: 15px; padding-right:15px;" />
+                                                    <apex:commandbutton value="Close" styleclass="btn btn-sm btn-primary btnstyle" action="{!Cancel}" style="padding-left: 15px; padding-right:15px;"/>
+                                                    <apex:commandbutton value="Build Complete" action="{!SOEBuildComplete}" rendered="{!(CurSOE.Status__c == i8.STATUS_BUILD || BuildComp ==true) && CONTAINS(ImpMgrMapKey,$User.Id)}" styleclass="btn btn-sm btn-primary btnstyle" onclick="if(!confirm('Please confirm you want to Complete the SOE Build')) return false;" status="blockUI" style="padding-left: 15px; padding-right:15px;"/>
+                                                    <apex:commandbutton value="QA Review" action="{!QAReview}" rendered="{!QAReviewButton == true && (CurSOE.OwnerId == $User.Id || $Profile.Name == 'System Administrator')}"  styleclass="btn btn-sm btn-primary btnstyle" onclick="if(!confirm('Please confirm you want to Review the SOE')) return false;" style="padding-left: 15px; padding-right:15px;"/>
+                                                    <apex:commandbutton value="Schedule" action="{!SOESchedule}" rendered="{!ScheduleButton == true &&  CONTAINS(ImpMgrMapKey,$User.Id)}" styleclass="btn btn-sm btn-primary btnstyle" onclick="if(!confirm('Please confirm you want to Schedule the SOE')) return false;" style="padding-left: 15px; padding-right:15px;"/>
+                                                    <apex:outputpanel rendered="{!CurSOE.QA_Review__c == 'In Progress'}" styleclass="alert alert-warning">  QA Review In Progress  </apex:outputpanel>
+                                                    <apex:outputpanel rendered="{!CurSOE.QA_Review__c == 'In Progress' && (QAMgrId  == $User.Id || $Profile.Name == 'System Administrator')}">
+                                                        <apex:commandLink action="{!openReviewWalkthroughPage}" value="GoTo QAReview" />
+                                                    </apex:outputpanel>
+                                                    <apex:commandbutton value="Walk Through" action="{!WalkThrough}" rendered="{!WalkThroughButton == true &&  (CurSOE.OwnerId == $User.Id || $Profile.Name == 'System Administrator')}" styleclass="btn btn-sm btn-primary btnstyle" onclick="if(!confirm('Please confirm you want to WalkThrough the SOE')) return false;" style="padding-left: 15px; padding-right:15px;"/>
+                                                    <apex:outputpanel rendered="{!CurSOE.WalkThrough__c == 'In Progress'}" styleclass="alert alert-warning">
+                                                        WalkThrough In Progress  <apex:commandLink action="{!openReviewWalkthroughPage}" value="GoTo WalkThrough" rendered="{!CurSOE.OwnerId == $User.Id || $Profile.Name == 'System Administrator'}"/>                                                        
+                                                    </apex:outputpanel>
+                                                    <apex:commandbutton value="Freeze" action="{!SOEFreeze}" rendered="{!FreezeButton == true &&  CONTAINS(ImpMgrMapKey,$User.Id)}" styleclass="btn btn-sm btn-primary btnstyle" onclick="if(!confirm('Please confirm you want to Freeze the SOE')) return false;" style="padding-left: 15px; padding-right:15px;"/>
+                                                    <apex:commandbutton value="Execute" action="{!SOEExecute}" rendered="{!CurSOE.Status__c== i8.STATUS_FREEZE &&  CONTAINS(ImpMgrMapKey,$User.Id)}"  styleclass="btn btn-sm btn-primary btnstyle" onclick="if(!confirm('Please confirm you want to Execute the SOE')) return false;" style="padding-left: 15px; padding-right:15px;"/>
+                                                    <apex:commandbutton value="Suspend"  rendered="{!CurSOE.Status__c == i8.STATUS_IMPINPROGRESS &&  CONTAINS(ImpMgrMapKey,$User.Id)}" styleclass="btn btn-sm btn-primary btnstyle" onclick="SuspendorBackout();" rerender="frm1" style="padding-left: 15px; padding-right:15px;"/>
+                                                    <apex:commandbutton value="Abandon" action="{!SOEAbandon}" rendered="{!(CurSOE.Status__c == i8.STATUS_IMPINPROGRESS || CurSOE.Status__c == i8.STATUS_SUSPENDED) &&  CONTAINS(ImpMgrMapKey,$User.Id)}" styleclass="btn btn-sm btn-primary btnstyle" onclick="if(!confirm('Please confirm you want to Abandon the SOE')) return false;" style="padding-left: 15px; padding-right:15px;"/>
+                                                    <apex:commandbutton value="ReExecute" action="{!SOEReExecute}" rendered="{!CurSOE.Status__c == i8.STATUS_SUSPENDED &&  (CONTAINS(ImpMgrMapKey,$User.Id) || CONTAINS(IncMgrMapKey,$User.Id))}" styleclass="btn btn-sm btn-primary btnstyle" onclick="if(!confirm('Please confirm you want to ReExecute the SOE')) return false;" style="padding-left: 15px; padding-right:15px;"/>
+                                                 <div class="col-xs-12">
+                                                    <center><apex:outputpanel id="sms" rendered="{!statusmsg != null}">
+                                                    <div class="row" style="left:30%;padding-top:5px;padding-bottom:0px;padding-left:20px;padding-right:20px;">
+                                                        <div class="alert alert-warning alert-dismissible fade in" role="alert">
+                                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                    {!statusmsg} </div>
+                                                    </div>
+                                                    </apex:outputpanel></center>
+                                                </div> 
+                                              </apex:outputPanel>
+                                            </div>
+                                        </div>
+                                          
+                                    </div>                                
+                                </div>
+                            </div>                            
+                            <div class="box-body ">
+                                <div class="form-group" style="display:none">
+                                    <div class="row" style="margin-bottom: 5px">
+                                        <div class="col-lg-9 col-md-9 col-sm-12" style="margin-bottom: 2px">
+                                            <div class="row" style="margin-left: 5px">    </div>
+                                        </div>                                        
+                                        <div class="col-lg-3 col-md-3 col-sm-12" style="text-align:right; padding: 5px"> </div>
+                                    </div>
+                                </div>                                 
+                                <div id="popup" style="display:none;">
+                                    <apex:outputPanel id="frm4">                           
+                                        <apex:outputPanel styleClass="popupBackground" layout="block"  />
+                                        <apex:outputPanel styleClass="custPopup1" style="top:30%;" layout="block" >
+                                             <center><b> To : <span id="user"></span> </b><br/>
+                                             Enter Message (160 characters) <textarea id="myText" name="textarea" rows="2" style="width:70%"></textarea>                                            
+                                            <br/><apex:commandButton value="Send" onclick="sendSMS()" rerender="frm4"/>  
+                                            <apex:commandButton value="Cancel" onclick="hidepopup()" rerender="frm3"/></center>
+                                        </apex:outputPanel>
+                                     </apex:outputPanel>
+                                 </div> 
+                                 <div id="pin" style="display:none;">                                   
+                                    <apex:outputPanel id="frm3">             
+                                        <apex:outputPanel styleClass="popupBackground" layout="block"  />
+                                          <apex:outputPanel styleClass="custPopup" style=" layout:block" >
+                                            <b> To : <span id="task"></span> </b><br/>
+                                           <b> PIN :</b>  <apex:outputPanel ><div id="pinData" style="border:1px solid #D7DBDD;overflow: auto;height:30%"></div> </apex:outputPanel><br/>
+                                            Enter Message 
+                                            <textarea id="pinText" name="textarea" style="width:90%;height:18%;overflow: auto;"></textarea>
+                                            <center><br/><apex:commandButton value="Send" onclick="addpin()" rerender="frm1,loading"/>  
+                                            <apex:commandButton value="Cancel" onclick="hidepin()" rerender="frm3"/></center>
+                                         </apex:outputPanel>
+                                   </apex:outputPanel>
+                                 </div>   
+                                <div  id="divtable" class="table-responsive no-border" >
+                                    <table id="example" class="display table table1"  ></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- /Main content -->
+        </div>
+        <!-- /.content -->
+        <!-- /.content-wrapper -->
+        <!-- main-footer -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+                <b>Version</b> 2.3.0
+            </div>
+            <strong>Copyright &copy; 2016-2017 <a href="#">DEMO</a>.</strong> All rights reserved.
+        </footer>
+        <!-- /main-footer -->
+    </div> 
+    <script src="{!$Resource.BootstrapJS}" type="text/javascript"></script>
+    <script src="{!$Resource.BootstrapWizard}" type="text/javascript"></script>
+    <script type="text/javascript">
+        //for pre-loader
+        jQuery(window).load(function () {
+            jQuery(".loader").fadeOut(50);
+
+        });
+    </script>
+    <script type="text/javascript">
+        //Adding side bar attributes to the body of the Page
+        $("body").attr("class", "skin-blue sidebar-mini sidebar-collapse");
+        window.prettyPrint && prettyPrint();
+    </script>
+    <script type="text/javascript">
+        //for Enabling the bootstrap Wizard
+        $('#rootwizard').bootstrapWizard({ 'tabClass': 'bwizard-steps' });
+    </script>
+    <script src="{!$Resource.MomentJs}" type="text/javascript"></script>
+    <script src="{!$Resource.Plugins}" type="text/javascript"></script>
+    <script src="{!$Resource.ApplicationJS}" type="text/javascript"></script>
+    <script src="{!$Resource.moment_timezone_with_data_js}" type="text/javascript"></script>
+    <script type="text/javascript">
+        var SOEID = '{!JSENCODE(HTMLENCODE(SOEId))}';
+        var TableData = null;
+        var CurrentPageNo = null;
+        var TotalRecords = null;
+        var TotalFilterRecords = 0;
+        var SearchString = null;
+        var SortColumn = null;
+        var SortDirection = null;
+        var SearchRecords = null;
+        var exampletable = null;
+        var TaskStatus = null;
+        var tempRecords = null;
+        var userColumns = new Array();
+        var activeUsers = new Array();
+        tableColumns = null;
+        var activeUserTimeZone = null;
+        var ddlSelectedVal = null;
+        var soe = null;
+         // Secure Filters
+        var html_encode = secureFilters.html;
+        var js_encode = secureFilters.js;
+        var uri_encode = secureFilters.uri;
+        var css_encode = secureFilters.css;
+        var js_attr_encode = secureFilters.jsAttr;
+        $(document).ready(function () { 
+            $('#pinText').keypress(function(event) {
+                if (event.which == 13) {
+                    event.preventDefault();
+                }
+            });
+            if( '{!$User.UIThemeDisplayed}'== 'Theme4d')
+                $("body").css("font-size","135%");
+            debugger;  
+              $("#popup").hide();       
+            //Setting the min height to "0" for page since it is taking much height */
+            $(".content-wrapper, .right-side").css('min-height', 0);
+            //to know the Selected Item in Main-view dropdown
+            var $li = $('.treeview-menu li').click(function () {
+                $li.removeClass('selectedli');
+                $(this).addClass('selectedli');
+            });           
+            // to know the current user belongs to which time-zone
+            activeUserTimeZone = '{!JSENCODE(HTMLENCODE(userTimeZone))}';
+            /* Related  to the model pop-up which is seen when user hovers on the dependies column*/
+            var originalLeave = $.fn.popover.Constructor.prototype.leave;
+            $.fn.popover.Constructor.prototype.leave = function (obj) {
+                var self = obj instanceof this.constructor ?
+                    obj : $(obj.currentTarget)[this.type](this.getDelegateOptions()).data('bs.' + this.type)
+                var container, timeout;
+                originalLeave.call(this, obj);
+                if (obj.currentTarget) {
+                    container = $(obj.currentTarget).siblings('.popover')
+                    timeout = self.timeout;
+                    container.one('mouseenter', function () {
+                        //We entered the actual popover â call off the dogs
+                        clearTimeout(timeout);
+                        //Lets monitor popover content instead
+                        container.one('mouseleave', function () {
+                            $.fn.popover.Constructor.prototype.leave.call(self, self);
+                        });
+                    })
+                }
+            };
+            //Query to SOE MyView of a particulat user
+            var userView = '{!JSENCODE(HTMLENCODE(MyView))}';
+            userColumns = userView.split(','); 
+            //datatable pagination size
+            $(".pagination").toggleClass("pagination-sm");
+            //on side bar menu items  selection
+            $(".sidebarclick").click(function () {
+                $("#aEditMyView").hide();
+                $("#dropdownMenu1").attr("rel", "defaultView");
+                $("#dropdownMenu1").html("Main View " + ' <span class="caret"></span>');
+                var selSideBar = $(this).attr('rel');
+                $("#hfSideBarSelectedView").val(selSideBar);
+                /*This parameter is send to other page about the user selection */
+                $("#hUserSelectedView").val(selSideBar);
+                //When selecting items in Stages Menu in Side-bar
+                switch (selSideBar) {
+                    case "preImplementation": whereClause = " AND (Stage__c='Pre' AND Stage_Level__c='Implementation') ";
+                        break;
+                    case "impleMentation": whereClause = " AND (Stage__c='Imp' AND Stage_Level__c='Implementation') ";
+                        break;
+                    case "postImplementation":
+                        whereClause = " AND (Stage__c='Post' AND Stage_Level__c='Implementation') ";
+                        break;
+                    case "allImplementation":
+                        whereClause = " AND ( (Stage__c = 'Pre' or Stage__c = 'Imp' or Stage__c = 'Post' ) AND  Stage_Level__c = 'Implementation') ";
+                        break;
+                    case "backOut": whereClause = " AND ( Stage_Level__c = 'BackOut')";
+                        break;
+                    case "brokenTasks": whereClause = " AND ( Broken_Task__c = false AND Is_Stack__c = false AND End_Stack__c = false)";
+                        break;
+                    case "linkedTasks": whereClause = " AND ( Link__c = true)";
+                        break;
+                    case "intDepTasks": whereClause = " AND ( Internal_Task__c = true)";
+                        break;
+                    case "timeTasks": whereClause = " AND ( Time_Bound__c != null)";
+                        break;
+                }
+                ResetTable();
+                //to refresh and re build the datatable
+                var dTable = $('#example').DataTable();
+                dTable.draw();
+            });
+            //for Edit Button Toggle When "My View" is selected in dropdown "main View"
+            $(".mainviewdropdown li a").click(function () {
+                $("#example").removeAttr("style");
+                $("#example_wrapper").removeAttr("style");
+                var SelectedIndex = $(this).attr('rel');
+                ddlSelectedVal = SelectedIndex;
+                $('.selectedli').removeClass('selectedli');
+                if (SelectedIndex == "myView")
+                    //to Show Edit button if Selected "myView"
+                    $("#aEditMyView").show();
+                else
+                    // to hide Edit buttin
+                    $("#aEditMyView").hide();
+                var whereClause = "";
+                switch (SelectedIndex) {
+                    case "defaultView": ResetTable();
+                        break;
+                    case "myView": ShowMyViewColumn();
+                        break;
+                    case "runreadysusTasks": whereClause = " AND ( (Status__c='Ready' OR Status__c='Running' OR Status__c='Suspended') AND  Is_Stack__c = false) ";
+                        ResetTable();
+                        break;
+                    case "nonCompletedTasks": whereClause = " AND (Status__c!='Completed' AND Status__c!='Force Completed' AND Status__c!='Completed-Jump')";
+                        ResetTable();
+                        break;
+                    case "plannedForecastTimes":
+                        ShowPlannedColumns();
+                        break;
+                    case "criticalPathTasks": whereClause = " AND (critical_Path__c!=null)";
+                        ResetTable();
+                        break;
+                    case "externalDependencyTasks": whereClause = " AND (Dependency_Type__c='External')";
+                        ResetTable();
+                        break;
+                    case "milestonesTasks": whereClause = " AND (Milestone__c = true OR Advanced_Notifications__c = true OR When_Task_Ready__c = true OR Task_Completed__c = true)";
+                        ResetTable();
+                        break;
+                }
+                //To display the selected item  in main menu Dropdowns
+                $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+                $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+                $(this).parents(".dropdown").find('.btn').attr("rel", $(this).attr('rel'));
+                //When user navigates to other page and returned ,maintaining the state of the User in Local Storage
+                $("#hUserSelectedView").val($(this).attr('rel'));
+                sessionStorage.setItem("userSelectedView", $("#hUserSelectedView").val());
+                //to re-build the status
+                var dTable = $('#example').DataTable();
+                dTable.draw();
+            });           
+            //to bind the datatable and to set the status depend on Local Storage value
+            if (sessionStorage.getItem("userSelectedView") === null) {
+                BindTable(activeUserTimeZone);
+            } else {
+                var vTemp = sessionStorage.getItem("userSelectedView");                
+                var isSideBar = false;
+                switch (vTemp) {
+                    case "defaultView":
+                        break;
+                    case "myView": $("#dropdownMenu1").attr("rel", "myView");
+                        $("#aEditMyView").show();
+                        break;
+                    case "runreadysusTasks": $("#dropdownMenu1").attr("rel", "runreadysusTasks");
+                        break;
+                    case "nonCompletedTasks": $("#dropdownMenu1").attr("rel", "nonCompletedTasks");
+                        break;
+                    case "plannedForecastTimes":
+                        $("#dropdownMenu1").attr("rel", "plannedForecastTimes");
+                        break;
+                    case "criticalPathTasks": $("#dropdownMenu1").attr("rel", "criticalPathTasks");
+                        break;
+                    case "externalDependencyTasks": $("#dropdownMenu1").attr("rel", "externalDependencyTasks");
+                        break;
+                    case "milestonesTasks":
+                        $("#dropdownMenu1").attr("rel", "milestonesTasks");
+                        break;
+                    case "preImplementation":
+                    case "impleMentation":
+                    case "postImplementation":
+                    case "allImplementation":
+                    case "backOut":
+                    case "brokenTasks":
+                    case "timeTasks":
+                    case "linkedTasks":
+                    case "intDepTasks": isSideBar = true;
+                        break;
+                }                         
+                BindTable(activeUserTimeZone);           
+            }
+            // set the page no manually for the grid
+            if ((getCookie(SOEID + "PageNo") != "") && (getCookie(SOEID + "PageNo") != "0")) {
+                setTimeout(function () {
+                    var oTable = $('#example').dataTable();
+                    oTable.fnPageChange(parseInt(getCookie(SOEID + "PageNo")));
+                }, 1000);
+            }
+           $('#example').on('page.dt', function () {            
+                // set the cookie with key value pairs    //  the key being the SOEID +PageSize   //   value being the current page no
+                var tempPageNo = parseInt($('#example').DataTable().page.info().page);
+                document.cookie = SOEID + "PageNo" + "=" + tempPageNo;
+            });
+        });
+        //Datatable Binding functionailty
+        function BindTable(timeZone) {
+            var twilio = '{!TwilioInstalled}';
+            var vPageSize = "";
+            var cols = [
+                //Adding the Cols to the datatable
+                {
+                
+                    "mDataProp": "Id", "render": function (data, type, row) {  
+                        var addComp ='';
+                        if (row.I8__PIN__c == "") 
+                            addComp += '<a href="javascript:void(0)" onclick="addpin1(\''+js_attr_encode(row.I8__ID_Text__c)+'\',\''+js_attr_encode(row.Id)+'\',\''+html_encode(row.I8__PIN__c)+'\');"><i class="fa fa-thumb-tack" title="Post Implementation Notes" style="color:black;"></i></a>';
+                        else 
+                            addComp += '<a href="javascript:void(0)" onclick="addpin1(\''+js_attr_encode(row.I8__ID_Text__c)+'\',\''+js_attr_encode(row.Id)+'\',\''+html_encode(row.I8__PIN__c)+'\');"><i class="fa fa-thumb-tack" title="Post Implementation Notes"></i></a>';
+                        addComp += '<b style="width:5px;display: inline-block;"></b>';
+                        if (row.I8__Is_Stack__c == true)
+                            addComp += '<a href="javascript:void(0)" onclick="editstack(\''+js_attr_encode(row.Id)+'\');"><i class="fa fa-list-alt" style="padding: 3px;" title="Edit Stack"></i></a>';
+                        else if (row.I8__End_Stack__c != true)
+                            addComp += '<a href="javascript:void(0)" onclick="addtask(\''+js_attr_encode(row.Id)+'\');"><i class="fa fa-arrow-circle-o-down" title="Add Task" style="padding: 3px;"></i></a>';
+                        else
+                            addComp += '<b style="width: 20px;display: inline-block;"></b>'; 
+                        
+                        if (row.Attachments != null)
+                            addComp += '<a href="javascript:void(0)" onclick="adddocuments(\''+js_attr_encode(row.Id)+'\');"><i class="fa fa-file-text" title="Documents attached"></i></a>';
+                        else
+                            addComp += '<a href="javascript:void(0)" onclick="adddocuments(\''+js_attr_encode(row.Id)+'\');" ><i class="fa fa-file-text-o" title="No Documents, click to attach" ></i></a>';
+                        
+                        addComp += '<b style="width:5px;display: inline-block;"></b>';
+                        if(row.I8__Is_Stack__c == false){
+                            if (row.I8__MileStone_Task__c == "Yes")
+                                addComp += '<i class="fa fa-flag-checkered"  title="Milestone Task" style="color:blue;"></i>';
+                            else
+                                addComp += '<i class="fa fa-flag-checkered" style="color:#A9B0B2;" title="Not Milestone Task"></i>';
+                        }
+                        addComp += '<b style="width:5px;display: inline-block;"></b>';
+                       if(row.I8__Is_Stack__c == false){
+                          if (row.I8__Time_Bound__c != null)
+                              addComp += '<i class="fa fa-clock-o" style="color:blue;" title="'+moment(row.I8__Time_Bound__c).format("DD/MM/YY HH:mm")+'"></i>';
+                          else 
+                              addComp += '<i class="fa fa-clock-o" style="color:#A9B0B2;" title="No TimeBound"></i>';
+                       }
+                       addComp += '<b style="width:5px;display: inline-block;"></b>';
+                       if(row.I8__Is_Stack__c == false){
+                            if ((row.I8__When_Task_Ready__c == true) || (row.I8__Task_Completed__c == true) || (row.I8__Advanced_Notifications__c == true))
+                                addComp += '<i class="fa fa-bell"  title="Communication" style="color:blue;"></i>';
+                            else
+                                addComp += '<i class="fa fa-bell" style="color:#A9B0B2;" title="No Communication"></i>';
+                       }                       
+                       addComp += '<b style="width:5px;display: inline-block;"></b>';  
+                       var vPredecessors = "";
+                        var vSuccessors = "";
+                        if (row.I8__Dependencies__r != null) {                          
+                            var dependenciesForTask = row.I8__Dependencies__r;
+                            for (var index = 0; index < dependenciesForTask.length; index++) {
+                                if (dependenciesForTask[index].I8__Dependent_Type__c == "Predecessors") {
+                                    vPredecessors += html_encode(dependenciesForTask[index].I8__Type__c) + " - " + (dependenciesForTask[index].I8__Preceeding_Task__r.I8__State__c == null ? "" : dependenciesForTask[index].I8__Preceeding_Task__r.I8__State__c) + " " + js_attr_encode(dependenciesForTask[index].I8__Preceeding_Task__r.I8__ID_Text__c) + " - " + (dependenciesForTask[index].I8__Preceeding_Task__r.I8__Task_Title__c == null ? "" : html_encode(dependenciesForTask[index].I8__Preceeding_Task__r.I8__Task_Title__c)) + " " + " " + (dependenciesForTask[index].I8__Dep_Type__c != "External" ? "" : '<span style="color:red;">[ '+html_encode(dependenciesForTask[index].I8__Preceeding_SOE__r.I8__SOE_Title__c)+' ]</span>') + '</br>';
+                                }
+                                else {
+                                    vSuccessors += html_encode(dependenciesForTask[index].I8__Type__c) + " - " + (dependenciesForTask[index].I8__Preceeding_Task__r.I8__State__c == null ? "" : dependenciesForTask[index].I8__Preceeding_Task__r.I8__State__c) + " " + js_attr_encode(dependenciesForTask[index].I8__Preceeding_Task__r.I8__ID_Text__c) + " - " + (dependenciesForTask[index].I8__Preceeding_Task__r.I8__Task_Title__c == null ? "" : html_encode(dependenciesForTask[index].I8__Preceeding_Task__r.I8__Task_Title__c)) + " " + " " + (dependenciesForTask[index].I8__Dep_Type__c != "External" ? "" :'<span style="color:red;">[ '+ html_encode(dependenciesForTask[index].I8__Preceeding_SOE__r.I8__SOE_Title__c) +' ]</span>') + '</br>';
+                                }
+                            }
+                        } 
+                        if(vPredecessors == "")
+                            vPredecessors = "--None--" + "</br>";
+                        if(vSuccessors  == "")
+                            vSuccessors = "--None--";
+                        if (row.I8__Is_Stack__c == true) 
+                            addComp += '<b style="width: 58px;display: inline-block;"></b>';
+                        else if (row.I8__End_Stack__c == true)
+                            addComp += '<b style="width: 17px;display: inline-block;"></b>';
+                        else {
+                            if (row.I8__Dependency_Image__c.indexOf("internal.png") > -1)
+                                addComp += "<a href='javascript:void(0)'  data-popover='true' class='dependencyImg' data-html='true' data-content='<b>Predecessors</b> </br> " + vPredecessors + " <b>Successors</b></br> " + vSuccessors + "'  onclick='managedeps(\""+js_attr_encode(row.Id)+"\");'>" + "<i class='fa fa-link' style='padding: 3px; '></i>" + "</a>";
+                            if (row.I8__Dependency_Image__c.indexOf("no_dep.png") > -1)
+                               addComp += "<a href='javascript:void(0)' popover-placement='top' data-popover='true' class='dependencyImg' data-html='true' data-content='<b>Predecessors</b> </br> " + vPredecessors + " <b>Successors</b></br> " + vSuccessors + "'  onclick='managedeps(\""+js_attr_encode(row.Id)+"\");'>" + "<i class='fa fa-chain-broken' style='padding: 3px;color:black;'></i>" + "</a>";
+                            if (row.I8__Dependency_Image__c.indexOf("external.png") > -1)
+                                addComp += "<a href='javascript:void(0)'  data-popover='true' class='dependencyImg'  data-html='true' data-content='<b>Predecessors</b> </br> " + vPredecessors + " <b>Successors</b></br> " + vSuccessors + "'  onclick='managedeps(\""+js_attr_encode(row.Id)+"\");'>" + "<i class='fa fa-link' style='padding: 3px;color:red;'></i>" + "</a>";
+                            if (row.I8__Dependency_Image__c.indexOf("link.png") > -1)
+                                addComp += "<a href='javascript:void(0)' data-popover='true' class='dependencyImg' data-html='true' data-content='<b>Predecessors</b> </br> " + vPredecessors + " <b>Successors</b></br> " + vSuccessors + "'  onclick='managedeps(\""+js_attr_encode(row.Id)+"\");'>" + "<i class='fa fa-link' style='padding: 3px;color:black;'></i>" + "</a>";
+                        }
+                        addComp += '<b style="width:5px;display: inline-block;"></b>';
+                        if (row.I8__Owner__c != null) {                           
+                            if (activeUsers.indexOf(row.I8__Owner__r.I8__Member__r.I8__Salesforce_User__c) > -1){
+                                if(twilio == 'true')
+                                    addComp += "<span data-popover='true' class='dependencyImg' data-html='true' data-content='<a title=\"Click to Mail\" style=\"cursor:pointer\" onclick=\"openemail("+js_attr_encode(row.I8__ID_Text__c)+");\"><i class=\"fa fa-envelope-o\"></i></a>&nbsp; <a style=\"cursor:pointer\" title=\"Click to SMS\" onclick=\"SendSMS1("+html_encode(row.I8__Owner__r.I8__Member__r.I8__Phone__c)+");\"><i class=\"fa fa-whatsapp fa-lg\"></i></a> &nbsp; <a style=\"cursor:pointer\" title=\"Click to Call\"  onclick=\"SendCall2("+html_encode(row.I8__Owner__r.I8__Member__r.I8__Phone__c)+");\"><i class=\"fa fa-phone-square fa-lg\"></i></a> ' >" + "<i class='fa fa-user' title='User is online' style='color:blue'></i>" + "</span>";
+                                else
+                                    addComp += "<span data-popover='true' class='dependencyImg' data-html='true' data-content='<a title=\"Click to Mail\" style=\"cursor:pointer\" onclick=\"openemail("+js_attr_encode(row.I8__ID_Text__c)+");\"><i class=\"fa fa-envelope-o\"></i></a>' >" + "<i class='fa fa-user' title='User is online' style='color:blue'></i>" + "</span>";
+                            }
+                             else{
+                                if(twilio == 'true')
+                                    addComp += "<span data-popover='true' class='dependencyImg' data-html='true' data-content='<a title=\"Click to Mail\" style=\"cursor:pointer\" onclick=\"openemail("+js_attr_encode(row.I8__ID_Text__c)+");\"><i class=\"fa fa-envelope-o\"></i></a>&nbsp; <a style=\"cursor:pointer\" title=\"Click to SMS\" onclick=\"SendSMS1("+html_encode(row.I8__Owner__r.I8__Member__r.I8__Phone__c)+");\"><i class=\"fa fa-whatsapp fa-lg\"></i></a> &nbsp; <a style=\"cursor:pointer\" title=\"Click to Call\"  onclick=\"SendCall2("+html_encode(row.I8__Owner__r.I8__Member__r.I8__Phone__c)+");\"><i class=\"fa fa-phone-square fa-lg\"></i></a> ' >" + "<i class='fa fa-user' title='User is offline' style='color:#797D7F'></i>" + "</span>";
+                               else
+                                    addComp += "<span data-popover='true' class='dependencyImg' data-html='true' data-content='<a title=\"Click to Mail\" style=\"cursor:pointer\" onclick=\"openemail("+js_attr_encode(row.I8__ID_Text__c)+");\"><i class=\"fa fa-envelope-o\"></i></a>' >" + "<i class='fa fa-user' title='User is offline' style='color:#797D7F'></i>" + "</span>";
+                            }
+                        }
+                        else 
+                            addComp += '<b style="width:15px;display: inline-block;"></b>';
+                       addComp += '<b style="width:5px;display: inline-block;"></b>';  
+                       if (row.I8__Critical_Path__c != null)
+                           addComp += row.I8__Critical_Path__c;
+                        return addComp;
+                    }, "sWidth": '9%',"bSortable": false,"sClass": "my_class_wrap","sTitle": "<i class='fa fa-thumb-tack fa-lg' title='Post Implementation Notes'></i>&nbsp;&nbsp;<i class='fa fa-list-alt fa-lg' title='Edit Stack'></i>&nbsp;&nbsp;<i class='fa fa-file-text-o' title='Documents'></i>&nbsp;&nbsp;<i class='fa fa-flag-checkered' title='Milestone'></i>&nbsp;&nbsp;<i class='fa fa-clock-o fa-lg' title='Time Bound'></i>&nbsp;&nbsp;<i class='fa fa-bell' title='Communications'></i>&nbsp;&nbsp;<i class='fa fa-link fa-lg' title='Dependency' ></i>&nbsp;&nbsp;<i class='fa fa-user fa-lg' title='Owner Status'></i>&nbsp;&nbsp;<b title='Critical Path' >C</b>"
+                },
+                {
+                    "mDataProp": "I8__State__c", "sClass": "TextColumn wordwrap", "sWidth": '3%',"bSortable": false,  "sTitle": "State",
+                    "render": function (data, type, row) {
+                        var addComp = "";
+                        if (data != null) {
+                            data = htmlDecode(data);
+                            if (row.I8__Status__c == "Ready" ){
+                                if({!CONTAINS(ImpMgrMapKey,$User.Id)})
+                                    addComp = "<a href='javascript:void(0);' title='" + html_encode(row.I8__Status__c) + "' onclick='activatetask(\"" + js_attr_encode(row.Id) + "\");'> " + data + "  </a>";
+                                else
+                                    addComp = "<a href='javascript:void(0);' title='" + html_encode(row.I8__Status__c) + "' class='not-active'> " + data + "  </a>";
+                            }
+                            else if (row.I8__Status__c == "ReRun"){
+                                if({!CONTAINS(ImpMgrMapKey,$User.Id)})
+                                    addComp = "<a href='javascript:void(0);' title='" + html_encode(row.I8__Status__c) + "' onclick='reactivatetask(\"" + js_attr_encode(row.Id) + "\");'> " + data + "  </a>";
+                                 else
+                                    addComp = "<a href='javascript:void(0);' title='" + html_encode(row.I8__Status__c) + "' class='not-active'> " + data + "  </a>";
+                            }
+                            else if (row.I8__Is_Stack__c == false && row.I8__Status__c == "Running"){
+                                 if({!CONTAINS(ImpMgrMapKey,$User.Id)})
+                                     addComp = "<a href='javascript:void(0);' title='" + html_encode(row.I8__Status__c) + "' height='15' width='15' onclick='completetask(\"" + js_attr_encode(row.Id) + "\");'> <img src='{!$Resource.stop}' alt='None' height='22' width='22' border='0'> </a>";
+                                 else
+                                    addComp = "<a href='javascript:void(0);' title='" + html_encode(row.I8__Status__c) + "' class='not-active'>  <img src='{!$Resource.stop}' alt='None' height='22' width='22' border='0'>   </a>";
+                            }
+                            else
+                                addComp = "<a href='javascript:void(0);' title='" + html_encode(row.I8__Status__c) + "'> " + data + "  </a>";
+                            
+                         }
+                        return addComp;
+                    },
+                },
+                { "mDataProp": "I8__Stage__c", "sClass": "TextColumn wordwrap", "sWidth": '5%', "sTitle": "Stage" },
+                { "mDataProp": "I8__ID_Text__c", "sClass": "TextColumn wordwrap", "sWidth": '5%', "sTitle": "ID" },
+                { "mDataProp": "I8__Stage_Level__c", "bVisible":false,"sClass": "TextColumn wordwrap", "sWidth": '5%', "sTitle": "Level" },
+                {
+                    "mDataProp": "I8__Task_Title__c", "sClass": "TextColumn wordwrap", "render": function (data, type, row) {
+                        var addComp = "";                                                    
+                        addComp += '<a href="javascript:void(0)" onclick=" modifytask(\''+js_attr_encode(row.Id)+'\',\''+js_attr_encode(row.I8__Stage_Level__c)+'\');">' + data + '</a>';
+                        return addComp;
+                    }, "sWidth": '15%', "sTitle": "Task Title"
+                },
+                {
+                    "mDataProp": "I8__Planned_Start__c", "render": function (data, type, row) {
+                        if (data != null) {
+                            data = moment.tz(data, timeZone).format("DD/MM/YY HH:mm");
+                            return (data);
+                        }
+                        else
+                            return "";
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Planned Start", "bVisible": false
+                },
+                {
+                    "mDataProp": "I8__Planned_End__c", "render": function (data, type, row) {
+                        if (data != null) {
+                            data = moment.tz(data, timeZone).format("DD/MM/YY HH:mm");
+                            return (data);
+                        }
+                        else
+                            return "";
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Planned End", "bVisible": false
+                },
+                {
+                    "mDataProp": "I8__Forecast_Start__c", "render": function (data, type, row) {
+                        if (data != null) {
+                            data = moment.tz(data, timeZone).format("DD/MM/YY HH:mm");
+                            return (data);
+                        }
+                        else
+                            return "";
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Forecast Start", "bVisible": false
+                },
+                 {"mDataProp": "I8__Forecast_Duration__c", "sClass": "TextColumn wordwrap", "sWidth": '20%', "sTitle": "Forecast Duration", "bVisible": false},
+                {
+                    "mDataProp": "I8__Forecast_End__c", "render": function (data, type, row) {
+                        if (data != null) {
+                            data = moment.tz(data, timeZone).format("DD/MM/YY HH:mm");
+                            return (data);
+                        }
+                        else
+                            return "";
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Forecast End", "bVisible": false
+                },               
+                {
+                    "mDataProp": "I8__Actual_Start__c", "render": function (data, type, row) {
+                        if (data != null) {
+                            data = moment.tz(data, timeZone).format("DD/MM/YY HH:mm");
+                            return (data);
+                        }
+                        else
+                            return "";
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Actual Start", "bVisible": false
+                },
+                 {"mDataProp": "I8__Actual_Duration__c", "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Actual Dur", "bVisible": false },
+                {
+                    "mDataProp": "I8__Actual_End__c", "render": function (data, type, row) {
+                        if (data != null) {
+                            data = moment.tz(data, timeZone).format("DD/MM/YY HH:mm");
+                            return (data);
+                        }
+                        else
+                            return "";
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Actual End", "bVisible": false
+                },       
+                {
+                    "mDataProp": "I8__Start_Time__c", "render": function (data, type, row) {
+                        if (data != null) {
+                            data = moment.tz(data, timeZone).format("DD/MM/YY HH:mm");
+                            return (data);
+                        }
+                        else
+                            return "";
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Start Time"
+                },
+                { "mDataProp": "I8__Planned_Duration__c", "sClass": "TextColumn", "sWidth": '7%', "sTitle": "Plan Dur", "bVisible": ($("#hSOEStatus").val() == "ImpInProgress") },
+                { "mDataProp": "I8__Duration__c", "sClass": "TextColumn wordwrap", "sWidth": '7%', "sTitle": $("#hSOEStatus").val() == "ImpInProgress" ? "Actual Dur" : "Duration" },
+                {
+                    "mDataProp": "I8__End_Time__c", "render": function (data, type, row) {
+                        if (data != null) {
+                            data = moment.tz(data, timeZone).format("DD/MM/YY HH:mm");
+                            return (data);
+                        }
+                        else
+                            return "";
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "End Time"
+                },
+                { "mDataProp": "I8__Stack_Owner_Name__c", "sClass": "TextColumn wordwrap ", "sWidth": '10%', "sTitle": "Owner" },
+                {
+                    "mDataProp": "I8__Team__c", "render": function (data, type, row) {
+                        if (row.I8__Team__r != null) {
+                            var tempRecords = row.I8__Team__r;
+                            return tempRecords.Name;
+                        }
+                        else
+                            return "";
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Team"
+                }, 
+                { "mDataProp": "I8__Description__c", "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Description", "bVisible": false },
+                { "mDataProp": "I8__Technical_Detail__c", "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Technical Details", "bVisible": false },
+                { "mDataProp": "I8__Review_Comments__c", "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Review Comments", "bVisible": false },
+                { "mDataProp": "I8__WalkThrough_Comments__c", "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "WalkThrough Comments", "bVisible": false },
+                { "mDataProp": "I8__Jumped__c", "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Jump", "bVisible": false },
+                { "mDataProp": "I8__Jumped_Duration__c", "sClass": "TextColumn wordwrap", "sWidth": '15%', "sTitle": "Jumped Duration", "bVisible": false },
+                { "mDataProp": "I8__BackOut__c", "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "BackOut", "bVisible": false },
+                { "mDataProp": "I8__Technical_Skills__c", "sClass": "TextColumn wordwrap", "sWidth": '10%', "sTitle": "Technical Skills", "bVisible": false },
+                {
+                    "mDataProp": "I8__Time_Bound__c", "render": function (data, type, row) {
+                        if (data != null) {
+                            data = moment.tz(data, timeZone).format("DD/MM/YY HH:mm");
+                            return (data);
+                        }
+                        else
+                            return "";
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '15%', "sTitle": "Time Bound", "bVisible": false
+                }, 
+                {
+                    "mDataProp": "I8__Start_Delay__c", "render": function (data, type, row) {
+                        var addCom = "";
+                        if (row.I8__Status__c == "Ready" || row.I8__Status__c == "Running" || row.I8__Status__c == "Completed" || row.I8__Status__c == "Suspended") {
+                            addCom = data;
+                        } else {
+                            addCom = "";
+                        }
+                        return addCom;
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '2%', "sTitle": "SD", "bVisible": false
+                },
+                 {
+                    "mDataProp": "I8__Run_Delay__c", "render": function (data, type, row) {
+                        var addCom = "";
+                        if (row.I8__Stage__c == "Imp") {
+                            addCom = data;
+                        } else {
+                            addCom = "";
+                        }
+                        return addCom;
+                    }, "sClass": "TextColumn wordwrap", "sWidth": '2%', "sTitle": "RV", "bVisible": false
+                }
+            ];
+            //Initializing DataTable
+            exampletable = $('#example').DataTable({
+                "processing": true,
+                "scrollX": true,
+                "bAutoWidth":false ,
+                "order": [[3, "asc"]],
+                "lengthMenu": [[10, 20, 30, 40, 50,75,100], [10, 20, 30, 40, 50,75,100]],
+                "iDisplayLength": 10,
+                "serverSide": true,
+                "bPaginate": true,//pagination true/false
+                "sPaginationType": "full_numbers",
+                "bLengthChange": true,
+                "bSort": true,
+                "aoColumns": cols,//Adding columns here
+                "sAjaxDataProp": "data",
+                "searching": true,//searchable true or false
+                "initComplete": function (settings) {
+                    $('#example thead th').each(function () {
+                        var $td = $(this);
+                        if ($td.text() == "SD")
+                            $td.attr('title', "Start Delay");
+                        else if ($td.text() == "RV")
+                            $td.attr('title', "Run Variation");
+                    });
+                    /* Apply the tooltips */
+                    $('#example thead th[title]').tooltip(
+                    {
+                        "container": 'body'
+                    });
+                },
+                "language": {
+                    "processing": "<div id='' text-align: center;width:100%;'><i class='fa fa-spinner fa-spin'></i> Loading...</div>"
+                },
+                "fnDrawCallback": function (oSettings) {                   
+                    var divWidth = $("#example").width();
+                    $("#example_wrapper").width(divWidth);                    
+                },
+                "dom": "<'row divSearch'<'col-sm-9'l><'col-sm-3 pull-right examplesearch'>>" + "tr" + "<'row divPaging'<'col-sm-5'i><'col-sm-7' p>>",//for positionting  page numbers pagination and search functionality etc
+                "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    if (aData.I8__Is_Stack__c == true)
+                        $(nRow).addClass('IsStack');
+                    if (aData.I8__End_Stack__c == true)
+                        $(nRow).addClass('EndStack');                
+                },
+                "fnServerData": function (sSource, aoData, fnCallback) {
+                        var vPageNo = $.grep(aoData, function (element, index) {
+                            return element.name == "draw";
+                        })[0];
+                        CurrentPageNo = vPageNo.value;
+                        var vstartData = $.grep(aoData, function (element, index) {
+                            return element.name == "start";
+                        })[0];
+                        var vLength = $.grep(aoData, function (element, index) {
+                            return element.name == "length";
+                        })[0];
+                        // set the cookie here with key value pairs   // key beaing SOEID and value being page size      // it is updated when the page size is changed
+                        var vSearch = $.grep(aoData, function (element, index) {
+                            return element.name == "search";
+                        })[0];
+                        //applying custom searching functionality
+                        SearchString = vSearch.value.value;
+                        //applying custom sorting functionality
+                        var vSort = $.grep(aoData, function (element, index) {
+                            return element.name == "order";
+                        })[0];
+                        SortColumn = tableColumns()[vSort.value[0].column];
+                        SortDirection = vSort.value[0].dir;
+                        if (SortColumn == "I8__ID_Text__c" && SortDirection == "asc")
+                            SortColumn = "Id_Before_Decimal__c,Id_After_Decimal__c";
+                        if (SortColumn == "I8__ID_Text__c" && SortDirection == "desc")
+                            SortColumn = "Id_Before_Decimal__c desc,Id_After_Decimal__c";
+                        var whereClause = "";
+                        switch ($("#hfSideBarSelectedView").val()) {
+                            case 'mainview': whereClause = " AND (Stage_Level__c='Implementation') ";
+                                break;
+                            case "preImplementation": whereClause = " AND (Stage__c='Pre' AND Stage_Level__c='Implementation') ";
+                                break;
+                            case "impleMentation": whereClause = " AND (Stage__c='Imp' AND Stage_Level__c='Implementation') ";
+                                break;
+                            case "postImplementation":
+                                whereClause = " AND (Stage__c='Post' AND Stage_Level__c='Implementation') ";
+                                break;
+                            case "allImplementation":
+                                whereClause = " AND ( (Stage__c = 'Pre' or Stage__c = 'Imp' or Stage__c = 'Post' ) AND  Stage_Level__c = 'Implementation') ";
+                                break;
+                            case "backOut": whereClause = " AND ( Stage_Level__c = 'BackOut')";
+                                break;
+                            case "brokenTasks": whereClause = " AND ( Broken_Task__c = false AND Is_Stack__c = false AND End_Stack__c = false)";
+                                break;
+                            case "linkedTasks": whereClause = " AND ( Link__c = true AND  Stage_Level__c = 'Implementation')";
+                                break;
+                            case "intDepTasks": whereClause = " AND ( Internal_Task__c = true AND  Stage_Level__c = 'Implementation')";
+                                break;
+                            case "timeTasks": whereClause = " AND ( Time_Bound__c != null AND  Stage_Level__c = 'Implementation')";
+                                break;
+                        }
+                        switch ($("#dropdownMenu1").attr("rel")) {
+                            case "defaultView": //ResetTable();
+                                break;
+                            case "myView": break;
+                            case "runreadysusTasks": whereClause = " AND ( (Status__c='Ready' OR Status__c='Running' OR Status__c='Suspended') AND  Is_Stack__c = false) ";
+                                break;
+                            case "nonCompletedTasks": whereClause = " AND (Status__c!='Completed' AND Status__c!='Force Completed' AND Status__c!='Completed-Jump')";
+                                break;
+                            case "plannedForecastTimes":
+                                break;
+                            case "criticalPathTasks": whereClause = "AND (critical_Path__c != null)";
+                                break;
+                            case "externalDependencyTasks": whereClause = "AND (Dependency_Type__c='External')";
+                                break;
+                            case "milestonesTasks": whereClause = " AND (Milestone__c = true OR Advanced_Notifications__c = true OR When_Task_Ready__c = true OR Task_Completed__c = true)";
+                                break;
+                        }
+                        var query1 ;
+                        if (SearchString != "") {
+                           query1 = whereClause + " AND (Stage__c like " + '\'' + '%' + SearchString + '%' + '\'' + " OR ID_Text__c like " + '\'' + '%' + SearchString + '%' + '\'' + " OR Task_Title__c like " + '\'' + '%' + SearchString + '%' + '\''+ " OR MI_Keyword__c like " + '\'' + '%' + SearchString + '%' + '\'' + " )";
+                            var query = '';
+                            query = "select id,Stage_Level__c,Description__c,Technical_Detail__c,Review_Comments__c,WalkThrough_Comments__c,Task_Title__c,Is_Stack__c,End_Stack__c,Milestone__c ,Duration__c,Time_Bound__c,SOE__r.Name,SOE__c,Critical_Path__c,Dependency_Image__c,State__c,Status__c,Team__c,Team__r.Name,Owner__c,(select id from Attachments),Planned_Start__c,Planned_End__c,Planned_Duration__c,Forecast_Start__c,Forecast_End__c,Forecast_Duration__c,Actual_Start__c,Actual_End__c,Actual_Duration__c, "
+                            + "(select id,Dep_Type__c ,Type__c,Dependent_Type__c,Preceeding_Task__r.ID_Text__c,Preceeding_Task__r.Task_Title__c,Preceeding_Task__r.State__c,Preceeding_SOE__r.SOE_Title__c,SOE__r.SOE_Title__c,Preceeding_Task__r.Status__c from Dependencies__r where Preceeding_Task__c != null order by Preceeding_Task__r.ID_Text__c),"
+                            + "Advanced_Notifications__c,MileStone_Task__c,Task_Completed__c,Stack_Owner_Name__c,"
+                            + "Start_Delay__c,PIN__c,When_Task_Ready__c,Jumped__c,Jumped_Duration__c,Execution_Detail__c,Comments__c,BackOut_Point__c,BackOut__c,Run_Delay__c,Stage__c,Technical_Skills__c,"
+                            + "ID_Text__c,Start_Time__c,Broken_Task__c,End_Time__c,Owner__r.Member__r.Phone__c,Owner__r.Member__r.Email__c FROM  Task__c where     (Stage__c like " + '\'' + '%' + SearchString + '%' + '\'' + " OR ID_Text__c like " + '\'' + '%' + SearchString + '%' + '\'' + " OR Task_Title__c like " + '\'' + '%' + SearchString + '%' + '\'' + " OR MI_Keyword__c like " + '\'' + '%' + SearchString + '%' + '\'' + " OR Stack_Owner_Name__c like " + '\'' + '%' + SearchString + '%' + '\'' + "OR Team__r.Name like " + '\'' + '%' + SearchString + '%' + '\''+" ) AND SOE__c ='" + SOEID + "' " + whereClause + " order by " + SortColumn + " " + SortDirection ;
+                        } else {                            
+                            query = "select id,Stage_Level__c,Description__c,Technical_Detail__c,Review_Comments__c,WalkThrough_Comments__c,Task_Title__c,Team__r.Name,Is_Stack__c,End_Stack__c,Milestone__c ,Duration__c,Time_Bound__c,SOE__r.Name,SOE__c,Critical_Path__c,Dependency_Image__c,State__c,Status__c,Team__c,Owner__c,(select id from Attachments),Planned_Start__c,Planned_End__c,Planned_Duration__c,Forecast_Start__c,Forecast_End__c,Forecast_Duration__c,Actual_Start__c,Actual_End__c,Actual_Duration__c, "
+                                       + "(select id,Dep_Type__c ,Type__c,Dependent_Type__c,Preceeding_Task__r.ID_Text__c,Preceeding_Task__r.Task_Title__c,Preceeding_Task__r.State__c,Preceeding_SOE__r.SOE_Title__c,SOE__r.SOE_Title__c,Preceeding_Task__r.Status__c from Dependencies__r where Preceeding_Task__c != null order by Preceeding_Task__r.ID_Text__c),"
+                                       + "Advanced_Notifications__c,MileStone_Task__c,Task_Completed__c,Stack_Owner_Name__c,Owner__r.Member__r.Salesforce_User__c,"
+                                       + "Start_Delay__c,PIN__c,When_Task_Ready__c,Jumped__c,Jumped_Duration__c,Execution_Detail__c,Comments__c,BackOut_Point__c,BackOut__c,Run_Delay__c,Stage__c,Technical_Skills__c,"
+                                       + "ID_Text__c,Broken_Task__c,Start_Time__c,End_Time__c,Owner__r.Member__r.Phone__c,Owner__r.Member__r.Email__c FROM  Task__c where   SOE__c ='" + SOEID + "'" + whereClause + " order by " + SortColumn + " " + SortDirection ;
+                            query1 = whereClause;
+                        }
+                        if (query != null) {
+                            console.log(query);                           
+                            Visualforce.remoting.Manager.invokeAction(
+                                '{!$RemoteAction.AllTasks_ClientSide_Cntrl.getTasks}', query,query1,SOEID,vLength.value,vstartData.value,function (result, event) {
+                                   if (event.status) {                               
+                                       for (var i = 0; i < result.Tasks.length; i++) {
+                                           if (result.Tasks[i].I8__Dependencies__r == undefined) result.Tasks[i].I8__Dependencies__r = null;
+                                           if (result.Tasks[i].I8__Owner__c == undefined)  result.Tasks[i].I8__Owner__c = null;
+                                           if (result.Tasks[i].I8__Team__r == undefined) result.Tasks[i].I8__Team__r = null;                       
+                                           if (result.Tasks[i].I8__Stack_Owner_Name__c == undefined)   result.Tasks[i].I8__Stack_Owner_Name__c = null;
+                                           if (result.Tasks[i].I8__Description__c == undefined) result.Tasks[i].I8__Description__c = null;
+                                           if (result.Tasks[i].I8__Technical_Detail__c == undefined)   result.Tasks[i].I8__Technical_Detail__c = null;
+                                           if (result.Tasks[i].I8__Review_Comments__c == undefined)  result.Tasks[i].I8__Review_Comments__c = null;
+                                           if (result.Tasks[i].I8__WalkThrough_Comments__c == undefined) result.Tasks[i].I8__WalkThrough_Comments__c = null;
+                                           if (result.Tasks[i].I8__Execution_Detail__c == undefined) result.Tasks[i].I8__Execution_Detail__c = null;
+                                           if (result.Tasks[i].I8__User_Defined_Critical_Path__c == undefined) result.Tasks[i].I8__User_Defined_Critical_Path__c = null;
+                                           if (result.Tasks[i].I8__Technical_Skills__c == undefined) result.Tasks[i].I8__Technical_Skills__c = null;
+                                           if (result.Tasks[i].I8__Run_Delay__c == undefined)  result.Tasks[i].I8__Run_Delay__c = null;
+                                           if (result.Tasks[i].I8__WalkThrough_Comments__c == undefined)   result.Tasks[i].I8__WalkThrough_Comments__c = null;
+                                           if (result.Tasks[i].I8__Execution_Detail__c == undefined) result.Tasks[i].I8__Execution_Detail__c = null;
+                                           if (result.Tasks[i].I8__Description__c == undefined)  result.Tasks[i].I8__Description__c = null;
+                                           if (result.Tasks[i].I8__Planned_Duration__c == undefined) result.Tasks[i].I8__Planned_Duration__c = null;
+                                           if (result.Tasks[i].I8__Forecast_Duration__c == undefined)    result.Tasks[i].I8__Forecast_Duration__c = null;
+                                           if (result.Tasks[i].I8__Actual_Duration__c == undefined)  result.Tasks[i].I8__Actual_Duration__c = null;
+                                           if (result.Tasks[i].I8__Jumped_Duration__c == undefined)   result.Tasks[i].I8__Jumped_Duration__c = null;
+                                           if (result.Tasks[i].I8__Start_Delay__c == undefined) result.Tasks[i].I8__Start_Delay__c = null;
+                                           if (result.Tasks[i].I8__Critical_Path__c == undefined) result.Tasks[i].I8__Critical_Path__c = null;
+                                           if (result.Tasks[i].I8__Time_Bound__c == undefined)  result.Tasks[i].I8__Time_Bound__c = null;
+                                           if (result.Tasks[i].I8__PIN__c== undefined)  result.Tasks[i].I8__PIN__c = '';
+                               }
+                               SearchRecords = result.Tasks;
+                               TotalRecords = result.count;
+                               soe = result.soe;
+                               TotalFilterRecords  = TotalRecords ;
+                               TableData = SearchRecords;
+                               console.log(TableData);
+                               SOETaskStatus();
+                                //Based on Task Status heighlighting the Wizard elements
+                                $('.' + TaskStatus).addClass('heighlightWizard');
+                               /* This is Realetd to Owner Status */
+                               activeUsers = [];                                  
+                               if(result.users.length>0){
+                                   for(var i=0;i<result.users.length;i++)
+                                       activeUsers.push(result.users[i]);                                
+                               }
+                               var data = {
+                                   "data": SearchRecords,
+                                   "draw": CurrentPageNo,
+                                   "recordsFiltered": TotalFilterRecords,
+                                   "recordsTotal": TotalRecords,
+                               }
+                           //implementing key press event for search functionality in datatable
+                           if ($(".examplesearch #example_filter").length == 0) {
+                               ShowColumnsBasedOnTaskStatus();
+                               $(".examplesearch").append('<div id="example_filter" class="dataTables_filter"><div class="input-group pull-right"><input type="search" class="form-control" placeholder="Search"><span class="input-group-btn"><button class="btn btn-default" id="btnSearch" type="button">Go!</button></span></div></div>');
+                               $("#example_filter input[type='search']").on("keypress", function (e) {
+                                   if (e.keyCode == 13) {
+                                       exampletable.search($("#example_filter input[type='search']").val()).draw();
+                                   }
+                               });
+                               $("#btnSearch").on("click", function () {
+                                   SearchDataTable();
+                               });        
+                           }
+                           fnCallback(data)
+                       }
+                       else if (event.type === 'exception') {
+                           alert(event.message + event.where);
+                       }
+                       else {
+                           alert(event.message);
+                       }
+                   },
+                      { escape: true }
+                   );
+                }
+          //  }, 100);
+        }
+        });
+            //to show popover on hovering in manage dependencies icon in legends coloumn in datatable
+            $('body').popover({ selector: '[data-popover]', trigger: 'click hover', placement: 'bottom', delay: { show: 50, hide: 400 } });
+        }
+        
+        // Decode the html
+        function htmlDecode(input) {
+            if (input != null) {
+                var e = document.createElement('div');
+                e.innerHTML = input;
+                return e.childNodes[0].nodeValue;
+            }
+        }
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1);
+                if (c.indexOf(name) == 0)
+                    return c.substring(name.length, c.length);
+            }
+            return "";
+        }
+        //To Show all the columns in datatable
+        var tableColumns = function () {
+        debugger;
+            var dTable = $('#example').DataTable();
+            var vCols = [];
+            if (dTable != null && dTable.settings() != null && dTable.settings().length > 0) {
+                $.each(dTable.settings()[0].aoColumns, function (c) {
+                    vCols = vCols.concat(dTable.settings()[0].aoColumns[c].mData)
+                });
+            }
+            return vCols;
+        }
+        //customised search for datatable
+        function SearchDataTable() {
+            exampletable.search($("#example_filter input[type='search']").val()).draw();
+        }
+        //to reset the datatable
+        function ResetTable() {
+            var gridColumns = tableColumns();
+            var oTable = $('#example').DataTable();
+            for (var i = 0; i < gridColumns.length; i++) {
+                switch (gridColumns[i]) {
+                    case "I8__State__c":
+                    case "I8__Stage__c":
+                    case "I8__ID_Text__c":
+                    case "I8__Task_Title__c":
+                    case "I8__Start_Time__c":
+                    case "I8__Duration__c":
+                    case "I8__End_Time__c":
+                    case "I8__Stack_Owner_Name__c":
+                    case "I8__Team__c":
+                    case "Id":
+                    case "I8__Critical_Path__c":
+                        oTable.column(i).visible(true);
+                        break;
+                    case "I8__Start_Delay__c":
+                    case "I8__Run_Delay__c":
+                    case "I8__Owner__c":
+                    case "I8__Planned_Duration__c":
+                        showhidecolumn(i);
+                        break;
+                    default:
+                        oTable.column(i).visible(false);
+                        break;
+                }
+            }
+        }
+        //on Click of Stack Summary list item in Side bar Summary Menu
+        function ShowDescriptionColumn() {
+            var oTable = $('#example').DataTable();
+            var gridColumns = tableColumns();
+            for (var i = 0; i < gridColumns.length; i++) {
+                switch (gridColumns[i]) {
+                    case "I8__State__c":
+                    case "I8__Stage__c":
+                    case "I8__ID_Text__c":
+                    case "I8__Task_Title__c":
+                    case "I8__Start_Time__c":
+                    case "I8__Duration__c":
+                    case "I8__End_Time__c":
+                    case "I8__Stack_Owner_Name__c":
+                    case "I8__Team__c":
+                    case "Id":
+                    case "I8__Critical_Path__c":
+                    case "I8__Description__c":
+                        oTable.column(i).visible(true);
+                        break;
+                    case "I8__Start_Delay__c":
+                    case "I8__Run_Delay__c":
+                    case "I8__Planned_Duration__c":
+                        showhidecolumn(i);
+                        break;
+                    default:
+                        oTable.column(i).visible(false);
+                        break;
+                }
+            }
+        }
+        //on Click of Technical Summary list item in Side bar Summary Menu
+        function ShowTechDetailColumn() {
+            var oTable = $('#example').DataTable();
+            var gridColumns = tableColumns();
+            for (var i = 0; i < gridColumns.length; i++) {
+                switch (gridColumns[i]) {
+                    case "I8__State__c":
+                    case "I8__Stage__c":
+                    case "I8__ID_Text__c":
+                    case "I8__Task_Title__c":
+                    case "I8__Start_Time__c":
+                    case "I8__Duration__c":
+                    case "I8__End_Time__c":
+                    case "I8__Stack_Owner_Name__c":
+                    case "I8__Team__c":
+                    case "Id":
+                    case "I8__Critical_Path__c":
+                    case "I8__Technical_Detail__c":
+                        oTable.column(i).visible(true);
+                        break;
+                    case "I8__Start_Delay__c":
+                    case "I8__Run_Delay__c":
+                    case "I8__Planned_Duration__c":
+                        showhidecolumn(i);
+                        break;
+                    default:
+                        oTable.column(i).visible(false);
+                        break;
+                }
+            }
+        }
+        //on Click of QA review list item in Side bar Summary Menu
+        function ShowReviewColumn() {
+            var oTable = $('#example').DataTable();
+            var gridColumns = tableColumns();
+            for (var i = 0; i < gridColumns.length; i++) {
+                switch (gridColumns[i]) {
+                    case "I8__State__c":
+                    case "I8__Stage__c":
+                    case "I8__ID_Text__c":
+                    case "I8__Task_Title__c":
+                    case "I8__Start_Time__c":
+                    case "I8__Duration__c":
+                    case "I8__End_Time__c":
+                    case "I8__Stack_Owner_Name__c":
+                    case "I8__Team__c":
+                    case "Id":
+                    case "I8__Critical_Path__c":
+                    case "I8__Review_Comments__c":
+                        oTable.column(i).visible(true);
+                        break;
+                    case "I8__Start_Delay__c":
+                    case "I8__Run_Delay__c":
+                    case "I8__Planned_Duration__c":
+                        showhidecolumn(i);
+                        break;
+                    default:
+                        oTable.column(i).visible(false);
+                        break;
+                }
+            }
+        }
+        //on Click of WalkThroughColumn list item in Side bar Summary Menu
+        function ShowWalkThroughColumn() {
+            var oTable = $('#example').DataTable();
+            var gridColumns = tableColumns();
+            for (var i = 0; i < gridColumns.length; i++) {
+                switch (gridColumns[i]) {
+                    case "I8__State__c":
+                    case "I8__Stage__c":
+                    case "I8__ID_Text__c":
+                    case "I8__Task_Title__c":
+                    case "I8__Start_Time__c":
+                    case "I8__Duration__c":
+                    case "I8__End_Time__c":
+                    case "I8__Stack_Owner_Name__c":
+                    case "I8__Team__c":
+                    case "Id":
+                    case "I8__Critical_Path__c":
+                    case "I8__WalkThrough_Comments__c":
+                        oTable.column(i).visible(true);
+                        break;
+                    case "I8__Start_Delay__c":
+                    case "I8__Run_Delay__c":
+                    case "I8__Planned_Duration__c":
+                        showhidecolumn(i);
+                        break;
+                    default:
+                        oTable.column(i).visible(false);
+                        break;
+                }
+            }
+        }
+        //on statsus plannedForecastTimes
+        function ShowPlannedColumns() {
+            var oTable = $('#example').DataTable();
+            var gridColumns = tableColumns();
+            for (var i = 0; i < gridColumns.length; i++) {
+                switch (gridColumns[i]) {
+                    case "I8__State__c":
+                    case "I8__Stage__c":
+                    case "I8__ID_Text__c":
+                    case "I8__Task_Title__c":
+                    case "I8__Stack_Owner_Name__c":
+                    case "I8__Team__c":
+                    case "Id":
+                    case "I8__Critical_Path__c":
+                    case "I8__Planned_Start__c":
+                    case "I8__Planned_End__c":
+                    case "I8__Forecast_Start__c":
+                    case "I8__Forecast_End__c":
+                    case "I8__Actual_Start__c":
+                    case "I8__Actual_End__c":
+                        oTable.column(i).visible(true);
+                        break;
+                    case "I8__Start_Delay__c":
+                    case "I8__Run_Delay__c":
+                    case "I8__Planned_Duration__c":
+                        showhidecolumn(i);
+                        break;
+                    default:
+                        oTable.column(i).visible(false);
+                        break;
+                }
+            }
+        }
+        //To show My veiw col in Datatable
+        function ShowMyViewColumn() {
+            $("#aEditMyView").show();
+            var gridColumns = tableColumns();
+            var oTable = $('#example').DataTable();
+            if (gridColumns.length < 0) {
+            } else {
+                for (var i = 0; i < gridColumns.length; i++) {
+                    if (userColumns.indexOf(gridColumns[i]) > -1) {
+                        oTable.column(i).visible(true);
+                    } else {
+                        oTable.column(i).visible(false);
+                    }
+                }
+                for (var i = 0; i < gridColumns.length; i++) {
+                    switch (gridColumns[i]) {
+                        case "I8__State__c":
+                        case "I8__Stage__c":
+                        case "Id":
+                        case "I8__Critical_Path__c":
+                            oTable.column(i).visible(true);
+                            break;
+                        case "I8__Start_Delay__c":
+                        case "I8__Run_Delay__c":
+                        case "I8__Planned_Duration__c":
+                            showhidecolumn(i);
+                            break;
+                    }
+                }
+            }
+        }
+        //to vary the datatable columns to be shown based on task status
+        function ShowColumnsBasedOnTaskStatus() {
+            if ($("#hSOEStatus").val() == "ImpInProgress") {
+                var gridColumns = tableColumns();
+                var oTable = $('#example').DataTable();
+                for (var i = 0; i < gridColumns.length; i++) {
+                    switch (gridColumns[i]) {
+                        case "I8__Start_Delay__c":
+                        case "I8__Run_Delay__c":
+                        case "I8__Owner__c": 
+                        case "I8__Planned_Duration__c":   
+                            oTable.column(i).visible(true);
+                            break;
+                        case "I8__Team__c":
+                            oTable.column(i).visible(false);
+                            break;
+                    }
+                }
+            }
+        }
+        //to hide a particular coloumn
+        function showhidecolumn(index) {
+            if ($("#hSOEStatus").val() == "ImpInProgress") {
+                var oTable = $('#example').DataTable();
+                oTable.column(index).visible(true);
+            } else {
+                var oTable = $('#example').DataTable();
+                oTable.column(index).visible(false);
+            }
+        }
+        function activatetask(id) {            
+            if (confirm("Do you want to run the task ?")) {
+                runthetask(id);
+            }
+        }
+        function reactivatetask(id) {
+            if (confirm("Do you want to rerun the task ?")) {
+                rerunthetask(id);
+            }
+        }
+        function completetask(id) {
+            if (confirm("Do you want to complete the task ?")) {
+                completethetask(id);
+            }
+        }  
+        function SendSMS1(number){
+             $("#user").html(number);
+             $("#popup").show();
+        } 
+        function hidepopup(){
+             $('#pinData').empty();
+             $("#popup").hide();
+        }  
+        function sendSMS(number,body){
+            $("#popup").hide();         
+            SendSMS2($("#user").text(),document.getElementById("myText").value);
+        } 
+        function addpin1(tas,id,data)  {
+            $("#task").html(tas);
+            $("#taskid").html(id);
+            $('#pinData').empty();
+            $("#pinData").append(
+                document.createElement('div').innerText = data 
+            );
+            $("#pin").show();
+        }
+        function hidepin(){
+             $("#pin").hide();
+        }  
+        function addpin(number,body){
+            $("#pin").hide();      
+            SendPIN2($("#taskid").text(),document.getElementById("pinText").value);
+            document.getElementById("pinText").value = '';
+        } 
+        function activecomplete() {
+            if ((getCookie(SOEID + "PageNo") != "") && (getCookie(SOEID + "PageNo") != "0")) {
+                setTimeout(function () {
+                    var oTable = $('#example').dataTable();
+                    oTable.fnPageChange(parseInt(getCookie(SOEID + "PageNo")));
+                }, 1000);
+            }
+            var dTable = $('#example').DataTable();
+            dTable.draw();
+        }        
+        function SOETaskStatus() {          
+            TaskStatus = soe.I8__Status__c;
+            var reg = new RegExp(" ", "g");
+            TaskStatus = TaskStatus.replace(reg, "");
+            $("#hSOEStatus").val(TaskStatus);
+            var state = htmlDecode(soe.I8__State__c);          
+            var rag= htmlDecode(soe.I8__RAG__c);
+            var refreshtime = '{!$Label.SOE_Auto_Refresh_Time}';  
+            if(soe.I8__Dealy_Ahead_mins__c > 0)
+                var delay = "<b><font color='red'>Delay (mins)  :</font> </b>"+ soe.I8__Dealy_Ahead_mins__c ;
+            else if(soe.I8__Dealy_Ahead_mins__c < 0)
+                var delay = "<b><font color='green'>Ahead (mins)  :</font> </b>"+ Math.abs(soe.I8__Dealy_Ahead_mins__c) ;
+           else
+                var delay = "<b><font color='blue'>Delay/Ahead Mins  :</font> </b>"+ soe.I8__Dealy_Ahead_mins__c ;                  
+           switch (TaskStatus) {
+                case "Build":
+                case "Review":               
+                var TaskForecastDate = "<div style='width: 90%;overflow-x: auto;'><center><table><tr><td><strong><font size='2px'>"+soe.Name +" : " + soe.I8__SOE_Title__c+"</font></strong></td></tr></table></center></div>";
+                   $('#li3').remove();
+                   $('#li4').remove();
+                   $('#li5').remove();
+                   $('#li6').remove();
+                   $('#li7').remove();
+                   $('#li8').remove();
+                    break; 
+                case "Scheduled":
+                case "Freeze":  
+                    var TaskForecastDate = "<div style='width: 90%;overflow-x: auto;'><center><table ><tr><td align='left' nowrap><strong><font size='2px'><font color='blue'>"+soe.Name +" :</font></strong>" + soe.I8__SOE_Title__c+"&nbsp;&nbsp;</font></td><td nowrap>&nbsp;<b> <font color='blue'> Planned Start  : </font></b>"+ moment(soe.I8__Min_Planned_Start__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b><font color='blue'>RAG Status  :</font> </b> "+ rag +"</td></tr><tr><td align='left' nowrap><b><font color='blue'>Imp Duration  : </font></b>"+ soe.I8__Imp_Duration__c+"</td><td align='left' nowrap>&nbsp;&nbsp;<b><font color='blue'>Planned &nbsp;End  &nbsp;: </font></b>"+ moment(soe.I8__Max_Planned_End__c).format("DD/MM/YY HH:mm")+"</td><td></td></tr></table></center></div>";
+                    $('#li3').remove();
+                   $('#li4').remove();
+                   $('#li5').remove();
+                   $('#li6').remove();
+                   $('#li7').remove();
+                   $('#li8').remove();
+                    break;      
+                case "ImpInProgress":
+                    if(refreshtime > 0)
+                        setTimeout(function () { refreshgrid(); }, refreshtime*60* 1000);
+                    var TaskForecastDate = "<div style='width:95%;overflow-x: auto;'><center><table ><tr><td align='left' nowrap><strong><font size='2px'><font color='blue'>"+soe.Name +" :</font></strong>" + soe.I8__SOE_Title__c+"&nbsp;&nbsp;</font></td><td nowrap>&nbsp;<b> <font color='blue'> Planned Start  : </font></b>"+ moment(soe.I8__Min_Planned_Start__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b> <font color='blue'>Actual &nbsp;Start  &nbsp;: </font></b>"+ moment(soe.I8__Min_Start_Time__c).format("DD/MM/YY HH:mm")+"</td><td nowrap>&nbsp;"+delay+"</td></tr><tr><td align='left' nowrap><b><font color='blue'>Imp Duration  : </font></b>"+ soe.I8__Imp_Duration__c+"</td><td align='left' nowrap>&nbsp;&nbsp;<b><font color='blue'>Planned &nbsp;End  &nbsp;: </font></b>"+ moment(soe.I8__Max_Planned_End__c).format("DD/MM/YY HH:mm")+"</td><td nowrap>&nbsp;<b> <font color='blue'>Forecast End  :</font></b>"+ moment(soe.I8__Max_Forecast_End__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b><font color='blue'>RAG Status  :</font> </b> "+ rag +"</td></tr></table></center></div>";
+                    $('#li3').remove();
+                   $('#li4').remove();
+                   $('#li5').remove();
+                   $('#li6').remove();
+                   $('#li7').remove();
+                   $('#li8').remove();
+                    break;
+                case "ImpCompleted":
+                var TaskForecastDate = "<div style='width:95%;overflow-x: auto;'><center><table ><tr><td align='left' nowrap><strong><font size='2px'><font color='blue'>"+soe.Name +" :</font></strong>" + soe.I8__SOE_Title__c+"&nbsp;&nbsp;</font></td><td nowrap>&nbsp;<b> <font color='blue'> Planned Start  : </font></b>"+ moment(soe.I8__Min_Planned_Start__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b> <font color='blue'>Actual Start : </font></b>"+ moment(soe.I8__Min_Start_Time__c).format("DD/MM/YY HH:mm")+"</td><td nowrap>&nbsp;"+delay+"</td></tr><tr><td align='left' nowrap><b><font color='blue'>Imp Duration  : </font></b>"+ soe.I8__Imp_Duration__c+"</td><td align='left' nowrap>&nbsp;&nbsp;<b><font color='blue'>Planned &nbsp;End  &nbsp;: </font></b>"+ moment(soe.I8__Max_Planned_End__c).format("DD/MM/YY HH:mm")+"</td><td nowrap>&nbsp;<b> <font color='blue'>Actual  &nbsp;End  &nbsp;:</font></b>"+ moment(soe.I8__Max_End_Time__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b><font color='blue'>RAG Status  :</font> </b> "+ rag +"</td></tr></table></center></div>";
+                var bool = '{!JSENCODE(IF(CurSOE.Post_Implementation_Stage__c,"true", "false"))}';
+                    if(bool == 'true')
+                        $('#li3').add();
+                   else
+                       $('#li3').remove();
+                   $('#li4').remove();
+                   $('#li5').remove();
+                   $('#li6').remove();
+                   $('#li7').remove();
+                   $('#li8').remove();
+                    break;                                      
+                case "SOECompleted":
+                    var TaskForecastDate = "<div style='width:95%;overflow-x: auto;'><center><table ><tr><td align='left' nowrap><strong><font size='2px'><font color='blue'>"+soe.Name +" :</font></strong>" + soe.I8__SOE_Title__c+"&nbsp;&nbsp;</font></td><td nowrap>&nbsp;<b> <font color='blue'> Planned Start  : </font></b>"+ moment(soe.I8__Min_Planned_Start__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b> <font color='blue'>Actual Start : </font></b>"+ moment(soe.I8__Min_Start_Time__c).format("DD/MM/YY HH:mm")+"</td><td nowrap>&nbsp;"+delay+"</td></tr><tr><td align='left' nowrap><b><font color='blue'>Imp Duration  : </font></b>"+ soe.I8__Imp_Duration__c+"</td><td align='left' nowrap>&nbsp;&nbsp;<b><font color='blue'>Planned &nbsp;End  &nbsp;: </font></b>"+ moment(soe.I8__Max_Planned_End__c).format("DD/MM/YY HH:mm")+"</td><td nowrap>&nbsp;<b> <font color='blue'>Actual  &nbsp;End  &nbsp;:</font></b>"+ moment(soe.I8__Max_End_Time__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b><font color='blue'>RAG Status  :</font> </b> "+ rag +"</td></tr></table></center></div>";
+                    $('#li4').remove();
+                   $('#li5').remove();
+                   $('#li6').remove();
+                   $('#li7').remove();
+                   $('#li8').remove();
+                    break;
+                case "Suspended":
+                   var TaskForecastDate = "<div style='width:95%;overflow-x: auto;'><center><table ><tr><td align='left' nowrap><strong><font size='2px'><font color='blue'>"+soe.Name +" :</font></strong>" + soe.I8__SOE_Title__c+"&nbsp;&nbsp;</font></td><td nowrap>&nbsp;<b> <font color='blue'> Planned Start  : </font></b>"+ moment(soe.I8__Min_Planned_Start__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b> <font color='blue'>Actual &nbsp;Start  &nbsp;: </font></b>"+ moment(soe.I8__Min_Start_Time__c).format("DD/MM/YY HH:mm")+"</td><td nowrap>&nbsp;"+delay+"</td></tr><tr><td align='left' nowrap><b><font color='blue'>Imp Duration  : </font></b>"+ soe.I8__Imp_Duration__c+"</td><td align='left' nowrap>&nbsp;&nbsp;<b><font color='blue'>Planned &nbsp;End  &nbsp;: </font></b>"+ moment(soe.I8__Max_Planned_End__c).format("DD/MM/YY HH:mm")+"</td><td nowrap>&nbsp;<b> <font color='blue'>Forecast End  :</font></b>"+ moment(soe.I8__Max_Forecast_End__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b><font color='blue'>RAG Status  :</font> </b> "+ rag +"</td></tr></table></center></div>";
+                   $('#li1').remove();
+                   $('#li2').remove();
+                   $('#li3').remove();
+                   $('#li4').remove();
+                   $('#li5').remove();
+                   $('#li6').remove();
+                   $('#li7').add();
+                   $('#li8').remove();
+                    break;  
+                case "Abandoned":
+                   var TaskForecastDate = "<div style='width:95%;overflow-x: auto;'><center><table ><tr><td align='left' nowrap><strong><font size='2px'><font color='blue'>"+soe.Name +" :</font></strong>" + soe.I8__SOE_Title__c+"&nbsp;&nbsp;</font></td><td nowrap>&nbsp;<b> <font color='blue'> Planned Start  : </font></b>"+ moment(soe.I8__Min_Planned_Start__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b> <font color='blue'>Actual &nbsp;Start  &nbsp;: </font></b>"+ moment(soe.I8__Min_Start_Time__c).format("DD/MM/YY HH:mm")+"</td><td nowrap>&nbsp;"+delay+"</td></tr><tr><td align='left' nowrap><b><font color='blue'>Imp Duration  : </font></b>"+ soe.I8__Imp_Duration__c+"</td><td align='left' nowrap>&nbsp;&nbsp;<b><font color='blue'>Planned &nbsp;End  &nbsp;: </font></b>"+ moment(soe.I8__Max_Planned_End__c).format("DD/MM/YY HH:mm")+"</td><td nowrap>&nbsp;<b> <font color='blue'>Forecast End  :</font></b>"+ moment(soe.I8__Max_Forecast_End__c).format("DD/MM/YY HH:mm")+"&nbsp;&nbsp;</td><td align='left' nowrap>&nbsp;<b><font color='blue'>RAG Status  :</font> </b> "+ rag +"</td></tr></table></center></div>";
+                   $('#li1').remove();
+                   $('#li2').remove();
+                   $('#li3').remove();
+                   $('#li4').remove();
+                   $('#li5').remove();
+                   $('#li6').remove();
+                   $('#li7').remove();
+                   $('#li8').add();
+                    break;  
+                case "BOInProgress":
+                 var TaskForecastDate = "<div style='width: 90%;overflow-x: auto;'><center><table><tr><td><strong><font size='2px'>"+soe.Name +" : " + soe.I8__SOE_Title__c+"</font></strong></td></tr></table></center></div>";
+                   $('#li1').remove();
+                   $('#li2').remove();
+                   $('#li3').remove();
+                   $('#li4').add();
+                   $('#li5').add();                   
+                   $('#li6').remove();
+                   $('#li7').remove();
+                   $('#li8').remove();
+                    break;
+                case "BOCompleted":
+                var TaskForecastDate = "<div style='width: 90%;overflow-x: auto;'><center><table><tr><td><strong><font size='2px'>"+soe.Name +" : " + soe.I8__SOE_Title__c+"</font></strong></td></tr></table></center></div>";
+                   $('#li1').remove();
+                   $('#li2').remove();
+                   $('#li3').remove();
+                   $('#li4').add();
+                   $('#li5').add(); 
+                   var bool = '{!JSENCODE(IF(CurSOE.Post_Implementation_Stage__c,"true", "false"))}';
+                   if(bool == 'true')
+                       $('#li6').add();
+                    else
+                         $('#li6').remove();
+                   $('#li7').remove();
+                   $('#li8').remove();
+                    break; 
+                case "SOEBOCompleted":
+                var TaskForecastDate = "<div style='width: 90%;overflow-x: auto;'><center><table><tr><td><strong><font size='2px'>"+soe.Name +" : " + soe.I8__SOE_Title__c+"</font></strong></td></tr></table></center></div>";
+                   $('#li1').remove();
+                   $('#li2').remove();
+                   $('#li3').remove();
+                   $('#li4').add();
+                   $('#li5').add();
+                   $('#li6').add();
+                   $('#li7').remove();
+                   $('#li8').remove();
+                    break;               
+            }
+            $("#divTaskDetails").html(TaskForecastDate);
+            $('#statusbar').removeClass('hidden');
+        }        
+        function SuspendorBackout(){
+            var bool = '{!JSENCODE(IF(CurSOE.Backout_Stage__c,"true", "false"))}';
+            if(bool == 'true'){
+               var retVal = prompt("Please confirm you want to suspend the SOE or to initiate Backout :", "Suspend or Backout");
+               console.log("You have entered : " + retVal);
+               retVal = retVal.toLowerCase();
+               if(  (retVal.includes("suspend") && retVal.includes("backout"))   || (retVal.includes("suspend")== false  && retVal.includes("backout")== false)  )
+                   alert('Please enter either Suspend or Backout');
+               else if((retVal.includes("suspend") || retVal.includes("backout")) && retVal.length== 7)
+                   SOESuspended1(retVal);
+               else
+                   alert('Please enter either Suspend or Backout');
+            }
+            else{
+                var retVal = confirm("Do you want to suspend SOE ?");
+                   if( retVal == true )
+                       SOESuspended1('suspend');
+            }  
+        }                     
+    </script>
+    </apex:form> 
+</apex:page>

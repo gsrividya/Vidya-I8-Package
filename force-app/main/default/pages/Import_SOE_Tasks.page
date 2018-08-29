@@ -1,0 +1,136 @@
+<apex:page controller="Import_SOE_Tasks_Cntrl" >  
+    <style>
+        .activeTab {background-color: #1797C0;font-size:18px;color:white; background-image:none;padding-top:5px;height:25px;width:5000px;cursor:default;}
+        .inactiveTab { background-color: lightgrey;font-size:18px;color:black; background-image:none;padding-top:5px;height:25px;width:5000px;cursor:pointer;}
+        .headerclass {background-color: #1797C0;font-size:14px;padding-top:5px;height:18px;text-align:center;}
+        .columnclass {text-align:center;}
+    </style>
+    <script>
+    function assign_sid(){
+        var sidfld = document.getElementById('{!JSENCODE($Component.frm.sersec.selectlist)}').value;
+        if(sidfld == '' || sidfld == null){
+            alert('Select/Insert SOE');
+            return false;
+        }
+        else
+            window.open('/apex/Export_SOE_CSV?id='+sidfld,'_blank','height=150,location=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=1', 1);
+    }    
+    </script>    
+    <apex:form id="frm">
+        <apex:outputPanel rendered="{!$User.UIThemeDisplayed == 'Theme4t'}">
+             <b><center><span style="color:red;font-size:20px;">{!$Label.i8__export001}</span>
+             <br/><apex:commandButton value="Cancel" style="font-size: 13px;" action="{!cancelSOE}"  immediate="true"/></center></b>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!($User.UIThemeDisplayed != 'Theme4t')}">
+         <apex:sectionHeader title="Upload Tasks for SOE"/>
+         <apex:pageMessages />
+           <apex:outputPanel rendered="{!SOE_Task_Access}">
+        <apex:tabPanel width="100%" immediate="true" tabClass="activeTab" inactiveTabClass="inactiveTab" height="50%">
+            <apex:tab label="Existing SOE" >
+                <apex:actionregion id="regid">
+                    <apex:pageBlock title="Search Section" id="sersec">
+                        <table width="100%">
+                            <tr>
+                                <apex:outputPanel id="selsoe">
+                                    <td width="40%">
+                                        <apex:outputLabel style="font-size:16px;font-weight:bold;" value="Search SOE"/>   &nbsp;&nbsp;
+                                        <apex:inputtext value="{!Seact_ip}" id="serid" html-placeholder="Please enter SOE-Title"/>  &nbsp;&nbsp;
+                                        <apex:commandButton value="Search" action="{!SOE_List}" rerender="selectlist"/>  &nbsp;
+                                        <apex:commandButton value="Clear" action="{!ClrStr}" rerender="serid,selectlist"/>
+                                    </td>
+                                    <td align="left" width="60%">
+                                        <apex:selectList multiselect="false" size="15" style="width:200px;" value="{!selected_SOE}" id="selectlist">
+                                            <apex:selectOptions value="{!SOE_Options}"/>
+                                        </apex:selectList>
+                                    </td>
+                                    <td>
+                                        <apex:commandButton value="Cancel" style="margin-left: 10px;font-size: 13px;" action="{!CancelSOE}"/>
+                                    </td>
+                                </apex:outputPanel>
+                            </tr>
+                        </table>
+                    </apex:pageBlock>
+                    <apex:pageBlock title="Export Section" id="butblck">
+                        <apex:outputPanel >
+                            <apex:commandbutton value="Export Tasks" onclick="assign_sid();" rerender="regid" style="font-size:16px;font-weight:bold;color:red"/>
+                        </apex:outputPanel>
+                    </apex:pageBlock>
+                </apex:actionregion>                
+                <apex:pageBlock title="Tasks Upload Section">    
+                    <left>
+                        <apex:inputFile value="{!contentFile}" filename="{!nameFile}" accept=".csv"/> <apex:commandButton action="{!ReadFile}" value="Upload Tasks" id="theButton" style="width:75px;"/>
+                        <br/><br/><font color="red"> <b>Note: {!$Label.i8__soeimport001}</b> </font>
+                    </left> 
+                </apex:pageBlock>
+            </apex:tab>            
+            <apex:tab label="New SOE" id="newtab" >
+                <apex:outputPanel >
+                    <apex:pageMessages />
+                </apex:outputPanel>   
+                <apex:actionRegion id="regid_new"><center>
+                    <apex:commandButton value="Cancel" style="font-size: 13px;" action="{!URLFOR($Action.SOE__c.List, $ObjectType.SOE__c)}"  immediate="true"/>
+                  </center>  <apex:pageBlock title="SOE Info" id="soeblock" >
+                        <apex:pageBlockTable value="{!SOE_Rec}" var="s" headerClass="headerclass" columnClasses="columnclass">
+                            <apex:column headervalue="Title" width="17%">
+                                <apex:inputField value="{!s.SOE_Title__c}" rendered="{!renSOEFields}"/>
+                                <apex:outputField value="{!s.SOE_Title__c}" rendered="{!renSOEFields == false}"/>
+                            </apex:column>
+                            <apex:column headervalue="Summary" width="17%">
+                                <apex:inputField value="{!s.Summary__c}" rendered="{!renSOEFields}"/>
+                                <apex:outputField value="{!s.Summary__c}" rendered="{!renSOEFields == false}"/>
+                            </apex:column>
+                            <apex:column headervalue="Baseline Start" width="19%">
+                                <apex:inputField value="{!s.Baseline_Start__c}" rendered="{!renSOEFields}"/>
+                                <apex:outputField value="{!s.Baseline_Start__c}" rendered="{!renSOEFields == false}"/>
+                            </apex:column>
+                            <apex:column headerValue="Pre-Imp Stage" width="10%">
+                                <apex:inputField value="{!s.Pre_Implementation_Stage__c}" rendered="{!hidefields == false}"/>
+                                <apex:outputField value="{!s.Pre_Implementation_Stage__c}" rendered="{!hidefields}"/>
+                            </apex:column>
+                            <apex:column headerValue="Post-Imp Stage" width="10%">
+                                <apex:inputField value="{!s.Post_Implementation_Stage__c}" rendered="{!hidefields == false}"/>
+                                <apex:outputField value="{!s.Post_Implementation_Stage__c}" rendered="{!hidefields}"/>
+                            </apex:column>
+                            <apex:column headerValue="Backout Stage" width="10%">
+                                <apex:inputField value="{!s.BackOut_Stage__c}" rendered="{!hidefields == false}"/>
+                                <apex:outputField value="{!s.BackOut_Stage__c}" rendered="{!hidefields}"/>
+                            </apex:column>
+                             <apex:column headerValue="Backout Process" width="15%">
+                                <apex:inputField value="{!s.Backout__c}" rendered="{!hidefields == false}"/>
+                                <apex:outputField value="{!s.Backout__c}" rendered="{!hidefields}"/>
+                            </apex:column>
+                            <apex:column headerValue="Actions">
+                                <apex:commandButton value="Save" action="{!Create_SOE}" rerender="frm" rendered="{!renSOEFields}"/>
+                                <script>
+                                function assign_sid_New(){
+                                    var sidfld = '{!SOE_Rec[0].id}';
+                                    if(sidfld == '' || sidfld == null){
+                                        alert('Select/Insert SOE');
+                                        return false;
+                                    }
+                                    else
+                                        window.open('/apex/Export_SOE_CSV?id='+sidfld,'_blank','height=50,location=no,resizable=yes,toolbar=no,status=no,menubar=no,scrollbars=1', 1);
+                                }
+                                </script>
+                                <apex:commandButton value="Edit" action="{!Edit_SOE}" rerender="soeblock" rendered="{!renSOEFields == false}"/>
+                            </apex:column>
+                        </apex:pageBlockTable>
+                    </apex:pageBlock><br/>                    
+                    <apex:pageBlock title="Export Section" id="newbutblck">
+                        <apex:outputPanel >
+                            <apex:commandlink value="Export Tasks" onclick="assign_sid_New();" rerender="newtab"  style="font-size:16px;font-weight:bold;color:red"/>
+                        </apex:outputPanel>
+                    </apex:pageBlock>                    
+                </apex:actionRegion>
+                <apex:pageBlock title="Tasks Upload Section"> 
+                    <left>
+                        <apex:inputFile value="{!contentFile}" filename="{!nameFile}" accept=".csv"/> <apex:commandButton action="{!ReadFile}" immediate="true" value="Upload Tasks" id="theButton" style="width:75px;"/>
+                        <br/><br/><font color="red"> <b>Note: {!$Label.i8__soeimport001}</b> </font>
+                    </left> 
+                </apex:pageBlock>
+            </apex:tab>
+        </apex:tabPanel>
+        </apex:outputPanel>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

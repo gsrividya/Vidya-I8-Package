@@ -1,0 +1,133 @@
+<apex:component controller="SOEPageHeader">
+    <apex:attribute name="sid" description="This is the SOE Id" assignTo="{!SOEId}" type="string" />
+    <apex:attribute name="object" description="This is the MIS Id" assignTo="{!MISID}" type="string"/>
+    <apex:stylesheet value="{!$Resource.Bootstrap}" />
+    <apex:stylesheet value="{!URLFOR($Resource.FontAwesome, '/font-awesome-4.7.0/css/font-awesome.min.css')}" />
+    <apex:stylesheet value="{!$Resource.AdminLTE}" />    
+    <style>         
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar {background-color:#CFEEF8;border-color: #303260;margin-left: 0px !important;} 
+        .wrapper {background-color: #EEE !important;}
+        .row{padding-top:10px;}
+        .lookupInput {display: inline;vertical-align: middle;white-space: nowrap;}
+        .lookupInput img {background-repeat: no-repeat;margin-right: .25em;vertical-align: middle;}
+        .lookupInput .disabled {background-color: #ccc;}
+        .lookupInput .emptyDependentLookup {font-style: italic;}
+        .lookupInput input[readonly] {background-color: #e6e6e6;border: 2px solid #e6e6e6;color: #333;cursor: default;}
+        .lookupInput a.readOnly {float: right;}
+        .lookupInput span.readOnly {display: block;white-space: normal;}
+        .lookupInput span.totalSummary {font-weight: bold;}
+        .inlineEditRequiredDiv .lookupInput img,.inlineEditDiv .lookupInput img {vertical-align: middle;}
+        .quickCreateModule .lookupInput input {max-width: 155px }
+        .lookupIcon {background-image: url(/img/func_icons/util/lookup20.gif);background-position: 0 0;width: 20px;height: 20px;background-position: top left}
+        .lookupIconOn {background-image: url(/img/func_icons/util/lookup20.gif);background-position: 0 0;width: 20px;height: 20px;background-position: top right}
+        table {border-collapse: collapse; }
+        tr {border: none; }
+        td {border-right: solid 1px #BCC4C6; border-left: solid 1px gray;} 
+        table td:first-child { border-left: none; }
+        table td:last-child { border-right: none; }
+        .table1 td{border-left: none;border-right: none;}
+        body{font-size : 135%}
+        body .btn { color: #fff;   padding : 4px 15px 4px 15px; background :#529dc8 ;font-size:15px; border-radius : 16px;}
+        .btn:hover, .btn:focus, .btn.focus { background :  #367fa9;  } 
+    </style>   
+    <header class="main-header">            
+        <nav class="navbar navbar-static-top" role="navigation">
+            <!-- Sidebar toggle button-->
+            <div class="col-sm-1">                
+                <center> <img src="{!$Resource.Company_Logo}" alt="" id="phHeaderLogoImage" onload="javascript:scaleImage(this, 65,300);this.scaled=true;" title="" width="45" height="40" style="margin-left: 10px;margin-top:5px;" /></center>
+            </div >
+            <div class="col-sm-9" style="padding-top:10px;">
+                <div style="width: 100%;overflow-x: auto;">
+                    <center>
+                        <table>
+                            <apex:repeat value="{!SOE}" var="s" rendered="{!object == NULL}">
+                                <tr>
+                                    <td>
+                                        <div style="{!If(s.Status__c = 'Build' || s.Status__c = 'Review' || s.Status__c = 'BO In Progress' || s.Status__c = 'BO Completed' || s.Status__c = 'SOE BO Completed'  ,'display:inline','display:None')}" >                                   
+                                            <table >
+                                                <tr>
+                                                    <td align="left" nowrap="nowrap"><font size='2px'><font color='blue'><strong>{!s.Name} :</strong></font> {!s.SOE_Title__c}&nbsp;&nbsp;</font></td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;&nbsp;<b><font color='blue'>SOE Status  :</font> </b>  <apex:outputText value="{!s.State__c}" escape="false" title="{!s.Status__c}"/></td>
+                                                </tr>    
+                                            </table>
+                                        </div>
+                                        <div style="{!If(s.Status__c = 'Scheduled' || s.Status__c = 'Freeze'  ,'display:inline','display:None')}" >                                   
+                                            <table >
+                                                <tr>
+                                                    <td align="left" nowrap="nowrap"><font size='2px'><font color='blue'><strong>{!s.Name} :</strong></font> {!s.SOE_Title__c}&nbsp;&nbsp;</font></td>
+                                                    <td nowrap="nowrap">&nbsp;<b> <font color='blue'> Planned Start  : </font></b> <apex:outputField value="{!s.Min_Planned_Start__c}"/>&nbsp;&nbsp;</td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;&nbsp;<b><font color='blue'>SOE Status  :</font> </b>  <apex:outputText value="{!s.State__c}" escape="false" title="{!s.Status__c}"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td align='left' nowrap="nowrap"><b><font color='blue'>Imp Duration  : </font></b> {!s.Imp_Duration__c}</td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;&nbsp;<b><font color='blue'>Planned &nbsp;End  &nbsp;: </font></b><apex:outputField value="{!s.Max_Planned_End__c}"/></td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;<b><font color='blue'>RAG Status  :</font> </b>  <apex:outputText value="{!s.RAG__c}" escape="false" title="{!s.SOE_RAG__c}"/></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div style="{!If( s.Status__c = 'Imp In Progress' || s.Status__c = 'Suspended' || s.Status__c = 'Abandoned','display:inline','display:None')}" >                                   
+                                            <table >
+                                                <tr>
+                                                    <td align="left" nowrap="nowrap"><font size='2px'><font color='blue'><strong>{!s.Name} :</strong></font> {!s.SOE_Title__c}&nbsp;&nbsp;</font></td>
+                                                    <td nowrap="nowrap">&nbsp;<b> <font color='blue'> Planned Start  : </font></b> <apex:outputField value="{!s.Min_Planned_Start__c}"/>&nbsp;&nbsp;</td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;<b> <font color='blue'>Actual &nbsp;Start  &nbsp;: </font></b> <apex:outputField value="{!s.Min_Start_Time__c}"/></td>
+                                                    <td nowrap="nowrap">&nbsp;<apex:outputPanel rendered="{!s.Dealy_Ahead_mins__c != null && s.Dealy_Ahead_mins__c >0 }"><b><font color='red'> Delay Mins  :</font> </b>{!s.Dealy_Ahead_mins__c} </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!s.Dealy_Ahead_mins__c != null && s.Dealy_Ahead_mins__c <0 }"><b><font color='green'> Ahead Mins  :</font> </b>{!ABS(s.Dealy_Ahead_mins__c)}  </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!s.Dealy_Ahead_mins__c != null && s.Dealy_Ahead_mins__c ==0 }"><b> Delay/Ahead Mins  :</b>{!s.Dealy_Ahead_mins__c} </apex:outputPanel>
+                                                        &nbsp;</td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;&nbsp;<b><font color='blue'>SOE Status  :</font> </b>  <apex:outputText value="{!s.State__c}" escape="false" title="{!s.Status__c}"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td align='left' nowrap="nowrap"><b><font color='blue'>Imp Duration  : </font></b> {!s.Imp_Duration__c}</td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;&nbsp;<b><font color='blue'>Planned &nbsp;End  &nbsp;: </font></b><apex:outputField value="{!s.Max_Planned_End__c}"/></td>
+                                                    <td nowrap="nowrap">&nbsp;<b> <font color='blue'>Forecast End  :</font></b> <apex:outputField value="{!s.Max_Forecast_End__c}"/>&nbsp;&nbsp;</td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;<b><font color='blue'>RAG Status  :</font> </b>  <apex:outputText value="{!s.RAG__c}" escape="false" title="{!s.SOE_RAG__c}"/></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div style="{!If( s.Status__c = 'Imp Completed' || s.Status__c = 'SOE Completed'  ,'display:inline','display:None')}" >                                   
+                                            <table >
+                                                <tr>
+                                                    <td align="left" nowrap="nowrap"><font size='2px'><font color='blue'><strong>{!s.Name} :</strong></font> {!s.SOE_Title__c}&nbsp;&nbsp;</font></td>
+                                                    <td nowrap="nowrap">&nbsp;<b> <font color='blue'> Planned Start  : </font></b> <apex:outputField value="{!s.Min_Planned_Start__c}"/>&nbsp;&nbsp;</td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;<b> <font color='blue'>Actual &nbsp;Start  &nbsp;: </font></b> <apex:outputField value="{!s.Min_Start_Time__c}"/></td>
+                                                    <td nowrap="nowrap">&nbsp;
+                                                        <apex:outputPanel rendered="{!s.Dealy_Ahead_mins__c != null && s.Dealy_Ahead_mins__c >0 }"><b><font color='red'> Delay Mins  :</font> </b>{!s.Dealy_Ahead_mins__c} </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!s.Dealy_Ahead_mins__c != null && s.Dealy_Ahead_mins__c <0 }"><b><font color='green'> Ahead Mins  :</font> </b>{!ABS(s.Dealy_Ahead_mins__c)} </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!s.Dealy_Ahead_mins__c != null && s.Dealy_Ahead_mins__c ==0 }"><b> Delay/Ahead Mins  :</b>{!s.Dealy_Ahead_mins__c} </apex:outputPanel>
+                                                        &nbsp;</td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;&nbsp;<b><font color='blue'>SOE Status  :</font> </b>  <apex:outputText value="{!s.State__c}" escape="false" title="{!s.Status__c}"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td align='left' nowrap="nowrap"><b><font color='blue'>Imp Duration  : </font></b> {!s.Imp_Duration__c}</td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;&nbsp;<b><font color='blue'>Planned &nbsp;End  &nbsp;: </font></b><apex:outputField value="{!s.Max_Planned_End__c}"/></td>
+                                                    <td nowrap="nowrap">&nbsp;<b> <font color='blue'>Actual End  :</font></b> <apex:outputField value="{!s.Max_End_Time__c}"/>&nbsp;&nbsp;</td>
+                                                    <td align='left' nowrap="nowrap">&nbsp;<b><font color='blue'>RAG Status  :</font> </b>  <apex:outputText value="{!s.RAG__c}" escape="false" title="{!s.SOE_RAG__c}"/></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </apex:repeat>
+                            <apex:repeat value="{!MIS}" var="m" rendered="{!sid == NULL}">
+                                <tr>
+                                    <td>
+                                        <label> {!m.Name} : {!m.MIS_Title__c} </label>  &nbsp;
+                                        <div style="display:inline;">
+                                            Planned Start :<span style="color: blue;"> <apex:outputField value="{!m.MIS_PlannedStart__c}"/> </span><span style="color:green;">|</span> 
+                                        </div>
+                                        <div style="display:inline;">
+                                            Planned End :<span style="color: blue;"> <apex:outputField value="{!m.MIS_PlannedEnd__c}"/> </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </apex:repeat>
+                        </table>
+                    </center>
+                </div>
+            </div>
+        </nav>
+    </header>   
+            
+</apex:component>

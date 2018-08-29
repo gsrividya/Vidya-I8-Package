@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Start_date_must_be_Todays_date</fullName>
+    <active>true</active>
+    <errorConditionFormula>Message_Start_Date__c  &lt;  NOW()-0.0006945</errorConditionFormula>
+    <errorMessage>Start date  must be  greater than or equal to Current time</errorMessage>
+</ValidationRule>

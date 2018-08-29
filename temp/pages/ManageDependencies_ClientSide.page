@@ -1,0 +1,286 @@
+<apex:page controller="Manage_Dependencies_Cntrl" showHeader="false" id="Page" standardStylesheets="false">  
+     <apex:stylesheet value="{!$Resource.AdminCSS}" />
+     <apex:includescript value="{!$Resource.Jquery1}" />
+     <apex:includescript value="{!$Resource.JQuery_Min}" />     
+     <apex:includescript value="{!$Resource.JQuery_DataTable_Min}" />   
+     <apex:stylesheet value="{!$Resource.JQuery_DataTable_CSS}" />
+        <style>
+            .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;background-color: #CFEFFA; }
+            th, td{  text-align: center;  }
+            hr{margin-top:10px;margin-bottom:10px;}
+            .table { margin-bottom: 10px;}
+            .panel { margin-bottom: 2px;}
+        </style>
+        <apex:form id="frm">
+            <div class="wrapper">
+                <c:SOEPageHeader sid="{!taskobj.SOE__c}" ></c:SOEPageHeader>
+                <div  style="min-height:0px!important">
+                    <section class="content">
+                        <apex:outputPanel id="panel1">                            
+                            <apex:actionRegion rendered="{!taskid != null}" id="header">
+                                <div class="box box-primary">
+                                   <apex:outputPanel id="msg">
+                                    <div class="box-body" style="padding: 5px; margin-left: 15px;" >                                        
+                                        <div class="row" style="padding-top:5px;">
+                                            <div class="col-sm-4">                                             
+                                                <i class="fa fa-folder-open fa-lg"></i>
+                                                    <h4 style="margin-left: 5px; display: inline"><b>MANAGE DEPENDENCIES</b></h4>
+                                            </div>                                          
+                                             <div class="col-sm-4" >
+                                                 <apex:actionStatus id="updateStatus">
+                                                    <apex:facet name="start">   <img src="{!$Resource.Running}" alt="" height="25" width="25" /> Processing...  </apex:facet>
+                                                </apex:actionStatus>                                               
+                                            </div> 
+                                            <div class="col-sm-4" style="text-align: right" id="btn">                                                
+                                                <apex:commandButton value="Prev" action="{!BeforeTask}" styleClass="btn btn-primary btn-sm" reRender="panel1" rendered="{!(! before)}" status="updateStatus" style="padding-left: 15px; padding-right:15px;"/>
+                                                <apex:commandButton value="Next" action="{!AfterTask}" styleClass="btn btn-primary btn-sm" reRender="panel1" rendered="{!(! after)}" status="updateStatus" style="padding-left: 15px; padding-right:15px;"/>
+                                                <apex:commandButton value="Save" action="{!Save}" styleClass="btn btn-primary btn-sm" rerender="msg,err" status="updateStatus" rendered="{!taskobj.SOE__r.QA_Review__c != 'In Progress' && taskobj.SOE__r.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Dep}" style="padding-left: 15px; padding-right:15px;"/>
+                                                <apex:commandButton value="Cancel" action="{!Cancel}" styleClass="btn btn-primary btn-sm" style="padding-left: 15px; padding-right:15px;"/>
+                                            </div>                                            
+                                        </div>
+                                        <div class="row" style="padding-top:0px;">
+                                             <div class="col-sm-12" id="testdiv">
+                                                 <apex:outputPanel rendered="{!errorbool == true}" >                                
+                                                      <center> <h4 id="messages"  class="bg-success" style="text-transform:uppercase;" ><center><span> {!$Label.EditStack010}</span></center></h4></center>
+                                                   </apex:outputPanel>
+                                                   <apex:outputPanel rendered="{!errmsg != null}"><div class="alert alert-danger" role="alert" id="err"> {!errmsg} </div></apex:outputPanel>
+                                                   <script type="text/javascript">
+                                                        $(function() {
+                                                                $("#testdiv").delay(5000).fadeOut(0);
+                                                        });
+                                                   </script>
+                                              </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row" style="padding-top:5px;">
+                                            <div class="col-sm-8">
+                                                <div class="row" style="padding-top:0px;">
+                                                    <div class="col-sm-2 lbl">  <label>Task Title</label>    </div>                                                    
+                                                    <div class="col-sm-4">     <apex:outputField value="{!taskobj.State__c}"/> {!taskobj.ID_Text__c} - {!taskobj.Task_Title__c}  </div>                                                    
+                                                    <div class="col-sm-2 lbl">  <label>Dependency</label> </div>                                                    
+                                                    <div class="col-sm-4 col-xs-8">
+                                                        <apex:outputPanel rendered="{!taskobj.Dependency_Type__c == i8.NODEP}"><i class="fa fa-chain-broken" style="color:black;" ></i></apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!taskobj.Dependency_Type__c == i8.LINKDEP}"><i class="fa fa-link" style="color:black;" ></i></apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!taskobj.Dependency_Type__c == i8.INTERNALDEP }"><i class="fa fa-link" style="color:blue;"></i></apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!taskobj.Dependency_Type__c == i8.EXTERNALDEP }"><i class="fa fa-link" style="color:red;"></i></apex:outputPanel>
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                        </div>
+                                    </div>
+                                   </apex:outputPanel>   
+                                </div>
+                                <apex:outputpanel id="frm1">
+                                <div class="box box-success " id="cur1">
+                                    <div class="box-body" style="padding: 0px; margin-left: 15px;">                                        
+                                        <div class="panel" style="padding:0px;">
+                                            <div class="panel-heading" style="padding:5px;">                                                
+                                                <div class="row" style="padding-top:0px;">
+                                                    <div class="col-sm-4">                                                      
+                                                        <img src="{!$Resource.UserIcon2}" alt="" height="25" width="25" />  <h4 style="margin-left: 5px;display:inline">Current Predecessors</h4>                                                        
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <apex:actionStatus id="updateStatus1">
+                                                            <apex:facet name="start"> <img src="{!$Resource.Running}" alt="" height="25" width="25" /> Processing... </apex:facet>
+                                                        </apex:actionStatus>
+                                                    </div>
+                                                    <div class="col-sm-6" style="text-align: right">
+                                                        <apex:commandButton value="Unlink" action="{!UnLinkTask}" reRender="panel1" status="updateStatus1" rendered="{!   taskobj.Link__c == true && check == false && CONTAINS(ImpMgrMapKey,$User.Id)&& Task_Dep}" styleClass="btn btn-primary btn-sm" style="padding-left: 15px; padding-right:15px;"/>
+                                                        <apex:commandButton value="Remove Dependencies" rerender="panel1" action="{!DeleteDependency}" rendered="{! Dependent_List.size>0   && check == false && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Dep}" status="updateStatus1" styleClass="btn btn-primary btn-sm"  style="padding-left: 15px; padding-right:15px;"/>
+                                                        <apex:commandButton value="Link" action="{!LinkTask}" reRender="panel1" status="updateStatus1" rendered="{!taskobj.Id_After_Decimal__c != 1 && taskobj.Link__c == false && check == false && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Dep}" styleClass="btn btn-primary btn-sm" style="padding-left: 15px; padding-right:15px;"/>                                
+                                                    </div>
+                                                </div>                                                
+                                                <hr/>
+                                            </div>
+                                            <apex:outputPanel rendered="{!Dependent_List.size==0}" style="text-transform:uppercase;"><center><b> {!$Label.i8__managedep001}</b></center></apex:outputPanel>
+                                            <apex:outputPanel rendered="{!Dependent_List.size>0 }" id="outpnl">
+                                               <div class="panel-body" style="padding:2px;">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-hover table-condensed table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>TYPE</th>
+                                                                    <th>STATE</th>
+                                                                    <th>PRECEDING SOE</th>
+                                                                    <th>PRECEDING SOE NAME</th>
+                                                                    <th>PRECEDING TASK</th>
+                                                                    <th>TITLE</th>
+                                                                    <apex:actionRegion rendered="{!CONTAINS(ImpMgrMapKey,$User.Id)&& Task_Dep}">
+                                                                        <th>DELETE</th>
+                                                                    </apex:actionRegion>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <apex:repeat value="{!Dependent_List}" var="Dep">
+                                                                    <tr class="slds-hint-parent">
+                                                                        <td><apex:outputField value="{!Dep.Type__c}"/></td>
+                                                                        <td><apex:outputField value="{!Dep.Preceeding_Task__r.State__c}"/></td>
+                                                                        <td><apex:outputField value="{!Dep.Preceeding_SOE__c}"/></td>
+                                                                        <td><apex:outputField value="{!Dep.Preceeding_SOE__r.SOE_Title__c}"/></td>
+                                                                        <td><apex:outputField value="{!Dep.Preceeding_Task__r.ID_Text__c}"/></td>
+                                                                        <td>
+                                                                        <apex:outputPanel rendered="{!Dep.Preceeding_Task__r.Dependency_Type__c == i8.NODEP}"><i class="fa fa-chain-broken" style="color:black;" ></i></apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!Dep.Preceeding_Task__r.Dependency_Type__c == i8.LINKDEP}"><i class="fa fa-link" style="color:black;" ></i></apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!Dep.Preceeding_Task__r.Dependency_Type__c == i8.INTERNALDEP }"><i class="fa fa-link" style="color:blue;"></i></apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!Dep.Preceeding_Task__r.Dependency_Type__c == i8.EXTERNALDEP }"><i class="fa fa-link" style="color:red;"></i></apex:outputPanel>
+                                                                        &nbsp;<apex:outputField value="{!Dep.Preceeding_Task__r.Task_Title__c}"/>
+                                                                        </td>
+                                                                        <apex:actionRegion rendered="{!CONTAINS(ImpMgrMapKey,$User.Id) && Task_Dep}">
+                                                                            <td>
+                                                                                <apex:commandLink action="{!Delete_Action}" reRender="panel1,header,outpnl" onclick="style.cursor='wait';" rendered="{! Dep.Preceeding_Task__r.Status__c != i8.STATUS_RUNNING && Dep.Preceeding_Task__r.Status__c != i8.STATUS_COMPLETED && Dep.Preceeding_Task__r.Status__c != i8.STATUS_FORCE_COMP && Dep.Preceeding_Task__r.Status__c != i8.STATUS_COMP_JUMP && check == false}">
+                                                                                    <apex:param name="DelDepId" value="{!Dep.Id}" assignTo="{!DelDepId}"/>
+                                                                                    <i class="fa fa-trash fa-lg"></i>
+                                                                                </apex:commandlink>
+                                                                            </td>
+                                                                        </apex:actionRegion>
+                                                                    </tr>
+                                                                </apex:repeat>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </apex:outputPanel>
+                                        </div>                                        
+                                    </div>    
+                                </div>                                
+                                <div class="box box-primary " id="pro1">
+                                    <div class="box-body" style="padding: 5px; margin-left: 15px;">                                        
+                                        <div class="row">
+                                            <div class="col-sm-6">  <i class="fa fa-usb"></i>    <h4 style="display:inline">Prospective Predecessors</h4>      </div>
+                                            <div class="col-sm-6">
+                                                <apex:actionStatus id="updateStatus2">
+                                                    <apex:facet name="start">  <img src="{!$Resource.Running}" alt="" height="25" width="25" /> Processing... </apex:facet>
+                                                </apex:actionStatus>
+                                            </div>                                            
+                                        </div>     <hr />                                    
+                                    <apex:outputPanel rendered="{!check == false}">
+                                <script>
+                                j$ = jQuery.noConflict();  
+                                j$(document).ready(function() {
+                                   j$('#PredecesorsTable').DataTable( {                                       
+                                        "columnDefs": [                                            
+                                            {
+                                                "targets": [ 0 ],
+                                                "visible": false
+                                            },
+                                            {
+                                                "targets": [ 1 ],
+                                                "visible": false
+                                            },
+                                            {
+                                                targets: [ 4 ],
+                                                orderData: [ 0,1 ]
+                                            },
+                                        ],
+                                         "order": [[ 4, "asc" ]]
+                                   });
+                                });
+                                </script>
+                                            <div class="row" style="padding:2px;">
+                                                <div class="col-sm-1 col-xs-4 lbl"><label>Type</label>  </div>                                                
+                                                <div class="col-sm-1 col-xs-4">     <apex:inputField value="{!type_dep.Type__c}"/>   </div>
+                                                <apex:outputPanel rendered="{!taskobj.SOE__r.Is_Template__c == False}" >                                                     
+                                                    <div class="col-sm-7 col-xs-12">
+                                                    <div class="col-sm-3 col-xs-5" style="padding-right:5px;text-align:right;">  <b>Preceding SOE</b>  </div>
+                                                    <div class="col-sm-3 col-xs-12" style="padding-left:5px;padding-right:5px;">
+                                                        <div class="input-group margin-bottom-sm">
+                                                            <apex:inputText value="{!SOEName}" styleClass="form-control" html-placeholder="Enter SOE Name/Title" style="padding:1px;height:25px;"/>
+                                                            <span class="input-group-addon" style="padding:1px;height:25px;"><apex:commandLink reRender="panel1,panel2" status="updateStatus3" ><i class="fa fa-search fa-fw" aria-hidden="true"></i></apex:commandLink></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 col-xs-7" style="padding-left:5px;">
+                                                        <apex:selectList value="{!selectSOE}" size="1" multiselect="false">
+                                                            <apex:selectOptions value="{!SOEOPtion}"></apex:selectOptions>
+                                                            <apex:actionSupport event="onchange" status="updateStatus3" reRender="panel1,panel2" action="{!ChangeSOEs}"  />
+                                                        </apex:selectList>
+                                                    </div>
+                                                    </div>
+                                                    <div class="col-sm-3 col-xs-5" >
+                                                         <apex:actionStatus id="updateStatus3">
+                                                            <apex:facet name="start"> <img src="{!$Resource.Running}" alt="" height="25" width="25" /> Processing... </apex:facet>
+                                                        </apex:actionStatus>                                               
+                                                    </div> 
+                                                </apex:outputPanel>
+                                            </div><br/>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!TaskList.size == 0 || check == true}" style="text-transform:uppercase;"><center><b>{!$Label.i8__managedep002}</b></center></apex:outputPanel>
+                                        <apex:outputPanel rendered="{!TaskList.size > 0 && check = false}" id="panel2">
+                                                <div class="panel-body" style="padding: 0px; margin-left: 15px;">
+                                                    <div class="table-responsive">
+                                                        <table id="PredecesorsTable" class="display table table-bordered"  >
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Before</th>
+                                                                    <th>After</th>
+                                                                    <th>State</th>
+                                                                    <th>Phs</th>
+                                                                    <th>ID</th>
+                                                                    <th>SOE</th>
+                                                                    <th>Dependency</th>
+                                                                    <th>Title</th>
+                                                                    <th>Start Time</th>
+                                                                    <th>Duration</th>
+                                                                    <th>End Time</th>
+                                                                    <apex:actionRegion rendered="{!CONTAINS(ImpMgrMapKey,$User.Id) && Task_Dep}">   <th>Add</th></apex:actionRegion>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <apex:repeat value="{!TaskList}" var="t1">
+                                                                    <tr>
+                                                                        <td><apex:outputField value="{!t1.Id_Before_Decimal__c}"/></td>
+                                                                        <td><apex:outputField value="{!t1.Id_After_Decimal__c}"/></td>
+                                                                        <td><apex:outputField value="{!t1.State__c}"/></td>
+                                                                        <td><apex:outputField value="{!t1.Stage__c}"/></td>                                                                      
+                                                                        <td><apex:outputField value="{!t1.ID_Text__c}"/></td>
+                                                                        <td><apex:outputField value="{!t1.SOE__c}"/></td>
+                                                                        <td>
+                                                                            <apex:outputPanel rendered="{!t1.Dependency_Type__c == i8.NODEP}"><i class="fa fa-chain-broken" style="color:black;" ></i></apex:outputPanel>
+                                                                            <apex:outputPanel rendered="{!t1.Dependency_Type__c == i8.LINKDEP}"><i class="fa fa-link" style="color:black;" ></i></apex:outputPanel>
+                                                                            <apex:outputPanel rendered="{!t1.Dependency_Type__c == i8.INTERNALDEP }"><i class="fa fa-link" style="color:blue;"></i></apex:outputPanel>
+                                                                            <apex:outputPanel rendered="{!t1.Dependency_Type__c == i8.EXTERNALDEP }"><i class="fa fa-link" style="color:red;"></i></apex:outputPanel>
+                                                                        </td>
+                                                                        <td><apex:outputField value="{!t1.Task_Title__c}"/></td>
+                                                                        <td><apex:outputField value="{!t1.Start_Time__c}"/></td>
+                                                                        <td><apex:outputField value="{!t1.Duration__c}"/></td>
+                                                                        <td><apex:outputField value="{!t1.End_Time__c}"/></td>
+                                                                        <apex:actionRegion rendered="{!CONTAINS(ImpMgrMapKey,$User.Id) && Task_Dep}">
+                                                                            <td style="text-align:center">
+                                                                                <apex:commandLink action="{!Add_Dependency}" rendered="{!check == false && CONTAINS(ImpMgrMapKey,$User.Id)}" status="updateStatus2" onclick="style.cursor='wait';"  >
+                                                                                    <apex:param name="PrevTaskId" value="{!t1.Id}" assignTo="{!PrevTaskId}"/>
+                                                                                    <i class="fa fa-check fa-lg"></i>
+                                                                                </apex:commandLink>
+                                                                            </td>  
+                                                                        </apex:actionRegion>
+                                                                    </tr>
+                                                                </apex:repeat>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                 <apex:actionRegion rendered="{!totalsize  > 1000}">
+                                                   <div class="row" style="padding: 10px;">
+                                                    <div class="col-sm-7 col-xs-12" >
+                                                        <p>NOTE: Showing tasks from {!PrevSize+1} to {!taskSize} of {!totalsize }.
+                                                        <apex:actionRegion rendered="{!totalsize  != TaskSize}">
+                                                            <apex:commandLink value=" Click here" action="{!MoreTasks}" reRender="panel1" status="updateStatus4"/> to load next set of tasks.
+                                                        </apex:actionRegion></p>
+                                                        </div>
+                                                         <div class="col-sm-3 col-xs-5" >
+                                                         <apex:actionStatus id="updateStatus4">
+                                                            <apex:facet name="start">   <img src="{!$Resource.Running}" alt="" height="25" width="25" /> Processing...  </apex:facet>
+                                                        </apex:actionStatus>                                               
+                                                    </div> 
+                                                    </div>
+                                                </apex:actionRegion>
+                                        </apex:outputPanel>
+                                    </div>                                    
+                                </div>
+                                </apex:outputpanel>
+                            </apex:actionRegion>     
+                        </apex:outputPanel>
+                    </section>                    
+                </div>                
+                <c:PageFooter ></c:PageFooter>                
+            </div>
+        </apex:form>
+</apex:page>

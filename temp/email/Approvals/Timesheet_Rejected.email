@@ -1,0 +1,13 @@
+Hi {!Timesheet__c.OwnerFullName}, 
+
+Your request for approving the following Timesheet record has been rejected. 
+
+Timesheet #: {!Timesheet__c.Name} 
+Pay Period: {!Timesheet__c.PayPeriod_Start__c} through {!Timesheet__c.PayPeriod_End__c}
+Total Worked Hours: {!Timesheet__c.Total_Worked_Hours__c} 
+
+
+Click the following link to view the Timesheet: {!Timesheet__c.Link} 
+
+Regards, 
+{!Timesheet__c.Manager__c}.

@@ -1,0 +1,6 @@
+Hi {!SOE__c.OwnerFullName},<br/><br/>
+
+The SOE {!SOE__c.Name} : {!SOE__c.SOE_Title__c} is created successfully.<br/><br/>
+
+Thanks,<br/>
+SOE Manager.

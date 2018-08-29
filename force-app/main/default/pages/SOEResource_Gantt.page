@@ -1,0 +1,114 @@
+<apex:page standardStylesheets="false" showChat="false" showHeader="false" sidebar="false" controller="SOEResource_Gantt_Cntrl">    
+    <apex:includeScript value="{!$Resource.dhtmlxSchedulerjs}"/>
+    <apex:includeScript value="{!$Resource.dhtmlxscheduler_timeline}"/>
+    <apex:includeScript value="{!$Resource.dhtmlxsche_treetime}"/>
+    <apex:stylesheet value="{!$Resource.dhtmlscss}"/>
+    <apex:includeScript value="{!$Resource.dhtmlxSchedulerTootlTip}"/>
+    <style type="text/css" media="screen">
+        html, body {margin:0px;padding:0px;height:100%;overflow:hidden; }   
+        .one_line {white-space:nowrap;overflow:hidden;padding-top:5px;padding-left:5px;text-align:left !important;}
+    </style>
+        <div><apex:outputPanel rendered="{!SOEId != null}"> <c:SOEPageHeader sid="{!SOEId}" ></c:SOEPageHeader> </apex:outputPanel> <!--Header section ends------>
+        <apex:outputPanel rendered="{!MISId != null}"> <c:SOEPageHeader object="{!MISId}" ></c:SOEPageHeader> </apex:outputPanel></div>
+        <div style="left:92%;position:relative;top:4px;height:30px;" >
+                 <apex:form >   <apex:commandButton value="Cancel" action="{!CancelPage}" styleClass="btn btn-primary"  style="padding-left: 15px; padding-right:15px;"/> </apex:form>
+        </div>   <br/>
+        <div id="scheduler_here" class="dhx_cal_container" style='width:97%; height:80%;'>
+            <div class="dhx_cal_navline">
+                <div class="dhx_cal_prev_button" style="font-size:12px;"><center>Prev</center></div>
+                <div class="dhx_cal_next_button" style="font-size:12px;"><center>Next</center></div>
+                <div class="dhx_cal_today_button"></div>
+                <div class="dhx_cal_date"></div>
+                <div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+                <div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>
+                <div class="dhx_cal_tab" name="timeline_tab" style="right:280px;"></div>
+                <div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+            </div>
+            <div class="dhx_cal_header"> </div>
+            <div class="dhx_cal_data"> </div>
+        </div>
+        <div> <c:PageFooter ></c:PageFooter></div>
+        <script> 
+            scheduler.locale.labels.timeline_tab = "Timeline";
+            scheduler.locale.labels.section_custom="Section";
+            scheduler.config.details_on_create=false;
+            scheduler.config.details_on_dblclick=true;
+            scheduler.config.readonly = true;
+            scheduler.config.xml_date="%Y-%m-%d %H:%i";   
+            var scheduler_container = document.getElementById("scheduler_here");
+            var scheduler_container_divs = scheduler_container.getElementsByTagName("div");
+            var dhx_cal_data = scheduler_container_divs[scheduler_container_divs.length-1]; 
+            scheduler.attachEvent("onMouseMove", function(id, e) {
+                var timeline_view = scheduler.matrix[scheduler.getState().mode];
+                if (id || !timeline_view) {  return;   }
+                e = e||window.event;
+                var target = e.target||e.srcElement;
+                var tooltip = scheduler.dhtmlXTooltip;
+                var tooltipTarget = tooltip.isTooltipTarget(target);
+                if (tooltipTarget) {
+                    if (tooltipTarget.classname == "dhx_matrix_scell") {
+                        var section_id = scheduler.getActionData(e).section;
+                        var section = timeline_view.y_unit[timeline_view.order[section_id]];
+                        var text = "Tooltip for <b>"+section.label+"</b>";
+                        tooltip.delay(tooltip.show, tooltip, [e, text]);
+                    }
+                    if (tooltipTarget.classname == "dhtmlXTooltip") {
+                        dhtmlxTooltip.delay(tooltip.show, tooltip, [e, tooltip.tooltip.innerHTML]);
+                    }
+                }
+            });  
+            var SOE_Id = '{!JSENCODE(HTMLENCODE(RecordId))}';
+            var mindate = new Date( '{!MinDateTime}' );            
+            Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SOEResource_Gantt_Cntrl.getTasks}',SOE_Id,function(result, event){
+                if (event.status){ 
+                    var tasklist = new Array();
+                    var resourcelist = new Array();
+                    for( i=0;i<result.length;i++){
+                        var find = false;
+                        for( j=0;j< resourcelist.length;j++){
+                            if(resourcelist[j].key == result[i].I8__Stack_Owner_Name__c && result[i].I8__Stack_Owner_Name__c != null){
+                                find = true;
+                                break;
+                            }
+                        }
+                        if( find == false && result[i].I8__Stack_Owner_Name__c != null)  
+                            resourcelist.push( {key : result[i].I8__Stack_Owner_Name__c, label : result[i].I8__Stack_Owner_Name__c } );
+                    }
+                    for( i=0;i<result.length;i++){
+                        var b=  new Date(result[i].I8__Start_Time__c);                    
+                        x=  new Date(result[i].I8__Start_Time__c );
+                        start = x.getFullYear() + '-' + (x.getMonth()+1) + '-' + x.getDate() + ' ' + x.getHours() + ':' + x.getMinutes();
+                        y=  new Date(result[i].I8__End_Time__c );
+                        end = y.getFullYear() + '-' + (y.getMonth()+1) + '-' + y.getDate() + ' ' + y.getHours() + ':' + y.getMinutes(); 
+                        tasklist.push( {start_date: start , end_date: end ,text: result[i].I8__Task_Title__c,section_id : result[i].I8__Stack_Owner_Name__c, id_text : result[i].I8__ID_Text__c, soe : result[i].I8__SOE__r.Name} );
+                    }
+                    var elements = resourcelist ;          
+                    scheduler.createTimelineView({
+                        section_autoheight: false,
+                        name:   "timeline",
+                        x_unit: "minute",
+                        x_date: "%H:%i",
+                        x_step: 60,
+                        x_size: 30,
+                        x_start:20,
+                        x_length:  1,
+                        y_unit: elements,
+                        y_property: "section_id",
+                        render: "tree",
+                        folder_dy:20,
+                        dy:60
+                    }); 
+                    scheduler.init('scheduler_here',mindate,"timeline");
+                    scheduler.parse(tasklist,"json");
+                }
+                else if (event.type === 'exception') {
+                      alert(event.message +  event.where );
+                } 
+                else {
+                        alert(event.message);
+                } 
+            },
+            {escape: true}
+         ); 
+      </script>
+</apex:page>

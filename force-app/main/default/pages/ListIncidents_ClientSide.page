@@ -1,0 +1,297 @@
+<apex:page showheader="false" standardstylesheets="false" controller="List_incidents_cntrl" docType="html-5.0">  
+    <apex:form id="frm">  
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;}
+        .table-responsive  {  width: 100%;margin-bottom: 15px;overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; -ms-overflow-style: -ms-autohiding-scrollbar; }
+        .padd-left {padding-left:30px; }
+        .padd-left-40 { padding-left:50px;}
+    </style>
+     <apex:includescript value="{!$Resource.JQuery_Min}" />     
+     <apex:includescript value="{!$Resource.JQuery_DataTable_Min}" />   
+     <apex:stylesheet value="{!$Resource.JQuery_DataTable_CSS}" />
+        <script>
+        j$ = jQuery.noConflict();
+        j$(document).ready( function () {
+            if( '{!$User.UIThemeDisplayed}'== 'Theme4d')
+                j$("body").css("font-size","130%");
+            var PredecesorsTable = j$('[id$="PredecesorsTable"]').DataTable({
+                order: [[1, 'asc']],
+                lengthMenu: [[5, 10, 20, 30, 40, 50], [5, 10, 20, 30, 40, 50]],
+                initComplete: function() {
+                    var api = this.api();
+                    var select = j$('[id$=accountSelect]');
+                    api.column(0).data().unique().sort().each( function ( d, j ) {
+                        select.append( '<option value="'+d+'">'+d+'</option>' )
+                    } );   
+                }
+            });
+        });
+        </script>       
+            <div class="wrapper">
+             <apex:actionRegion rendered="{!SOE == True}"><c:SOEPageHeader sid="{!SOEID}" ></c:SOEPageHeader>  </apex:actionRegion>
+             <apex:actionRegion rendered="{!SOE == False}"><c:SOEPageHeader object="{!MISID}" ></c:SOEPageHeader>   </apex:actionRegion>
+                <div  style="min-height:0px!important">
+                    <section class="content">
+                        <div class="box box-primary">                       
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                <div class="row">
+                                    <div class="col-sm-8" style="margin-bottom: 5px">
+                                        <span><i class="fa fa-list fa-lg" style="color:blue;"></i>&nbsp;<h4 style="display:inline;"><b>MANAGE INCIDENTS</b></h4></span>
+                                    </div>
+                                    <div class="col-sm-4" style="text-align: right">
+                                        <apex:commandButton value="Cancel" action="{!CancelIncidents}" styleClass="btn btn-primary"   style="padding-left: 15px; padding-right:15px;"/>  
+                                     </div>
+                                </div><br/>
+                                <apex:outputPanel id="OP1">
+                                    <div class="table-responsive">                                
+                                        <table id="PredecesorsTable" class="table table-striped table-bordered table-hover table-condensed">
+                                            <thead>
+                                                <tr>
+                                                    <th><center>Action</center></th>
+                                                    <th><center>SOE</center></th>
+                                                    <th><center>Inc#</center></th>
+                                                    <th><center>Type</center></th>
+                                                    <th><center>Status</center></th>
+                                                    <th><center>Priority</center></th>                                                    
+                                                    <th><center>Task</center></th>
+                                                    <th><center>Assignee</center></th>
+                                                    <th><center>Target Date</center></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <apex:repeat value="{!incList}" var="inc">
+                                                    <tr>
+                                                        <td align="center"> 
+                                                            <apex:commandLink value="Edit" action="{!edit_inc}" rerender="frm" rendered="{! incList[inc].SOE1__r.QA_Review__c != 'In Progress' && incList[inc].SOE1__r.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id)}" >
+                                                            <apex:param value="{!incList[inc].id}" assignTo="{!incid}" name="incid"/> </apex:commandlink>
+                                                        </td>
+                                                        <td align="center"><apex:outputField value="{!incList[inc].SOE1__c}"/></td> 
+                                                        <td align="center"><apex:commandLink value="{!incList[inc].Name}" action="{!edit_inc1}" rerender="frm">
+                                                            <apex:param value="{!incList[inc].id}" assignTo="{!incid}" name="incid"/>
+                                                            </apex:commandlink>
+                                                        </td>
+                                                        <td align="center"><apex:outputField value="{!incList[inc].Inc_Type__c}"/></td>
+                                                        <td align="center"><apex:outputField value="{!incList[inc].Status__c}"/></td>
+                                                        <td align="center"><apex:outputField value="{!incList[inc].Priority__c}"/></td>
+                                                        <td align="center"><apex:outputField value="{!incList[inc].Task__r.ID_Text__c}"/></td>
+                                                        <td align="center"><apex:outputField value="{!incList[inc].Assignee__c}"/></td>
+                                                        <td align="center"><apex:outputField value="{!incList[inc].Target_Date__c}"/></td>                                               
+                                                    </tr>
+                                                </apex:repeat>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </apex:outputPanel>
+                            </div>
+                        </div>
+                        <apex:outputPanel rendered="{!PB  || PB1}" id="OP">
+                            <div class="box box-primary">
+                                <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                    <div class="row">
+                                        <center>
+                                           
+                                            <apex:commandLink value="Edit" action="{!edit_inc}" reRender="frm"  rendered="{!PB1 && edit_incedent.SOE1__r.QA_Review__c != 'In Progress' && edit_incedent.SOE1__r.Walkthrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) }"  styleClass="btn btn-primary">
+                                                <apex:param value="{!edit_incedent.id}" assignTo="{!incid}" name="incid"/> 
+                                            </apex:commandlink>
+                                            <apex:commandButton value="Save" action="{!save_inc}" reRender="frm" rendered="{!PB && edit_incedent.SOE1__r.QA_Review__c != 'In Progress' && edit_incedent.SOE1__r.Walkthrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) }" styleClass="btn btn-primary"  style="padding-left: 15px; padding-right:15px;"/>
+                                            <apex:commandButton value="Cancel" action="{!cancel}" styleClass="btn btn-primary" rerender="frm"  style="padding-left: 15px; padding-right:15px;"/>
+                                        </center>
+                                    </div><br/>
+                                    <apex:outputPanel rendered="{!errormessage != null}">
+                                        <div class="alert alert-danger" role="alert" id="err"> <span>{!errormessage}</span></div>
+                                    </apex:outputPanel>   
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3"> Incident No</div>
+                                                <div class="col-sm-6"><apex:outputField value="{!edit_incedent.Name}"/></div>
+                                                <div class="col-sm-3"></div>
+                                            </div>  
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3"> Assignee</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Assignee__c}" rendered="{!PB1}"/>
+                                                    <apex:inputField value="{!edit_incedent.Assignee__c}" rendered="{!PB}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3"> Incident Manager</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Incident_Manager__c}" rendered="{!PB1}"/>
+                                                    <apex:inputField value="{!edit_incedent.Incident_Manager__c}" rendered="{!PB}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3">Target Date</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Target_Date__c}" rendered="{!PB1}"/>
+                                                    <apex:inputField value="{!edit_incedent.Target_Date__c}" rendered="{!PB}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3"> Company</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Company__c}" rendered="{!PB1}"/>
+                                                    <apex:inputField value="{!edit_incedent.Company__c}" rendered="{!PB}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3"> Customer</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Customer__c}" rendered="{!PB1}"/>
+                                                    <apex:inputField value="{!edit_incedent.Customer__c}" rendered="{!PB}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3"> Contact </div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Contact__c}" rendered="{!PB1}"/>
+                                                    <apex:inputField value="{!edit_incedent.Contact__c}" rendered="{!PB}"/>
+                                                </div>
+                                                <div class="col-sm-2"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3"> Incident Type </div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Inc_Type__c}"/>
+                                                </div>
+                                                <div class="col-sm-2"></div>
+                                            </div> 
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3"> Incident Open Time</div>
+                                                <div class="col-sm-6"> <apex:outputField value="{!edit_incedent.Inc_Open_Time__c}" /> </div>
+                                                <div class="col-sm-2"></div>
+                                            </div>                             
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3"> Incident On</div>
+                                                <div class="col-sm-6"> <apex:outputField value="{!edit_incedent.INC_on_Object__c}" /> </div>
+                                                <div class="col-sm-2"></div>
+                                            </div>                             
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3">MIS</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.MIS__c}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3">SOE</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.SOE1__c}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3">Task</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Task__r.ID_Text__c}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3">Status</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Status__c}" rendered="{!PB1 || edit_incedent.INC_on_Object__c == 'SOE'}"/>
+                                                    <apex:inputField value="{!edit_incedent.Status__c}" rendered="{!PB && edit_incedent.INC_on_Object__c != 'SOE'}"> <apex:actionSupport event="onchange" reRender="OP"/></apex:inputField> 
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3">Priority</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Priority__c}" rendered="{!PB1}"/>
+                                                    <apex:inputField value="{!edit_incedent.Priority__c}" rendered="{!PB}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3">Urgency</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Urgency__c}" rendered="{!PB1}"/>
+                                                    <apex:inputField value="{!edit_incedent.Urgency__c}" rendered="{!PB}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3">Conference / Audio Number</div>
+                                                <div class="col-sm-6">
+                                                    <apex:outputField value="{!edit_incedent.Conference_Audio_Number__c}" rendered="{!PB1}"/>
+                                                    <apex:inputField value="{!edit_incedent.Conference_Audio_Number__c}" rendered="{!PB}"/>
+                                                </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>                                            
+                                            <div class="row padd-left">
+                                                <div class="col-sm-3">Incident Closed Time</div>
+                                                <div class="col-sm-6"> <apex:outputField value="{!edit_incedent.Inc_Close_Time__c}" /> </div>
+                                                <div class="col-sm-3"></div>
+                                            </div>
+                                        </div>
+                                    </div>  
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="row padd-left">
+                                                <div class="col-sm-2"> <apex:outputLabel style="color:red;font-size:1.2em;" value="*" rendered="{!edit_incedent.Status__c == 'Closed'}"></apex:outputlabel>Root Cause</div>
+                                                <div class="col-sm-8">
+                                                    <apex:outputField value="{!edit_incedent.Root_Cause__c}" rendered="{!PB1}" styleClass="col-sm-8"/>
+                                                    <apex:inputField value="{!edit_incedent.Root_Cause__c}" rendered="{!PB}" styleClass="col-sm-8"/>
+                                                </div>
+                                                <div class="col-sm-2"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-2">Risk Mitigation</div>
+                                                <div class="col-sm-8">
+                                                    <apex:outputField value="{!edit_incedent.Risk_Mitigation__c}" rendered="{!PB1}" styleClass="col-sm-8"/>
+                                                    <apex:inputField value="{!edit_incedent.Risk_Mitigation__c}" rendered="{!PB}" styleClass="col-sm-8"/>
+                                                </div>
+                                                <div class="col-sm-2"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-2">Technical Recommendation</div>
+                                                <div class="col-sm-8">
+                                                    <apex:outputField value="{!edit_incedent.Technical_Recommendation__c}" rendered="{!PB1}" styleClass="col-sm-8"/>
+                                                    <apex:inputField value="{!edit_incedent.Technical_Recommendation__c}" rendered="{!PB}" styleClass="col-sm-8"/>
+                                                </div>
+                                                <div class="col-sm-2"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-2">Impact Analysis</div>
+                                                <div class="col-sm-8">
+                                                    <apex:outputField value="{!edit_incedent.Impact_Analysis__c}" rendered="{!PB1}" styleClass="col-sm-8"/>
+                                                    <apex:inputField value="{!edit_incedent.Impact_Analysis__c}" rendered="{!PB}" styleClass="col-sm-8"/>
+                                                </div>
+                                                <div class="col-sm-2"></div>
+                                            </div>
+                                            <div class="row padd-left">
+                                                <div class="col-sm-2"> <apex:outputLabel style="color:red;font-size:1.2em;" value="*" rendered="{!edit_incedent.Status__c == 'Closed'}"></apex:outputlabel>Resolution Type</div>
+                                                <div class="col-sm-8">
+                                                    <apex:outputField value="{!edit_incedent.Resolution_Type__c}" rendered="{!PB1}" />
+                                                    <apex:inputField value="{!edit_incedent.Resolution_Type__c}" rendered="{!PB}" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <center>
+                                            <apex:commandLink value="Edit" action="{!edit_inc}" reRender="OP"  rendered="{!PB1 && edit_incedent.SOE1__r.QA_Review__c != 'In Progress' && edit_incedent.SOE1__r.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id)}"  styleClass="btn btn-primary">
+                                                <apex:param value="{!edit_incedent.id}" assignTo="{!incid}" name="incid"/> 
+                                            </apex:commandlink>
+                                            <apex:commandButton value="Save" action="{!save_inc}" reRender="OP" rendered="{!PB && edit_incedent.SOE1__r.QA_Review__c != 'In Progress' && edit_incedent.SOE1__r.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id)}" styleClass="btn btn-primary"  style="padding-left: 15px; padding-right:15px;"/>
+                                            <apex:commandButton value="Cancel" action="{!cancel}" styleClass="btn btn-primary"  style="padding-left: 15px; padding-right:15px;"/>
+                                        </center>
+                                    </div>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                    </section>
+                </div>                        
+            </div>
+        </apex:form>
+    </apex:page>

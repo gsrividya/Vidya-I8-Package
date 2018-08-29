@@ -1,0 +1,921 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>ADMIN001</fullName>
+        <categories>InSufficient Permissions</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ADMIN001</shortDescription>
+        <value>You don&#39;t have the necessary access to perform the operation. Please contact the Administrator.</value>
+    </labels>
+    <labels>
+        <fullName>AccessRequest001</fullName>
+        <categories>AddAccessRequestLineItems_Cntrl</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AccessRequest001</shortDescription>
+        <value>Start Date should not be Empty.</value>
+    </labels>
+    <labels>
+        <fullName>AccessRequest002</fullName>
+        <categories>AddAccessRequestLineItems_Cntrl</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AccessRequest002</shortDescription>
+        <value>End Date should not be Empty.</value>
+    </labels>
+    <labels>
+        <fullName>AccessRequest003</fullName>
+        <categories>AddAccessRequestLineItems_Cntrl</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AccessRequest003</shortDescription>
+        <value>End Date should be greater than Start Date.</value>
+    </labels>
+    <labels>
+        <fullName>AccessRequest004</fullName>
+        <categories>AddAccessRequestLineItems_Cntrl</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AccessRequest004</shortDescription>
+        <value>Line Item Start &amp; End Dates should be b/w Access Request Start &amp; End Dates.</value>
+    </labels>
+    <labels>
+        <fullName>AccessRequest005</fullName>
+        <categories>AddAccessRequestLineItems_Cntrl</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AccessRequest005</shortDescription>
+        <value>Pick a value for Requested User field.</value>
+    </labels>
+    <labels>
+        <fullName>AccessRequest006</fullName>
+        <categories>AddAccessRequestLineItems_Cntrl</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AccessRequest006</shortDescription>
+        <value>If Access Request Type equals to Other then Access Type should not be empty.</value>
+    </labels>
+    <labels>
+        <fullName>AccessRequest007</fullName>
+        <categories>AddAccessRequestLineItems_Cntrl</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AccessRequest007</shortDescription>
+        <value>If Environment equals to Other then Environment should not be empty.</value>
+    </labels>
+    <labels>
+        <fullName>AccessRequest008</fullName>
+        <categories>AddAccessRequestLineItems_Cntrl</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AccessRequest008</shortDescription>
+        <value>If Access Type equals to Other then Access Type should not be empty.</value>
+    </labels>
+    <labels>
+        <fullName>AddTask001</fullName>
+        <categories>AddTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTask001</shortDescription>
+        <value>You don&#39;t have the  necessary access to perform the operation. Please contact the Record Owner.</value>
+    </labels>
+    <labels>
+        <fullName>AddTask002</fullName>
+        <categories>AddTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTask002</shortDescription>
+        <value>SOE cannot be modified in this Status.</value>
+    </labels>
+    <labels>
+        <fullName>AddTask003</fullName>
+        <categories>AddTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTask003</shortDescription>
+        <value>SOE is locked, Cannot modify anything.</value>
+    </labels>
+    <labels>
+        <fullName>AddTask004</fullName>
+        <categories>AddTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTask004</shortDescription>
+        <value>Stack cannot be modified in this Status.</value>
+    </labels>
+    <labels>
+        <fullName>AddTask005</fullName>
+        <categories>AddTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTask005</shortDescription>
+        <value>Please enter Task Title.</value>
+    </labels>
+    <labels>
+        <fullName>AddTask006</fullName>
+        <categories>AddTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTask006</shortDescription>
+        <value>You don&#39;t have the necessary access to perform the CREATE operation. Please contact the Administrator.</value>
+    </labels>
+    <labels>
+        <fullName>AddTask007</fullName>
+        <categories>AddTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTask007</shortDescription>
+        <value>You don&#39;t have the necessary access to perform the UPDATE operation. Please contact the Administrator.</value>
+    </labels>
+    <labels>
+        <fullName>AddTask008</fullName>
+        <categories>AddTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTask008</shortDescription>
+        <value>You don&#39;t have the necessary access to perform the DELETE operation. Please contact the Administrator.</value>
+    </labels>
+    <labels>
+        <fullName>AddTimeSheetEntries001</fullName>
+        <categories>AddTimeSheetEntries</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTimeSheetEntries001</shortDescription>
+        <value>TimeSheet cannot be edited.</value>
+    </labels>
+    <labels>
+        <fullName>AddTimeSheetEntries002</fullName>
+        <categories>AddTimeSheetEntries</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTimeSheetEntries002</shortDescription>
+        <value>The Start date and End dates can not be empty.</value>
+    </labels>
+    <labels>
+        <fullName>AddTimeSheetEntries003</fullName>
+        <categories>AddTimeSheetEntries</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTimeSheetEntries003</shortDescription>
+        <value>Timesheet Entry End must be less than  to Timesheet Pay Period End.</value>
+    </labels>
+    <labels>
+        <fullName>AddTimeSheetEntries004</fullName>
+        <categories>AddTimeSheetEntries</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTimeSheetEntries004</shortDescription>
+        <value>The Start cannot be after the End. Please enter a date and time prior to the End date and timel.</value>
+    </labels>
+    <labels>
+        <fullName>AddTimeSheetEntries005</fullName>
+        <categories>AddTimeSheetEntries</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTimeSheetEntries005</shortDescription>
+        <value>The Start must be greater than or equal to the Timesheet Pay Period Start.</value>
+    </labels>
+    <labels>
+        <fullName>AddTimeSheetEntries006</fullName>
+        <categories>AddTimeSheetEntries</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>AddTimeSheetEntries006</shortDescription>
+        <value>Please select SOE.</value>
+    </labels>
+    <labels>
+        <fullName>CloneSOE001</fullName>
+        <categories>CloneSOE</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloneSOE001</shortDescription>
+        <value>Please enter New SOE Title.</value>
+    </labels>
+    <labels>
+        <fullName>CloneSOE002</fullName>
+        <categories>CloneSOE</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloneSOE002</shortDescription>
+        <value>The Imp Manager of New SOE will receive Email after SOE is created.</value>
+    </labels>
+    <labels>
+        <fullName>CloneSOE003</fullName>
+        <categories>CloneSOE</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloneSOE003</shortDescription>
+        <value>Please confirm to clone SOE with Link and Internal dependencies</value>
+    </labels>
+    <labels>
+        <fullName>CloneSOE004</fullName>
+        <categories>CloneSOE</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloneSOE004</shortDescription>
+        <value>Please confirm to clone SOE with External dependencies.</value>
+    </labels>
+    <labels>
+        <fullName>CloneSOE005</fullName>
+        <categories>CloneSOE</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloneSOE005</shortDescription>
+        <value>There are no External dependencies in this SOE.</value>
+    </labels>
+    <labels>
+        <fullName>CloneSOE006</fullName>
+        <categories>CloneSOE</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloneSOE006</shortDescription>
+        <value>Please confirm to Clone  SOE</value>
+    </labels>
+    <labels>
+        <fullName>CloneSOE007</fullName>
+        <categories>CloneSOE</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloneSOE007</shortDescription>
+        <value>Select SOE from Search List</value>
+    </labels>
+    <labels>
+        <fullName>CloneTask001</fullName>
+        <categories>CloneTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloneTask001</shortDescription>
+        <value>Please select Source Task.</value>
+    </labels>
+    <labels>
+        <fullName>CloneTask002</fullName>
+        <categories>CloneTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloneTask002</shortDescription>
+        <value>Please select Target Task.</value>
+    </labels>
+    <labels>
+        <fullName>CloneTask003</fullName>
+        <categories>CloneTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CloneTask003</shortDescription>
+        <value>Target Stack cannot be modified in this Status.</value>
+    </labels>
+    <labels>
+        <fullName>CreateIncident001</fullName>
+        <categories>CreateIncident</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CreateIncident001</shortDescription>
+        <value>Please select a value for Incident Type</value>
+    </labels>
+    <labels>
+        <fullName>CreateIncident002</fullName>
+        <categories>CreateIncident</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CreateIncident002</shortDescription>
+        <value>Please provide Incident Summary.</value>
+    </labels>
+    <labels>
+        <fullName>CreateIncident003</fullName>
+        <categories>CreateIncident</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CreateIncident003</shortDescription>
+        <value>Please select a value for Priority.</value>
+    </labels>
+    <labels>
+        <fullName>CreateIncident004</fullName>
+        <categories>CreateIncident</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>CreateIncident004</shortDescription>
+        <value>Please select a value for Assignee.</value>
+    </labels>
+    <labels>
+        <fullName>DropTask001</fullName>
+        <categories>DropTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>DropTask001</shortDescription>
+        <value>Please select a Task to Drop</value>
+    </labels>
+    <labels>
+        <fullName>DropTask002</fullName>
+        <categories>DropTask</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>DropTask002</shortDescription>
+        <value>Stack must contain more than one Task to Drop.</value>
+    </labels>
+    <labels>
+        <fullName>EditStack001</fullName>
+        <categories>EditStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>EditStack001</shortDescription>
+        <value>Please enter Minutes in valid format.</value>
+    </labels>
+    <labels>
+        <fullName>EditStack002</fullName>
+        <categories>EditStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>EditStack002</shortDescription>
+        <value>Please enter Hours in valid format.</value>
+    </labels>
+    <labels>
+        <fullName>EditStack003</fullName>
+        <categories>EditStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>EditStack003</shortDescription>
+        <value>Task moved Up successfully.</value>
+    </labels>
+    <labels>
+        <fullName>EditStack004</fullName>
+        <categories>EditStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>EditStack004</shortDescription>
+        <value>Task moved Down successfully.</value>
+    </labels>
+    <labels>
+        <fullName>EditStack005</fullName>
+        <categories>EditStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>EditStack005</shortDescription>
+        <value>Tasks can be Added at the end of Stack.</value>
+    </labels>
+    <labels>
+        <fullName>EditStack006</fullName>
+        <categories>EditStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>EditStack006</shortDescription>
+        <value>Please Select atleast One Row.</value>
+    </labels>
+    <labels>
+        <fullName>EditStack007</fullName>
+        <categories>EditStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>EditStack007</shortDescription>
+        <value>Cannot Delete all Tasks in Stack.</value>
+    </labels>
+    <labels>
+        <fullName>EditStack008</fullName>
+        <categories>EditStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>EditStack008</shortDescription>
+        <value>Internal tasks are not Moved.</value>
+    </labels>
+    <labels>
+        <fullName>EditStack009</fullName>
+        <categories>EditStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>EditStack009</shortDescription>
+        <value>Cannot Move all Tasks in Stack.</value>
+    </labels>
+    <labels>
+        <fullName>EditStack010</fullName>
+        <categories>EditStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>EditStack010</shortDescription>
+        <value>Action Completed Successfully.</value>
+    </labels>
+    <labels>
+        <fullName>Email001</fullName>
+        <categories>Email</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Email001</shortDescription>
+        <value>Please add a recipient or enter mail ID to send a mail.</value>
+    </labels>
+    <labels>
+        <fullName>Email002</fullName>
+        <categories>Email</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Email002</shortDescription>
+        <value>Email Body must have some value.</value>
+    </labels>
+    <labels>
+        <fullName>Export001</fullName>
+        <categories>Export</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Export001</shortDescription>
+        <value>Device cannot support this functionality.</value>
+    </labels>
+    <labels>
+        <fullName>JumpStack001</fullName>
+        <categories>JumpStack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>JumpStack001</shortDescription>
+        <value>The Stage has only one Stack. So we cannot Jump the Stack.</value>
+    </labels>
+    <labels>
+        <fullName>ListIncident001</fullName>
+        <categories>ListIncident</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ListIncident001</shortDescription>
+        <value>Please provide Resolution Type.</value>
+    </labels>
+    <labels>
+        <fullName>ListIncident002</fullName>
+        <categories>ListIncident</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ListIncident002</shortDescription>
+        <value>Please Provide RootCause</value>
+    </labels>
+    <labels>
+        <fullName>MISSOE001</fullName>
+        <categories>MISSOE</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>MISSOE001</shortDescription>
+        <value>Please complete Pre Implementation Stages in All SOEs</value>
+    </labels>
+    <labels>
+        <fullName>MISSOE002</fullName>
+        <categories>MISSOE</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>MISSOE002</shortDescription>
+        <value>SOEs cannot be Executed unless it is within change window.</value>
+    </labels>
+    <labels>
+        <fullName>MIS_MyView</fullName>
+        <categories>User Settings</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>MIS My View</shortDescription>
+        <value>I8__ID_Text__c,I8__Task_Title__c,I8__Start_Time__c,I8__Duration__c,I8__End_Time__c,I8__Team__c,I8__Stack_Owner_Name__c</value>
+    </labels>
+    <labels>
+        <fullName>ManageDep001</fullName>
+        <categories>ManageDep</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ManageDep001</shortDescription>
+        <value>No active predecessors are available.</value>
+    </labels>
+    <labels>
+        <fullName>ManageDep002</fullName>
+        <categories>ManageDep</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ManageDep002</shortDescription>
+        <value>No suitable Predecessor Tasks to display.</value>
+    </labels>
+    <labels>
+        <fullName>ProjectBudget001</fullName>
+        <categories>ProjectBudget</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ProjectBudget001</shortDescription>
+        <value>There is no ProjectBudget assocoiated with this SOE.</value>
+    </labels>
+    <labels>
+        <fullName>ROTAImport001</fullName>
+        <categories>ROTAImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ROTAImport001</shortDescription>
+        <value>Please Choose The File.</value>
+    </labels>
+    <labels>
+        <fullName>ROTAImport002</fullName>
+        <categories>ROTAImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ROTAImport002</shortDescription>
+        <value>Name field requires a value on all rows.</value>
+    </labels>
+    <labels>
+        <fullName>ROTAImport003</fullName>
+        <categories>ROTAImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ROTAImport003</shortDescription>
+        <value>is not a valid SOE No.</value>
+    </labels>
+    <labels>
+        <fullName>ROTAImport004</fullName>
+        <categories>ROTAImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ROTAImport004</shortDescription>
+        <value>Please use the standard template to upload ROTA.</value>
+    </labels>
+    <labels>
+        <fullName>ROTAImport005</fullName>
+        <categories>ROTAImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>ROTAImport005</shortDescription>
+        <value>Please save the file as .CSV(comma delimited) and then upload.</value>
+    </labels>
+    <labels>
+        <fullName>Roles_To_Edit_SOE</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Roles To Edit SOE</shortDescription>
+        <value>Imp Manager</value>
+    </labels>
+    <labels>
+        <fullName>SOEAllTasks001</fullName>
+        <categories>SOEAllTasks</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEAllTasks001</shortDescription>
+        <value>All Pre Implementation Stacks must be completed.</value>
+    </labels>
+    <labels>
+        <fullName>SOEAllTasks002</fullName>
+        <categories>SOEAllTasks</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEAllTasks002</shortDescription>
+        <value>SOE cannot be Executed unless it is within change window.</value>
+    </labels>
+    <labels>
+        <fullName>SOEAttachment001</fullName>
+        <categories>SOEAttachment</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEAttachment001</shortDescription>
+        <value>Note: The browser can support only .MP3 or .MP4 files.</value>
+    </labels>
+    <labels>
+        <fullName>SOEAttachment002</fullName>
+        <categories>SOEAttachment</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEAttachment002</shortDescription>
+        <value>There are no Audio files to Play.</value>
+    </labels>
+    <labels>
+        <fullName>SOEAttachment003</fullName>
+        <categories>SOEAttachment</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEAttachment003</shortDescription>
+        <value>Please  choose the file.</value>
+    </labels>
+    <labels>
+        <fullName>SOEAttachment004</fullName>
+        <categories>SOEAttachment</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEAttachment004</shortDescription>
+        <value>File Uploaded Successfully.</value>
+    </labels>
+    <labels>
+        <fullName>SOEAttachment005</fullName>
+        <categories>SOEAttachment</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEAttachment005</shortDescription>
+        <value>Note: Please Upload only MP3 or MP4 File.</value>
+    </labels>
+    <labels>
+        <fullName>SOEAttachment006</fullName>
+        <categories>SOEAttachment</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEAttachment006</shortDescription>
+        <value>FileBody should have some value</value>
+    </labels>
+    <labels>
+        <fullName>SOEImport001</fullName>
+        <categories>SOEImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEImport001</shortDescription>
+        <value>Please Upload the file with .CSV(comma delimited) extension.</value>
+    </labels>
+    <labels>
+        <fullName>SOEImport002</fullName>
+        <categories>SOEImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEImport002</shortDescription>
+        <value>Please enter existing SOE name.</value>
+    </labels>
+    <labels>
+        <fullName>SOEImport003</fullName>
+        <categories>SOEImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEImport003</shortDescription>
+        <value>Selected SOE does not match with Tasks being uploaded</value>
+    </labels>
+    <labels>
+        <fullName>SOEImport004</fullName>
+        <categories>SOEImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEImport004</shortDescription>
+        <value>You will Receive mail after Import is completed.</value>
+    </labels>
+    <labels>
+        <fullName>SOEImport005</fullName>
+        <categories>SOEImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEImport005</shortDescription>
+        <value>SOE Title must be Unique.</value>
+    </labels>
+    <labels>
+        <fullName>SOEImport007</fullName>
+        <categories>SOEImport</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEImport007</shortDescription>
+        <value>An error has occured. Please check the template or try again later.</value>
+    </labels>
+    <labels>
+        <fullName>SOEReplace001</fullName>
+        <categories>SOEReplace</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEReplace001</shortDescription>
+        <value>Search String must have some Value.</value>
+    </labels>
+    <labels>
+        <fullName>SOEReplace002</fullName>
+        <categories>SOEReplace</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEReplace002</shortDescription>
+        <value>Please select atleast one Check box.</value>
+    </labels>
+    <labels>
+        <fullName>SOEReplace003</fullName>
+        <categories>SOEReplace</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEReplace003</shortDescription>
+        <value>Desription field is Empty we can not replace it.</value>
+    </labels>
+    <labels>
+        <fullName>SOEReplace004</fullName>
+        <categories>SOEReplace</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOEReplace004</shortDescription>
+        <value>Technical Detail is Empty we can not replace it.</value>
+    </labels>
+    <labels>
+        <fullName>SOETeamMember001</fullName>
+        <categories>SOETeamMember</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOETeamMember001</shortDescription>
+        <value>Please select Role for Team Member.</value>
+    </labels>
+    <labels>
+        <fullName>SOETeamMember002</fullName>
+        <categories>SOETeamMember</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOETeamMember002</shortDescription>
+        <value>Please select Access Level.</value>
+    </labels>
+    <labels>
+        <fullName>SOETeamMember003</fullName>
+        <categories>SOETeamMember</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOETeamMember003</shortDescription>
+        <value>Please select Team Member.</value>
+    </labels>
+    <labels>
+        <fullName>SOETeamMember004</fullName>
+        <categories>SOETeamMember</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOETeamMember004</shortDescription>
+        <value>This Member already exists.</value>
+    </labels>
+    <labels>
+        <fullName>SOETeamMember005</fullName>
+        <categories>SOETeamMember</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOETeamMember005</shortDescription>
+        <value>Please select Member having Salesforce User.</value>
+    </labels>
+    <labels>
+        <fullName>SOETeamMember006</fullName>
+        <categories>SOETeamMember</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOETeamMember006</shortDescription>
+        <value>These Fields Are Mandatory.</value>
+    </labels>
+    <labels>
+        <fullName>SOETemplate001</fullName>
+        <categories>SOETemplate</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOETemplate001</shortDescription>
+        <value>No results found.</value>
+    </labels>
+    <labels>
+        <fullName>SOETemplate002</fullName>
+        <categories>SOETemplate</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOETemplate002</shortDescription>
+        <value>SOE Title Must be Unique.</value>
+    </labels>
+    <labels>
+        <fullName>SOE_Auto_Refresh_Time</fullName>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOE Auto Refresh Time(mins)</shortDescription>
+        <value>3</value>
+    </labels>
+    <labels>
+        <fullName>SOE_MyView</fullName>
+        <categories>User Settings</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>SOE My View</shortDescription>
+        <value>I8__ID_Text__c,I8__Task_Title__c,I8__Start_Time__c,I8__Duration__c,I8__End_Time__c,I8__Team__c,I8__Stack_Owner_Name__c</value>
+    </labels>
+    <labels>
+        <fullName>Schedule001</fullName>
+        <categories>Schedule</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Schedule001</shortDescription>
+        <value>SOE cannot be Scheduled at this Stage.</value>
+    </labels>
+    <labels>
+        <fullName>Schedule002</fullName>
+        <categories>Schedule</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Schedule002</shortDescription>
+        <value>Schedule Start must have some value.</value>
+    </labels>
+    <labels>
+        <fullName>Schedule003</fullName>
+        <categories>Schedule</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Schedule003</shortDescription>
+        <value>Schedule End must have some Value.</value>
+    </labels>
+    <labels>
+        <fullName>Schedule004</fullName>
+        <categories>Schedule</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Schedule004</shortDescription>
+        <value>Schedule  Start cannot be in Past.</value>
+    </labels>
+    <labels>
+        <fullName>Schedule005</fullName>
+        <categories>Schedule</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Schedule005</shortDescription>
+        <value>Schedule End must have a value not less than shown Change End value.</value>
+    </labels>
+    <labels>
+        <fullName>Schedule006</fullName>
+        <categories>Schedule</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Schedule006</shortDescription>
+        <value>BAU Impact must have some Value.</value>
+    </labels>
+    <labels>
+        <fullName>Schedule007</fullName>
+        <categories>Schedule</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Schedule007</shortDescription>
+        <value>Schedule End must be later than Schedule Start.</value>
+    </labels>
+    <labels>
+        <fullName>Schedule008</fullName>
+        <categories>Schedule</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Schedule008</shortDescription>
+        <value>Warning Zone must be later than Schedule End.</value>
+    </labels>
+    <labels>
+        <fullName>Schedule009</fullName>
+        <categories>Schedule</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Schedule009</shortDescription>
+        <value>BAU Impact must be later than Schedule End.</value>
+    </labels>
+    <labels>
+        <fullName>Schedule010</fullName>
+        <categories>Schedule</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Schedule010</shortDescription>
+        <value>BAU Impact must be later than Warning Zone.</value>
+    </labels>
+    <labels>
+        <fullName>Stack001</fullName>
+        <categories>Stack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Stack001</shortDescription>
+        <value>We have atleast one Stack within Stage. So we cannot move the Stack.</value>
+    </labels>
+    <labels>
+        <fullName>Stack002</fullName>
+        <categories>Stack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Stack002</shortDescription>
+        <value>Source Stack and Target Stack are same. So we cannot Move the Stack.</value>
+    </labels>
+    <labels>
+        <fullName>Stack003</fullName>
+        <categories>Stack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Stack003</shortDescription>
+        <value>Source Stack cannot be modified in this Status.</value>
+    </labels>
+    <labels>
+        <fullName>Stack004</fullName>
+        <categories>Stack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Stack004</shortDescription>
+        <value>Please enter New Stack Name.</value>
+    </labels>
+    <labels>
+        <fullName>Stack005</fullName>
+        <categories>Stack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Stack005</shortDescription>
+        <value>Please select the Target Stack</value>
+    </labels>
+    <labels>
+        <fullName>Stack006</fullName>
+        <categories>Stack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Stack006</shortDescription>
+        <value>Please select one Stack to Drop.</value>
+    </labels>
+    <labels>
+        <fullName>Stack007</fullName>
+        <categories>Stack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Stack007</shortDescription>
+        <value>Unable to Drop the Stack. An SOE must have at least one Stack within the  Stage.</value>
+    </labels>
+    <labels>
+        <fullName>Stack008</fullName>
+        <categories>Stack</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>Stack008</shortDescription>
+        <value>Please Select Source Stack.</value>
+    </labels>
+    <labels>
+        <fullName>TaskAttachment001</fullName>
+        <categories>TaskAttachment</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>TaskAttachment001</shortDescription>
+        <value>The Size of the file must not Exceed 10MB.</value>
+    </labels>
+    <labels>
+        <fullName>TaskAttachment002</fullName>
+        <categories>TaskAttachment</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>TaskAttachment002</shortDescription>
+        <value>There are no Documents to Display.</value>
+    </labels>
+</CustomLabels>

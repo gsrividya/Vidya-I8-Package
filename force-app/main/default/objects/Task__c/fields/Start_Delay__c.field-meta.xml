@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Start_Delay__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <formula>IF(OR( ISPICKVAL( Status__c , &#39;Ready&#39;),ISPICKVAL( Status__c , &#39;Waiting&#39;)),  (Forecast_Start__c -  First_Ready__c)*24*60 , 
+IF(OR(ISPICKVAL( Status__c , &#39;Running&#39;),ISPICKVAL( Status__c , &#39;Completed&#39;)),  (Actual_Start__c -  First_Ready__c)*24*60,null))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Start Delay</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

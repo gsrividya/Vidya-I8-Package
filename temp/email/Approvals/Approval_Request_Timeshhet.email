@@ -1,0 +1,12 @@
+Dear {!Timesheet__c.Manager__c},<br/><br/>
+This mail is regarding approval request  to approve Timesheet.<br/><br/>
+
+Timesheet #:  {!Timesheet__c.Name} <br/>
+Pay Period: {!Timesheet__c.PayPeriod_Start__c} through {!Timesheet__c.PayPeriod_End__c}<br/>
+Total Worked Hours:  {!Timesheet__c.Total_Worked_Hours__c}<br/>
+
+
+Click the following link to Approve/Reject this Timesheet: {!Timesheet__c.Link} <br/><br/>
+
+Regards, 
+{!Timesheet__c.OwnerFullName}

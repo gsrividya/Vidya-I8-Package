@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Forecast_Duration__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <formula>IF(AND(ISBLANK( Forecast_End__c),ISBLANK( Forecast_Start__c)),&quot;&quot;, 
+IF(Forecast_End__c- Forecast_Start__c&gt; 0 , 
+TEXT( FLOOR( Forecast_End__c- Forecast_Start__c) ) &amp; &quot;d &quot; 
+&amp; TEXT( FLOOR( MOD( (Forecast_End__c- Forecast_Start__c) * 24, 24 ) ) ) &amp; &quot;h &quot; 
+&amp; TEXT( ROUND( MOD( (Forecast_End__c- Forecast_Start__c) * 24 * 60, 60 ), 0 ) ) &amp; &quot;m&quot;, 
+&quot;0d 0h 0m&quot; 
+))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Forecast Duration</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

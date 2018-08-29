@@ -1,0 +1,16 @@
+<apex:page controller="ThisWeekSOEs" showHeader="false"> 
+    <apex:form >
+        <apex:pageBlock title="SOEs running in this week">
+            <apex:pageBlockTable value="{!SOELIst}" var="soe">
+                <apex:column headerValue="SOE Name"> <apex:commandLink value="{!soe.Name}" onclick="window.open('/{!JSENCODE(HTMLENCODE(SOe.id))}');"/></apex:column>
+                <apex:column value="{!soe.SOE_Title__c}"/>
+                <apex:column value="{!soe.Imp_Duration__c}"/>
+                <apex:column value="{!soe.Baseline_Start__c}"/>
+                <apex:column value="{!soe.Schedule_Start__c}"/>
+                <apex:column value="{!soe.Schedule_End__c}"/>
+                <apex:column value="{!soe.Warning_Zone__c}"/>
+                <apex:column value="{!soe.BAU_Impact__c}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

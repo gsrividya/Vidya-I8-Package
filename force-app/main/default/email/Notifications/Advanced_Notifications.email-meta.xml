@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>Advanced Notifications</name>
+    <style>none</style>
+    <subject>Advaced Notification</subject>
+    <textOnly>Hi {!Task__c.CreatedBy},
+This is an reminder regaurding the task assigned to you is assumed to start at {!Task__c.Start_Time__c}. So please be ready with the required resources
+SOE Title: {!Task__c.SOE__c} - {!Task__c.SOE__cr.SOE_title__c}
+Task Title:{!Task__c.Name} - {!Task__c.Task_Title__c}</textOnly>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

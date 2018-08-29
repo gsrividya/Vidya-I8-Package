@@ -1,0 +1,9 @@
+<apex:page controller="ProjectBudget_Cntrl" >
+    <apex:form >
+       <center> 
+        <apex:outputPanel rendered="{!ProjBudg == null}"><b> <font size="4px;" color="red" >{!$Label.ProjectBudget001}</font></b></apex:outputPanel><br/>
+        <apex:outputPanel rendered="{!error}" ><h4><div class="alert alert-danger" role="alert"  style="width:100%;"> {!errormsg} </div></h4></apex:outputPanel>
+          <apex:commandButton value="Calculate Budget" action="{!ProjectBudgUpdate}" rendered="{!ProjBudg != null}" />
+        <apex:commandButton value="Close" action="{!Close}"/></center>
+    </apex:form>
+</apex:page>

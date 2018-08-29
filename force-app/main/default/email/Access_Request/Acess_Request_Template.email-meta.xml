@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>Acess Request Template</name>
+    <style>none</style>
+    <subject>Approval request for Accessing SOE</subject>
+    <textOnly>Dear {!ApprovalRequest.Process_Approver},
+This mail is regarding approval request of {!Access_Request__c.00N28000004eQY1} to complete assigned TASK, brief details as follows:
+SOE : &#39;{!Access_Request__c.SOE__c}&#39;
+TASK: &#39;{!Access_Request__c.Task__c}&#39;
+Description:&#39; {!Access_Request__c.Request_Description__c}&#39;
+Please click here to review the request
+
+Regards,
+{!Access_Request__c.OwnerFullName}</textOnly>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

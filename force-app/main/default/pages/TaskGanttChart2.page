@@ -1,0 +1,191 @@
+<apex:page standardStylesheets="false" showHeader="false" sidebar="false" controller="GanttChart_Cntrl1">
+    <head>        
+        <apex:stylesheet value="{!URLFOR($Resource.DHTMLXGantt4, 'codebase/dhtmlxgantt.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.DHTMLXGantt4, 'codebase/dhtmlxgantt.js')}"/> 
+        <apex:includeScript value="{!URLFOR($Resource.DHTMLXGantt4, 'codebase/ext/dhtmlxgantt_tooltip.js')}"/>        
+        <style type="text/css">
+            html, body{ height:100%; padding:0px; margin:0px; overflow: hidden;}
+            .child_preview{box-sizing: border-box;margin-top: 2px;position: absolute;  z-index: 1;  color: white; text-align: center;    font-size: 12px;     }   
+            .gantt_task_line.task-collapsed{opacity: 0.25;}    
+            .gantt_task_line.gantt_project.task-collapsed .gantt_task_content{display: none;}   
+            .gantt_row.task-parent{  font-weight: bold;     }   
+            .Btn { border-radius:15px;width:70px;height:26px;background:white;border: 1px solid #B6B6B4; }       
+        </style>
+    </head>
+    <body>
+        <div><c:SOEPageHeader sid="{!SOEId}" ></c:SOEPageHeader>  <!--Header section ends------></div>
+        <br/>
+        <div style="width:99%"> 
+            <div style="width:50%;float:left;">
+                &nbsp;&nbsp;
+                 <input type="button" value="Day" onclick="DayView();" id="button1" class="Btn" />
+                 <input type="button" value="TimeLine" onclick="TimelineView();" id="button2" class="Btn" style="width:80px;"/>
+            </div>
+            <div style="width:40%;float:left;">       
+            </div>
+            <div style="width:10%;float:right;" >
+                <apex:form >   <apex:commandButton value="Cancel" action="{!OpenCancel}" styleClass="btn btn-primary"  style="padding-left: 15px; padding-right:15px;"/> </apex:form>
+            </div> 
+        </div>
+        <div style="clear: left;"></div><br/>
+        <div id="gantt_here" style='width:98%; height:77%;'></div>  
+        <script type="text/javascript">
+            var start =0;
+            var pagesize =5; 
+            DayView();
+            function DayView(){
+                gantt.config.scale_unit = "month";
+                gantt.config.row_height = 24;
+                gantt.config.date_scale = "%F, %Y";
+                gantt.config.scale_height = 50; 
+                gantt.config.subscales = [
+                    {unit:"day", step:1, date:"%j, %D" }
+                ];
+                document.getElementById('button1').style.backgroundColor = '#529dc8';
+                document.getElementById('button2').style.backgroundColor = 'white';
+                 TasksDispaly(); 
+            }
+            function TimelineView(){
+                document.getElementById('button2').style.backgroundColor = '#529dc8';
+                document.getElementById('button1').style.backgroundColor = 'white';
+                gantt.config.scale_unit = "hour";
+                gantt.config.duration_unit = "minute";        
+                gantt.config.date_scale = "%H:%i";
+                gantt.config.details_on_create = true;
+                gantt.config.subscales = [{unit:"day", step:1, date:"%d-%D %M,%Y"}]; 
+                TasksDispaly();   
+            }  
+            function TasksDispaly()
+            {            
+                gantt.config.readonly = true;
+                if({!$User.UIThemeDisplayed == 'Theme3' ||$User.UIThemeDisplayed == 'Theme4d' }){
+                    gantt.config.columns = [
+                    {name:"idtext", label:"ID", width:120, tree:true},
+                    {name:"text", label:"Task Title", width:150} ,
+                    {name:"sdate", label:"Start Date", width:110},
+                    {name:"edate", label:"End Date", width:110}       
+                    ];
+                 }
+                else{
+                      gantt.config.columns = [{name:"idtext", label:"Id", width:140, tree:true}  ];
+                }
+                gantt.templates.rightside_text = function(start, end, task){
+                    if(task.type == gantt.config.types.milestone){
+                        return task.text;
+                    }
+                    return "";
+                };            
+                gantt.config.lightbox.sections = [
+                    {name: "description", height: 70, map_to: "text", type: "textarea", focus: true},
+                    {name: "type", type: "typeselect", map_to: "type"},
+                    {name: "time", type: "duration", map_to: "auto"}
+                ];
+                gantt.init("gantt_here");    
+                function createBox(sizes, class_name){
+                    var box = document.createElement('div');
+                    box.style.cssText = [
+                        "height:" + sizes.height + "px",
+                        "line-height:" + sizes.height + "px",
+                        "width:" + sizes.width + "px",
+                        "top:" + sizes.top + 'px',
+                        "left:" + sizes.left + "px",
+                        "position:absolute"
+                    ].join(";");
+                    box.className = class_name;
+                    return box;
+                }    
+                gantt.templates.grid_row_class = gantt.templates.task_class=function(start, end, task){
+                    var css = [];
+                    if(gantt.hasChild(task.id)){
+                        css.push("task-parent");
+                    }
+                    if (!task.$open && gantt.hasChild(task.id)) 
+                        css.push("task-collapsed");
+                    return css.join(" ");
+                };    
+                gantt.addTaskLayer(function show_hidden(task) {
+                    if (!task.$open && gantt.hasChild(task.id)) {
+                        var sub_height = gantt.config.row_height - 5,
+                            el = document.createElement('div'),
+                            sizes = gantt.getTaskPosition(task);        
+                        var sub_tasks = gantt.getChildren(task.id);        
+                        var child_el;        
+                        for (var i = 0; i < sub_tasks.length; i++){
+                            var child = gantt.getTask(sub_tasks[i]);
+                            var child_sizes = gantt.getTaskPosition(child);        
+                            child_el = createBox({
+                                height: sub_height,
+                                top:sizes.top,
+                                left:child_sizes.left,
+                                width: child_sizes.width
+                            }, "child_preview gantt_task_line");
+                            child_el.innerHTML =  child.text;
+                            el.appendChild(child_el);
+                        }
+                        return el;
+                    }
+                    return false;
+                }); 
+                      gantt.templates.task_text=function(start,end,task){
+                        return "<b>"+task.id+"</b> - "+task.text;
+                };
+                gantt.templates.tooltip_text = function(start,end,task){
+                        var x=  new Date(task.start_date );
+                        var start = x.getFullYear() + '-' + (x.getMonth()+1) + '-' + x.getDate() + ' ' + x.getHours() + ':' + x.getMinutes();
+                        var y=  new Date(task.end_date );
+                        var end = y.getFullYear() + '-' + (y.getMonth()+1) + '-' + y.getDate() + ' ' + y.getHours() + ':' + y.getMinutes();
+                        return "<b> Task Id:</b> "+ task.idtext+"<br/><b>Task Title:</b> "+task.text+"<br/> <b>Start Time: </b>"+start+"<br/> <b>End Time: </b>"+end+"<br/><b>Duration:</b> " + task.taskdur;
+                };
+                gantt.templates.link_text=function(start,end,task){
+                        return "<b>"+task.id+"</b> - "+task.text;
+                };              
+                var str=''; 
+                var SOEID = '{!JSENCODE(HTMLENCODE(SOEId))}';
+                Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.GanttChart_Cntrl1.getTasks}',SOEID,function(result, event){
+                console.log(result);
+                 if (event.status){ 
+                        var list2 =new Array();
+                        var list3 =new Array();
+                        for(var i=0;i<result.Tasks.length ;i++)
+                        { 
+                            var Enddate = new Date(result.Tasks[i].I8__End_Time__c);
+                            var Startdate = new Date(result.Tasks[i].I8__Start_Time__c);
+                            var formattedendDate = ('0' + Enddate.getDate()).slice(-2) + '/' + ('0' + (Enddate.getMonth() + 1)).slice(-2) + '/' + Enddate.getFullYear() + ' ' + ('0' + Enddate.getHours()).slice(-2) + ':' + ('0' + Enddate.getMinutes()).slice(-2);
+                            var formattedStartDate = ('0' + Startdate.getDate()).slice(-2) + '/' + ('0' + (Startdate.getMonth() + 1)).slice(-2) + '/' + Startdate.getFullYear() + ' ' + ('0' + Startdate.getHours()).slice(-2) + ':' + ('0' + Startdate.getMinutes()).slice(-2);
+                            var x = result.Tasks[i].I8__Id_Before_Decimal__c +'.0';
+                            if( result.Tasks[i].I8__Is_Stack__c == true)
+                                list2.push({"id":result.Tasks[i].I8__ID_Text__c,"parent":0,"open":false,color:"#6CC417",text:result.Tasks[i].I8__Task_Title__c, start_date:formattedStartDate ,sdate:formattedStartDate, end_date:formattedendDate , edate : formattedendDate,idtext:result.Tasks[i].I8__ID_Text__c,taskdur: result.Tasks[i].I8__Duration__c} );
+                            else if(result.Tasks[i].I8__Dependency_Type__c == 'External')
+                                list2.push({"id":result.Tasks[i].I8__ID_Text__c,"parent":x,"open":false,textColor:"red",text:result.Tasks[i].I8__Task_Title__c, start_date:formattedStartDate ,sdate:formattedStartDate, end_date:formattedendDate ,edate : formattedendDate, idtext:result.Tasks[i].I8__ID_Text__c,taskdur: result.Tasks[i].I8__Duration__c} );
+                            else
+                            list2.push({"id":result.Tasks[i].I8__ID_Text__c,"parent":x,"open":true,text:result.Tasks[i].I8__Task_Title__c, start_date:formattedStartDate ,sdate:formattedStartDate, end_date:formattedendDate , edate : formattedendDate,idtext:result.Tasks[i].I8__ID_Text__c,taskdur: result.Tasks[i].I8__Duration__c} );
+                       }
+                       for(var i=0;i<result.Deps.length ;i++){
+                           if(result.Deps[i].I8__Type__c == 'FS'){
+                               if(result.Deps[i].I8__Dep_Type__c == 'Link')
+                                   list3.push({"id" : result.Deps[i].Id, "source": result.Deps[i].I8__Preceeding_Task__r.I8__ID_Text__c, "target": result.Deps[i].I8__Task__r.I8__ID_Text__c , "type" : 0,"color":"black"});
+                               else if(result.Deps[i].I8__Dep_Type__c == 'Internal')
+                                   list3.push({"id" : result.Deps[i].Id, "source": result.Deps[i].I8__Preceeding_Task__r.I8__ID_Text__c, "target": result.Deps[i].I8__Task__r.I8__ID_Text__c , "type" : 0,"color":"blue"});
+                           } else {
+                               if(result.Deps[i].I8__Dep_Type__c == 'Link')
+                                   list3.push({"id" : result.Deps[i].Id, "source": result.Deps[i].I8__Preceeding_Task__r.I8__ID_Text__c, "target": result.Deps[i].I8__Task__r.I8__ID_Text__c , "type" : 1,"color":"black"});
+                               else if(result.Deps[i].I8__Dep_Type__c == 'Internal')
+                                   list3.push({"id" : result.Deps[i].Id, "source": result.Deps[i].I8__Preceeding_Task__r.I8__ID_Text__c, "target": result.Deps[i].I8__Task__r.I8__ID_Text__c , "type" : 1,"color":"blue"});
+                           }
+                       }
+                        gantt.clearAll(); 
+                        gantt.parse({data:list2,links: list3});
+                   }
+                  else if (event.type === 'exception') {
+                      alert(event.message +  event.where );
+                  } 
+                  else {
+                        alert(event.message);
+                  } 
+                 },
+                   {escape: true}
+                );    
+            } 
+        </script>       
+    </body>
+</apex:page>

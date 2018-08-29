@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ValidationOnStageCheckBoxs</fullName>
+    <active>true</active>
+    <description>Pre Implementation Stage, Post Implementation Stage, BackOut Stage check box fields can&#39;t modify after SOE creation</description>
+    <errorConditionFormula>OR( ISCHANGED( Pre_Implementation_Stage__c ) , ISCHANGED( Post_Implementation_Stage__c ) , ISCHANGED( BackOut_Stage__c ) )</errorConditionFormula>
+    <errorMessage>Pre Implementation Stage, Post Implementation Stage, BackOut Stage check box fields can&#39;t modify after SOE creation</errorMessage>
+</ValidationRule>

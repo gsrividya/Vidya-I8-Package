@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WalkThrough_Required_Edit</fullName>
+    <active>true</active>
+    <description>Walkthrough Required Can edit only Build,Review and Scheduled.</description>
+    <errorConditionFormula>AND( 
+NOT( ISPICKVAL( Status__c , &#39;Build&#39;) ) ,
+NOT( ISPICKVAL( Status__c , &#39;Review&#39;) ) ,
+ISCHANGED( WalkThrough_Required__c)
+)</errorConditionFormula>
+    <errorMessage>WalkThrough Required can edit only in Build and Review status.</errorMessage>
+</ValidationRule>

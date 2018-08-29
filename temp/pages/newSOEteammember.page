@@ -1,0 +1,126 @@
+<apex:page controller="newSOEteammember_cntrl" showHeader="false" sidebar="false" standardStylesheets="false">
+    <apex:form id="frm">
+        <div class="wrapper">
+            <c:SOEPageHeader sid="{!SOEObj.Id}" ></c:SOEPageHeader>                
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <form id="frmTasksOverview" class="form-group">
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                <div class="row"> 
+                                    <div class="col-md-5">
+                                        <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                        <h4 style="display:inline;COLOR:#093E4F;">Maintain Team Members</h4>                                        
+                                    </div>
+                                    <div class="col-md-3">
+                                        <center><apex:outputLabel style="color:red;font-size:1.2em;" value="*"></apex:outputlabel><label>{!$Label.i8__soeteammember006}</label></center>
+                                    </div> 
+                                    <div class="col-md-4" style="text-align: right">
+                                        <apex:commandButton value="Save" styleClass="btn btn-primary btn-sm" action="{!Save}" rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && SOEobj.QA_Review__c != 'In Progress' && SOEobj.Walkthrough__c != 'In Progress'}"/> 
+                                        <apex:commandButton value="Cancel" styleClass="btn btn-primary btn-sm" action="{!cancel}"/>
+                                    </div>   
+                                </div>
+                                <hr />
+                                <div class="table-responsive">
+                                   <apex:outputPanel id="table">
+                                    <apex:outputPanel rendered="{!errorMessage != null}" >
+                                        <div class="alert alert-danger" role="alert" id="err" style="width:100%;"> {!errorMessage} </div>
+                                    </apex:outputPanel> 
+                                    <div class="box box-danger ">                                 
+                                    <div class="box-body" style="padding: 5px;">                                              
+                                    <div class="table-responsive" >  
+                                    <script type="text/javascript">
+                                                   j$ = jQuery.noConflict();
+                                                   j$(document).ready(function() {
+                                                       j$('#table1').DataTable( { 
+                                                            "columnDefs": [                                            
+                                                                {
+                                                                    "targets": [ 0 ],
+                                                                    "visible": false
+                                                                },
+                                                            ],
+                                                             "order": [[ 0, "asc" ]]                          
+                                                       });
+                                                    });
+                                                    </script>
+                                    <table class="display table table-hover table1" id="table1" style="background-color:transparent;">
+                                        <thead>
+                                            <tr >
+                                                <th> </th>
+                                                <th scope="col"><center>Actions</center></th>
+                                                <th scope="col"><center>{!$ObjectType.SOE_Team_Member__c.fields.SOE__c.Label}</center></th>
+                                                <th scope="col"><center>{!$ObjectType.SOE_Team_Member__c.fields.Team_Member__c.Label}</center></th>
+                                                <th scope="col"><center>{!$ObjectType.SOE_Team_Member__c.fields.Access_Level__c.Label}</center></th>
+                                                <th scope="col"><center>{!$ObjectType.SOE_Team_Member__c.fields.Role__c.Label}</center></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <apex:repeat value="{!wrapperlist}" var="item" id="pagetabel">
+                                                <tr >
+                                                    <td> {!item.count} </td>
+                                                    <td >
+                                                        <center>
+                                                            <apex:outputPanel id="fdf" rendered="{!CONTAINS(ImpMgrMapKey,$User.Id) && SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress'}">
+                                                                <apex:commandLink action="{!Additem}"   rerender="table" rendered="{!WrapperList.Size -1 == item.count}">
+                                                                    <i class="fa fa-arrow-circle-down fa-lg" title="New LineItem" style="color:blue;"></i>
+                                                                    <apex:param value="{!item.count}" assignTo="{!entrycount}" name="entrycount"/>
+                                                                    <apex:param value="{!item.count}" assignTo="{!EntryCount}" name="EntryCount"/>
+                                                                </apex:commandLink>
+                                                            </apex:outputPanel>                                                     
+                                                            <apex:outputPanel rendered="{!CONTAINS(ImpMgrMapKey,$User.Id) && SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress'}">
+                                                                <apex:commandLink action="{!delitem}" reRender="table" rendered="{!item.Teammember.Default_Imp_Manager__c = false }" >
+                                                                    <i class="fa fa-trash-o fa-lg" title="Delete LineItem" style="color:blue;"></i>
+                                                                    <apex:param value="{!item.count}" assignTo="{!entrycount}" name="entrycount"/>
+                                                                </apex:commandLink>
+                                                            </apex:outputPanel>
+                                                        </center>
+                                                    </td>
+                                                    <td>
+                                                        <center>
+                                                            <apex:outputPanel >
+                                                                <apex:facet name="header">{!$ObjectType.SOE_Team_Member__c.fields.SOE__c.Label}</apex:facet>
+                                                                <apex:outputPanel layout="block" styleClass="requiredInput">
+                                                                    <apex:outputPanel layout="block" styleClass="requiredBlock" />
+                                                                    <apex:outputField value="{!item.Teammember.SOE__c}" />
+                                                                </apex:outputPanel> 
+                                                            </apex:outputPanel>
+                                                        </center>
+                                                    </td>
+                                                    <td>
+                                                        <center>
+                                                            <apex:outputLabel style="color:red;font-size:1.2em;" value="*" rendered="{!item.Teammember.Team_Member__c == null}"></apex:outputlabel><apex:inputField value="{!item.Teammember.Team_Member__c}"  rendered="{!item.Teammember.Default_Imp_Manager__c = false && item.Teammember.Team_Member__c == null }">
+                                                                <apex:actionSupport event="onchange" action="{!HavingSalesforceUser}" rerender="table">
+                                                                    <apex:param value="{!item.count}" assignTo="{!MemberId}" name="MemberId"  />
+                                                                </apex:actionSupport>
+                                                            </apex:inputField>
+                                                            <apex:outputField value="{!item.Teammember.Team_Member__c}"  rendered="{!item.Teammember.Default_Imp_Manager__c = true || item.Teammember.Team_Member__c != null}"/>
+                                                        </center>
+                                                    </td>
+                                                    <td><center>
+                                                        <apex:outputLabel style="color:red;font-size:1.2em;" value="*" rendered="{!item.Teammember.Default_Imp_Manager__c = false}"></apex:outputlabel><apex:inputField value="{!item.Teammember.Access_Level__c}" rendered="{!item.Teammember.Default_Imp_Manager__c = false}"/>
+                                                        <apex:outputField value="{!item.Teammember.Access_Level__c}"  rendered="{!item.Teammember.Default_Imp_Manager__c = true}"/>
+                                                        </center></td>
+                                                    <td>
+                                                        <center>
+                                                            <apex:outputLabel style="color:red;font-size:1.2em;" value="*" rendered="{!item.Teammember.Default_Imp_Manager__c = false}"></apex:outputlabel><apex:inputField value="{!item.Teammember.Role__c}" rendered="{!item.Teammember.Default_Imp_Manager__c = false}"/>
+                                                            <apex:outputField value="{!item.Teammember.Role__c}" rendered="{!item.Teammember.Default_Imp_Manager__c = true}"/>
+                                                        </center>
+                                                    </td>
+                                                </tr>
+                                            </apex:repeat>
+                                        </tbody>
+                                    </table>
+                                    </div></div></div>
+                                    </apex:outputPanel>
+                                </div>    
+                            </div>
+                        </div>                            
+                    </form>
+                </section>
+            </div> <!-- Content Wrapper ends---->
+        </div>
+         <apex:includescript value="{!$Resource.JQuery_Min}" />     
+         <apex:includescript value="{!$Resource.JQuery_DataTable_Min}" />   
+         <apex:stylesheet value="{!$Resource.JQuery_DataTable_CSS}" />
+    </apex:form>
+</apex:page>

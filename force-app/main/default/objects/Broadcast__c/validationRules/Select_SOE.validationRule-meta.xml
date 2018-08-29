@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Select_SOE</fullName>
+    <active>true</active>
+    <description>Please select SOE .</description>
+    <errorConditionFormula>AND( This_SOE_Users__c == True , All_Users__c == False, ISBLANK( SOE__c ) )</errorConditionFormula>
+    <errorDisplayField>SOE__c</errorDisplayField>
+    <errorMessage>If we select This SOE user. SOE is Requried</errorMessage>
+</ValidationRule>

@@ -1,0 +1,35 @@
+<apex:page showHeader="false" renderAs="pdf" controller="PDF_cntrl"  cache="true" action="{!getfields}">
+    <apex:pageBlock >
+    <center>       <p style="font-size:20px;color:blue;"><b>{!Task[0].SOE__r.Name}:{!Task[0].SOE__r.SOE_Title__c}</b></p></center>
+      <apex:pageBlockSection >
+           <apex:repeat value="{!soelist}" var="soe">
+                <Apex:repeat value="{!str}" var="f">                  
+                     <table > 
+                         <tr >
+                              <td  class="col-md-12" colspan="5" ><b>{!labelMap[f]} </b>:{!soe[f]} </td>
+                         </tr>
+                  </table>
+                   </Apex:repeat>                   
+            </apex:repeat>
+         </apex:pageBlockSection>              
+        
+    </apex:pageBlock>
+    <apex:pageBlock >
+     <center>       <p style="font-size:20px;color:blue;"><b>Tasks List</b></p></center>
+          <apex:pageBlockSection >  
+            <apex:pageBlockTable value="{!task}" var="tas" border="1" title="Task Information">
+           <!--<apex:column value="{!tas.Name}"/>-->
+            <apex:column value="{!tas.Stage_Level__c}"/>
+            <apex:column value="{!tas.Status__c }"/>
+            <apex:column value="{!tas.ID_Text__c}"/>
+            <apex:column value="{!tas.Stage__c}"/>
+            <apex:column value="{!tas.Task_Title__c}"/>            
+            <apex:column value="{!tas.Start_Time__c}"/>
+            <apex:column value="{!tas.Duration__c}"/>
+            <apex:column value="{!tas.End_Time__c}"/>  
+            <apex:column value="{!tas.Stack_Owner_Name__c}"/>
+            <apex:column value="{!tas.Team__c}"/>        
+        </apex:pageBlockTable>    
+        </apex:pageBlockSection>    
+    </apex:pageBlock>
+</apex:page>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Message_Diplaying_Conditions</fullName>
+    <active>true</active>
+    <description>Enter the value in either All Users Check box or enter SOE.</description>
+    <errorConditionFormula>OR(AND(All_Users__c == false,This_SOE_Users__c == false),
+AND(All_Users__c == true,This_SOE_Users__c  == true)
+)</errorConditionFormula>
+    <errorMessage>Please select either  All Users  or This SOE Users</errorMessage>
+</ValidationRule>

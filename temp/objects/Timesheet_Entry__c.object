@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <description>Entries for Timesheets</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableChangeDataCapture>false</enableChangeDataCapture>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>End__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Enter the end of your day here.</inlineHelpText>
+        <label>End</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Net_Pay__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Net Pay</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>SOE__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>SOE</label>
+        <referenceTo>SOE__c</referenceTo>
+        <relationshipLabel>Timesheet Entries</relationshipLabel>
+        <relationshipName>Timesheet_Entries</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Start__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>Enter the start of your day here.</inlineHelpText>
+        <label>Start</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Task__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Task</label>
+        <lookupFilter>
+            <active>true</active>
+            <filterItems>
+                <field>Task__c.SOE__c</field>
+                <operation>equals</operation>
+                <valueField>$Source.SOE__c</valueField>
+            </filterItems>
+            <isOptional>false</isOptional>
+        </lookupFilter>
+        <referenceTo>Task__c</referenceTo>
+        <relationshipLabel>Timesheet Entries</relationshipLabel>
+        <relationshipName>Timesheet_Entries</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>Timesheet__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Timesheet</label>
+        <referenceTo>Timesheet__c</referenceTo>
+        <relationshipLabel>Timesheet Entries</relationshipLabel>
+        <relationshipName>Timesheet_Entries</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>true</reparentableMasterDetail>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>Total_Hours__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Total Hours</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Worked_Hours__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>((ABS(Start__c  -  End__c)  * 1440) / 60)</formula>
+        <inlineHelpText>Total number of hours worked for this entry.</inlineHelpText>
+        <label>Worked Hours</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <label>Timesheet Entry</label>
+    <nameField>
+        <displayFormat>TS Entry-{000000000}</displayFormat>
+        <label>Timesheet Entry #</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Timesheet Entries</pluralLabel>
+    <searchLayouts>
+        <lookupDialogsAdditionalFields>Timesheet__c</lookupDialogsAdditionalFields>
+        <searchFilterFields>Timesheet__c</searchFilterFields>
+    </searchLayouts>
+    <sharingModel>ControlledByParent</sharingModel>
+    <validationRules>
+        <fullName>End_within_Timesheet_Pay_Period</fullName>
+        <active>false</active>
+        <description>Timesheet Entry End must be less than or equal to Timesheet Pay Period End.</description>
+        <errorConditionFormula>IF ( or(ISNULL(End__c),ISNULL( Timesheet__r.PayPeriod_End__c ),DATEVALUE(End__c) &gt;= DATEVALUE( Timesheet__r.PayPeriod_End__c )) , true, false)</errorConditionFormula>
+        <errorDisplayField>End__c</errorDisplayField>
+        <errorMessage>The End must be less than or equal to the Timesheet Pay Period End.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Start_cannot_be_after_the_End</fullName>
+        <active>false</active>
+        <description>Start must be before the End.</description>
+        <errorConditionFormula>Start__c  &gt; End__c</errorConditionFormula>
+        <errorDisplayField>Start__c</errorDisplayField>
+        <errorMessage>The Start cannot be after the End.  Please enter a date and time prior to the End date and time.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>Start_within_Timesheet_Pay_Period</fullName>
+        <active>false</active>
+        <description>Timesheet Entry Start must be greater or equal than Timesheet Pay Period Start.</description>
+        <errorConditionFormula>(NOT(ISNULL( DATEVALUE(Start__c) )) &amp;&amp; NOT(ISNULL(  Timesheet__r.PayPeriod_Start__c   )) &amp;&amp; DATEVALUE(Start__c)&lt; DATEVALUE(Timesheet__r.PayPeriod_Start__c) )</errorConditionFormula>
+        <errorDisplayField>Start__c</errorDisplayField>
+        <errorMessage>The Start must be greater than or equal to the Timesheet Pay Period Start.</errorMessage>
+    </validationRules>
+    <visibility>Public</visibility>
+</CustomObject>

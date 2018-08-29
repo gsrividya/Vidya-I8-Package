@@ -1,0 +1,6 @@
+Dear {!Asset_Assignment__c.Assignee__c},<br/><br/>
+Details of Asset assigned to you are as below:<br/>
+Asset : '{!Asset_Assignment__c.Asset__c}'<br/>
+Please <a href="https://ap2.salesforce.com/{!Asset_Assignment__c.Id}">click here</a> to review.<br/><br/>
+Regards, <br/>
+{!Asset_Assignment__c.Name}<br/>

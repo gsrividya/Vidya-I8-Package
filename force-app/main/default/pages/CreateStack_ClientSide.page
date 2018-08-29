@@ -1,0 +1,106 @@
+<apex:page showheader="false" standardstylesheets="false" controller="Stack_CreateMove_Cntrl" >
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar {background-color:#CFEEF8; border-color: #303260; } 
+    </style> 
+    <apex:form id="frm">           
+        <div class="wrapper">
+            <!--Header section starts ------>
+            <c:SOEPageHeader sid="{!SOEObj.Id}" ></c:SOEPageHeader>  
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <form id="frmTasksOverview" class="form-group">
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                        <h3 style="display:inline;COLOR:#093E4F;">CREATE STACK</h3>                                        
+                                    </div>
+                                    <div class="col-md-3">
+                                         <apex:outputLabel style="color:red;font-size:1.2em;" value="*"></apex:outputlabel><label>{!$Label.i8__soeteammember006}</label>
+                                    </div> 
+                                    <div class="col-md-4" style="text-align: right">
+                                       <apex:commandButton value="Save" action="{!CreateStack}" styleclass="btn btn-primary btn-sm" rendered="{!SOEobj.Status__c != I8.STATUS_IMP_COMP && SOEobj.Status__c != I8.STATUS_SOE_COMP && SOEobj.Status__c != I8.STATUS_IMPINPROGRESS &&  SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id)}"  style="padding-left: 15px; padding-right:15px;"/>   
+                                       <apex:commandButton value="Cancel" action="{!openCancel}" styleclass="btn btn-primary btn-sm"  style="padding-left: 15px; padding-right:15px;"/>
+                                   </div>
+                                </div>  
+                                <hr />
+                                <apex:actionRegion rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && (SOEobj.Status__c == I8.STATUS_IMP_COMP || SOEobj.Status__c == I8.STATUS_SOE_COMP || SOEobj.Status__c == I8.STATUS_IMPINPROGRESS)}"><label><center><h3>{!$Label.i8__addtask002}</h3></center></label></apex:actionRegion>
+                                <apex:actionRegion rendered="{!CONTAINS(ImpMgrMapKey,$User.Id) && ( (SOEobj.QA_Review_Required__c == true &&  SOEobj.QA_Review__c == 'In Progress')|| (SOEobj.WalkThrough_Required__c == true && SOEobj.WalkThrough__c == 'In Progress'))}">
+                                    <label><center><h3>{!$Label.i8__addtask003}</h3></center></label>
+                                </apex:actionRegion>
+                                <apex:actionRegion rendered="{!!(CONTAINS(ImpMgrMapKey,$User.Id))}">
+                                    <label><center><h3>{!$Label.i8__addtask001}</h3></center></label>
+                                </apex:actionRegion>
+
+                                <apex:actionRegion rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && !( SOEobj.Status__c == I8.STATUS_IMP_COMP || SOEobj.Status__c == I8.STATUS_SOE_COMP || SOEobj.Status__c == I8.STATUS_IMPINPROGRESS || (SOEobj.QA_Review_Required__c == true &&  SOEobj.QA_Review__c == 'In Progress')|| (SOEobj.WalkThrough_Required__c == true && SOEobj.WalkThrough__c == 'In Progress'))}">
+                                    <apex:outputPanel rendered="{!error}">
+                                        <div class="alert alert-danger" role="alert" id="err"> {!errormessage} </div>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel id="panel2">
+                                        <div class="row" id="div1">
+                                            <div class="col-md-2 col-sm-3"><apex:outputLabel style="color:red;font-size:1.2em;" value="*"></apex:outputlabel><label>New Stack Name</label>  </div>     
+                                            <div class="col-md-3 col-sm-6" > <input type="text" style="padding:0px;" name="tasktitle" class="col-sm-12" id="Stackowner" /> </div> 
+                                            <div class="col-md-6"> </div>                      
+                                        </div> 
+                                         <apex:outputPanel id="panel3"> 
+                                        <div class="row" id="level1">
+                                            <div class="col-md-2 col-sm-3"><label>Target Stage Level </label></div>     
+                                            <div class="col-md-3 col-sm-6">
+                                                <apex:inputField value="{!taskobj.Stage_Level__c}">                                                    
+                                                     <apex:actionSupport action="{!TargetStageList}" event="onchange" reRender="panel3"/>
+                                                </apex:inputField>
+                                            </div> 
+                                            <div class="col-sm-6"> </div>                      
+                                        </div> 
+                                        <div class="row">
+                                            <div class="col-md-2 col-sm-3"><label>Target Stage </label></div>     
+                                            <div class="col-md-3 col-sm-6">
+                                                <apex:selectList value="{!TargetStage}" size="1" >
+                                                    <apex:selectOptions value="{!StagesList}"></apex:selectOptions>
+                                                    <apex:actionSupport action="{!getTargetStackList}" event="onchange" reRender="panel1"/>
+                                                </apex:selectList>
+                                            </div> 
+                                            <div class="col-sm-6"> </div>                      
+                                        </div> 
+                                        <apex:outputPanel id="panel1">
+                                            <div class="row">
+                                                <div class="col-md-2 col-sm-3"> <label>Target Stack</label>  </div>     
+                                                <div class="col-md-2 col-sm-5">
+                                                    <apex:selectList value="{!TargetStack}" size="1" id="Stack" styleClass="form-control">
+                                                        <apex:selectOptions value="{!TargetStacks}">
+                                                        </apex:selectOptions>
+                                                    </apex:selectList>
+                                                </div> 
+                                                <div class="col-md-3 col-sm-4 table1">
+                                                    <apex:selectRadio value="{!BAValue}">
+                                                        <apex:selectOption itemValue="+" itemLabel="Below" />
+                                                        <apex:selectOption itemValue="-" itemLabel="Above"/>
+                                                    </apex:selectRadio>
+                                                </div> 
+                                                <div class="col-sm-6"></div>                                                             
+                                            </div> 
+                                        </apex:outputPanel> 
+                                        </apex:outputPanel>                                     
+                                        <div class="row">
+                                            <div class="col-md-2 col-sm-3"><span class="optional"><label>Stack TRL Task Duration</label></span></div>     
+                                            <div class="col-md-4 col-sm-7">
+                                                <input type="number" id="days" name="days" class="spin-button_days spin-button" value="0"  max="500" min="0"> Days </input>
+                                                <input type="number" id="hours" name="hours" class="spin-button_days spin-button" value="0"  max="23" min="0"> Hours </input>
+                                                <input type="number" id="minutes" name="minutes" class="spin-button_days spin-button" value="0"  max="59" min="0"> Minutes </input>
+                                            </div> 
+                                            <div class="col-sm-5"></div>                      
+                                        </div> 
+                                    </apex:outputPanel> 
+                                </apex:actionRegion>                                                                                                                                    
+                            </div>
+                        </div>                            
+                    </form>
+                </section>
+            </div> <!-- Content Wrapper ends---->
+        <c:PageFooter ></c:PageFooter><!-- Footer section ends------>
+    </div>
+</apex:form>
+</apex:page>

@@ -1,0 +1,176 @@
+<apex:page showheader="false" controller="Create_Incident" standardStylesheets="false">
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar { background-color:#CFEEF8; border-color: #303260;  }  
+        label{ color: #837B8A;  }
+    </style>    
+    <apex:form id="frm"> 
+        <div class="wrapper">
+            <c:SOEPageHeader sid="{!SOE.Id}" ></c:SOEPageHeader>  
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <form id="frmTasksOverview" class="form-group">
+                        <apex:outputpanel rendered="{!errorbool== true}">
+                            <div class="alert alert-danger" role="alert" id="err">{!errmsg}</div>
+                        </apex:outputpanel>   
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                <div class="row">
+                                    <div class="col-xs-8">
+                                        <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                        <h3 style="display:inline;COLOR:#093E4F;"><apex:actionRegion rendered="{!INCID == NULL}">CREATE </apex:actionRegion><apex:actionRegion rendered="{!INCID != NULL}">EDIT </apex:actionRegion> INCIDENT</h3>
+                                    </div>
+                                    <div class="col-sm-4 col-xs-12" style="text-align: right"> 
+                                        <apex:commandButton value="Save"   styleClass="btn btn-primary btn-md" action="{!save_INC}" rendered="{!access && SOE.QA_Review__c != 'In Progress' && SOE.WalkThrough__c != 'In Progress' }"  style="padding-left: 15px; padding-right:15px;"/>
+                                        <apex:commandButton value="Cancel" action="{!cancel_INC}" styleClass="btn btn-primary btn-md" immediate="true"  style="padding-left: 15px; padding-right:15px;"/>                                        
+                                    </div>
+                                </div>  
+                                <hr />                                
+                                <apex:outputPanel id="panel1" rendered="{!access }">                         
+                                    <div class="col-sm-6 ">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-sm-4 lbl"> <label>Incident Number</label> </div>
+                                            <div class="col-xs-12 col-sm-6"> <apex:outputLabel value="{!MaxInc }"/> </div>
+                                            <div class="col-sm-2">  </div>        
+                                        </div>   
+                                        <div class="row">
+                                            <div class="col-sm-4 col-xs-12 lbl"><label>MIS</label></div>
+                                            <div class="col-sm-6 col-xs-12"> <apex:inputField value="{!INCOBJ.MIS__c}"/></div>
+                                            <div class="col-sm-2">  </div> 
+                                        </div>                                     
+                                        <div class="row">
+                                            <div class="col-sm-4 col-xs-12 lbl"><label>SOE</label></div>
+                                            <div class="col-sm-6 col-xs-12"> <apex:inputField value="{!INCOBJ.SOE1__c}"/></div>
+                                            <div class="col-sm-2">  </div> 
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 col-xs-12 lbl"> <label>Task</label> </div>
+                                            <div class="col-sm-6 col-xs-12"><apex:inputField value="{!INCOBJ.Task__c}" rendered="{!INCOBJ.INC_on_Object__c != 'SOE'}"/><apex:outputField value="{!INCOBJ.Task__c}" rendered="{!TaskId != Null && INCOBJ.INC_on_Object__c == 'SOE'}"/> </div>
+                                            <div class="col-sm-2">  </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 col-xs-12 lbl"> <label>Status</label></div>
+                                            <div class="col-sm-6 col-xs-12"><apex:outputField value="{!INCOBJ.Status__c}"/></div>
+                                            <div class="col-sm-2">  </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 col-xs-12 lbl"> <apex:outputLabel style="color:red;font-size:1.2em;" value="*"></apex:outputlabel><label>Priority</label> </div>                
+                                            <div class="col-sm-6 col-xs-12"> <apex:inputField value="{!INCOBJ.Priority__c}"/>  </div>
+                                            <div class="col-sm-2">  </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 col-xs-12 lbl"> <label>Urgency</label></div>
+                                            <div class="col-sm-6 col-xs-12">  <apex:inputField value="{!INCOBJ.Urgency__c}"/></div>
+                                            <div class="col-sm-2">    </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-4 col-xs-12 lbl"> <label>Conference / Audio Number</label>  </div>
+                                            <div class="col-sm-6 col-xs-12"> <apex:inputField value="{!INCOBJ.Conference_Audio_Number__c}"/></div>
+                                            <div class="col-sm-2"></div>
+                                        </div>                                       
+                                        <div class="row">
+                                            <div class="col-sm-4 col-xs-12 lbl"> <label>Resolution Type</label></div>
+                                            <div class="col-sm-6 col-xs-12"><apex:inputField value="{!INCOBJ.Resolution_Type__c}"/></div>
+                                            <div class="col-sm-2">   </div>
+                                        </div>                                        
+                                    </div>                                    
+                                    <div class="col-sm-6 ">
+                                        <div class="row">
+                                            <div class="col-sm-3 col-sm-4 col-xs-12 lbl">
+                                               <label> <apex:outputLabel style="color:red;font-size:1.2em;" rendered="{!IncObj.Inc_Type__c == i8.STATUS_SUSPENDED}" value="*"></apex:outputlabel>Assignee</label>
+                                            </div>
+                                            <div class=" col-md-8 col-sm-7 col-xs-12"> <apex:inputField value="{!INCOBJ.Assignee__c}"/></div>
+                                            <div class="col-sm-1"></div> 
+                                        </div>
+                                         <div class="row">
+                                            <div class="col-sm-3 col-sm-4 col-xs-12 lbl"><label>Incident Manager</label></div>
+                                            <div class="col-sm-8 col-sm-7 col-xs-12"> <apex:inputField value="{!INCOBJ.Incident_Manager__c}"/></div> 
+                                            <div class="col-sm-1"> </div>                                             
+                                        </div> 
+                                        <div class="row">
+                                            <div class="col-sm-3 col-sm-4 col-xs-12 lbl"><label>Target Date</label></div>
+                                            <div class="col-sm-8 col-sm-7 col-xs-12"> <apex:inputField value="{!INCOBJ.Target_Date__c}"/></div> 
+                                            <div class="col-sm-1"> </div>                                             
+                                        </div> 
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-4 col-xs-12 lbl"> <label>Company</label></div>
+                                            <div class="col-md-8 col-sm-7 col-xs-12"><apex:inputField value="{!INCOBJ.Company__c}"/> </div>
+                                            <div class="col-sm-1">  </div> 
+                                        </div>  
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-4 col-xs-12 lbl"> <label>Customer</label> </div>
+                                            <div class="col-md-8 col-sm-7 col-xs-12">  <apex:inputField value="{!INCOBJ.Customer__c}"/>   </div> 
+                                            <div class="col-sm-1"> </div> 
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-4 col-xs-12 lbl">   <label>Contact</label> </div>
+                                            <div class="col-md-8 col-sm-7 col-xs-12"> <apex:inputField value="{!INCOBJ.Contact__c}"/> </div>
+                                            <div class="col-sm-1">    </div> 
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-4 col-xs-12 lbl"> <label><apex:outputLabel style="color:red;font-size:1.2em;" value="*"></apex:outputlabel>Incident Type</label> </div>
+                                            <div class="col-md-8 col-sm-7 col-xs-12">
+                                                <apex:inputField value="{!IncObj.Inc_Type__c}" rendered="{!type == null}">
+                                                    <apex:actionSupport event="onchange" rerender="panel1"/>
+                                                </apex:inputField>
+                                                <apex:outputField value="{!IncObj.Inc_Type__c}" rendered="{!type != null}"/>
+                                            </div>
+                                            <div class="col-sm-1"> </div> 
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-4 col-xs-12 lbl"> <label>Incident On</label>  </div>
+                                            <div class="col-md-8 col-sm-7 col-xs-12">
+                                                <apex:outputField value="{!INCOBJ.INC_on_Object__c}" rendered="{!type != null}"/>
+                                                <apex:inputField value="{!INCOBJ.INC_on_Object__c}" rendered="{!type == null}">
+                                                    <apex:actionSupport event="onchange" rerender="panel1"/>
+                                                </apex:inputField>
+                                            </div> 
+                                            <div class="col-sm-1"> </div> 
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12 ">                                        
+                                        <div class="row">
+                                            <div class="col-sm-2 col-xs-12 lbl">  <label><apex:outputLabel style="color:red;font-size:1.2em;" > *</apex:outputLabel>Incident Summary  </label> </div>
+                                            <div class="col-sm-10 col-xs-12"> <apex:inputtextarea value="{!INCOBJ.Summary__c}" style="padding:0px;"  styleclass="col-xs-7"/>   </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2 col-xs-12 lbl"> <label>Root Cause</label></div>
+                                            <div class="col-sm-10 col-xs-12"> <apex:inputtextarea value="{!INCOBJ.Root_Cause__c}" style="padding:0px;" styleclass="col-xs-7"/>  </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2 col-xs-12 lbl"> <label>Risk Mitigation</label></div>
+                                            <div class="col-sm-10 col-xs-12">  <apex:inputtextarea value="{!INCOBJ.Risk_Mitigation__c}" style="padding:0px;"  styleclass="col-xs-7"/></div> 
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2 col-xs-12 lbl">  <label>Technical Recommendation</label></div>
+                                            <div class="col-sm-10 col-xs-12"> <apex:inputtextarea value="{!INCOBJ.Technical_Recommendation__c}" style="padding:0px;" styleclass="col-xs-7"/> </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-2 col-xs-12 lbl"><label>Impact Analysis</label> </div>
+                                            <div class="col-sm-10 col-xs-12"><apex:inputtextarea value="{!INCOBJ.Impact_Analysis__c}" style="padding:0px;" styleclass="col-sm-7"/></div>
+                                        </div>
+                                        <apex:outputPanel id="Notes">
+                                            <div class="row">
+                                                <div class="col-sm-2 col-xs-12 lbl">  <label>Notes</label></div>
+                                                <div class="col-sm-10 col-xs-12"> <apex:inputtextarea value="{!INCOBJ.Notes__c}"  styleclass="col-sm-7" disabled="true"/></div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-2 col-xs-12lbl"> <label>Add Notes</label> </div>
+                                                <div class="col-sm-10 col-xs-12">
+                                                    <apex:inputText value="{!Add_Note}"  styleclass="col-xs-5"/>
+                                                    <apex:commandButton value="Add Note" styleClass="slds-button slds-button--neutral col-xs-2" action="{!Add_Note_Action}" reRender="Notes"  style="padding-left: 15px; padding-right:15px;"/>
+                                                </div>
+                                            </div>
+                                        </apex:outputPanel>
+                                    </div>
+                                </apex:outputPanel>                                
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div> 
+            <c:PageFooter ></c:PageFooter><!-- Footer section ends------>
+        </div>
+    </apex:form>
+</apex:page>

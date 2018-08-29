@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>SOE Cloned, Imp Manager Mail Template</name>
+    <style>none</style>
+    <subject>SOE {!SOE__c.Name} : {!SOE__c.SOE_Title__c} is created</subject>
+    <textOnly>Hi {!SOE__c.OwnerFullName},
+
+The SOE {!SOE__c.Name} : {!SOE__c.SOE_Title__c} is created successfully.  Thanks, SOE Manager.</textOnly>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

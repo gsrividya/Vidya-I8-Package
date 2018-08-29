@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>State__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <formula>IF(TEXT(Status__c) = &#39;Running&#39;,IMAGE(&quot;/resource/I8__Running&quot;,&quot;Running&quot;,20,20),
+IF(TEXT(Status__c) = &#39;Review&#39;,IMAGE(&quot;/resource/I8__Status/review.png&quot;,&quot;Review&quot;,20,20),
+IF(TEXT(Status__c) = &#39;Waiting&#39;,IMAGE(&quot;/resource/I8__waiting&quot;,&quot;Pending&quot;,17,17),
+IF(TEXT(Status__c) = &#39;Ready&#39;,IMAGE(&quot;/resource/I8__ready&quot;,&quot;Ready&quot;,21,22),
+IF(TEXT(Status__c) = &#39;Completed&#39;,IMAGE(&quot;/resource/I8__Complete&quot;,&quot;Completed&quot;,20,20),
+IF(TEXT(Status__c) = &#39;Build&#39;,IMAGE(&quot;/resource/I8__build&quot;,&quot;Build&quot;,20,20),
+IF(TEXT(Status__c) = &#39;Freeze&#39;,IMAGE(&quot;/resource/I8__Status/freeze.png&quot;,&quot;Freeze&quot;,20,20),
+IF(TEXT(Status__c) = &#39;Scheduled&#39;,IMAGE(&quot;/resource/I8__schedule&quot;,&quot;Scheduled&quot;,20,20),
+IF(TEXT(Status__c) = &#39;Abandoned&#39;,IMAGE(&quot;/resource/I8__abandon&quot;,&quot;Abandoned&quot;,20,20), 
+IF(TEXT(Status__c) = &#39;Suspended&#39;,IMAGE(&quot;/resource/I8__suspend&quot;,&quot;Suspended&quot;,20,20),
+IF(TEXT(Status__c) = &#39;ReRun&#39;,IMAGE(&quot;/resource/I8__rerun&quot;,&quot;ReRun&quot;,20,20),
+IF(TEXT(Status__c) = &#39;To Be Released&#39;,IMAGE(&quot;/resource/I8__ToBeReleased&quot;,&quot;To Be Released&quot;,20,20),
+IF(TEXT(Status__c) = &#39;Completed-Jump&#39;,IMAGE(&quot;/resource/I8__completedjump&quot;,&quot;completedjump&quot;,20,20),
+IF(TEXT(Status__c) = &#39;Force Completed&#39;,IMAGE(&quot;/resource/I8__forcecomplete&quot;,&quot;Force Completed&quot;,18,18), 
+IF(Jump__c = true,IMAGE(&quot;/resource/I8__jump&quot;,&quot;Jump&quot;,24,24),
+null)))))))))))))))</formula>
+    <label>State</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

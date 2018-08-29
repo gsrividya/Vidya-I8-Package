@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Once_created_Key_cannot_be_changed</fullName>
+    <active>false</active>
+    <description>Once create record, Key cannot be changed.</description>
+    <errorConditionFormula>ISCHANGED( Key__c )</errorConditionFormula>
+    <errorDisplayField>Key__c</errorDisplayField>
+    <errorMessage>Key cannot be changed</errorMessage>
+</ValidationRule>

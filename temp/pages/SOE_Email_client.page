@@ -1,0 +1,110 @@
+<apex:page showheader="false" standardstylesheets="false" controller="Email_Page_Cntrl">      
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;}
+        .table-responsive  {     width: 100%;   margin-bottom: 15px;   overflow-x: auto;     overflow-y: hidden;    -webkit-overflow-scrolling: touch;   -ms-overflow-style: -ms-autohiding-scrollbar;    }
+        .padd-left {   padding-left:30px;  }
+        .padd-left-40 {   padding-left:50px;  }
+        .custPopup{   border-width: 0px;  z-index: 9999;   left: 50%;   width: 20%;  padding:10px;  position: absolute;  width: relative;  margin-left: -250px;  top:30%;   }
+        .popupBackground{ background-color:black;  opacity: 0.20; filter: alpha(opacity = 20);      position: absolute;  width: 100%;   height: 100%;  top: 0; left: 0; z-index: 9998; }
+    </style>
+   
+        <apex:form id="frm">             
+            <div class="wrapper">
+                 <c:SOEPageHeader sid="{!getid}" ></c:SOEPageHeader>  <!--Header section ends------>
+                 <div  style="min-height:0px!important" id="body">
+                    <section class="content">
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                <div class="row">
+                                    <div class="col-md-3" style="margin-bottom: 5px">  <i class="fa fa-envelope fa-2x"></i>  <p style="display: inline; font-size: 20px; font-weight: bold;">EMAIL</p>  </div>
+                                    <div class="col-md-5">       </div>
+                                    <div class="col-md-4" style="text-align: right">            
+                                        <apex:commandButton value="Reset" action="{!Reset}"  styleClass="btn btn-primary btn-sm"/>&nbsp;
+                                        <apex:commandButton value="Send" action="{!SendMail}"  styleClass="btn btn-primary btn-sm" />&nbsp;
+                                        <apex:commandButton value="Cancel" action="{!cancel}"  styleClass="btn btn-primary btn-sm"/>
+                                    </div>
+                                </div>
+                                <apex:outputPanel id="tstpopup">
+                                    <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+                                    <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">
+                                        <div class="box box-primary">
+                                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                                <div class="row">  <i class="fa fa-file-text"></i>  <p style="display: inline; font-size: 20px; font-weight: bold;">Document Type</p>   </div>
+                                                <hr/>
+                                                <div class="row">
+                                                    <div class="col-sm-3"></div>
+                                                    <div class="col-sm-6">
+                                                        <apex:selectRadio value="{!selectaction}" styleClass="table1">
+                                                            <apex:selectOptions value="{!selectformatoption}"/>                            
+                                                        </apex:selectRadio>
+                                                    </div>
+                                                    <div class="col-sm-3"></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-3"></div>
+                                                    <div class="col-sm-6">
+                                                        <apex:commandButton value="OK" action="{!selectformat}" alt="Ok" styleClass="btn btn-primary btn-sm"/>&nbsp;
+                                                        <apex:commandButton value="Close" action="{!close}" alt="close" styleClass="btn btn-primary btn-sm"/>
+                                                    </div>
+                                                    <div class="col-sm-3"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                                <apex:outputPanel id="panel1">   
+                                      <apex:outputPanel rendered="{!errormsg != null}"><div class="alert alert-danger" role="alert" id="err"> {!errormsg} </div></apex:outputPanel>                             
+                                    <table class="table1">
+                                        <tr>
+                                            <td ></td>
+                                            <td align="center" > <b>Candidates</b></td>
+                                            <td></td>
+                                            <td align="center" ><b>Receipients</b></td> 
+                                        </tr>                                       
+                                        <tr>
+                                            <td valign="top" width="120px"><Span style="color:red;font-size:1.4em;">*</span>
+                                                <apex:outputLabel >Email To</apex:outputLabel></td>
+                                            <td width="120px">
+                                                <apex:selectList value="{!leftselected}" id="leftlist"  style="width:180px;height:180px;" multiselect="true" size="10">
+                                                    <apex:selectOptions value="{!LeftUsers}"/>
+                                                </apex:selectList>
+                                            </td>
+                                            <td width="20px">
+                                                <apex:commandLink title="Reset" action="{!ClearRightUsers}" reRender="panel1"><i class="fa fa-refresh" style="padding: 5px;"></i></apex:commandLink>
+                                                <apex:commandLink title="Add All" action="{!AddAllUsers}" reRender="panel1"><i class="fa fa-forward" style="padding: 5px;"></i></apex:commandLink>
+                                                <apex:commandLink title="Add Selected" action="{!AddUsers}" reRender="panel1"><i class="fa fa-caret-right fa-lg" style="padding: 8px;"></i></apex:commandLink>
+                                                <apex:commandLink title="Remove Selected" action="{!DeleteUsers}" reRender="panel1"><i class="fa fa-caret-left fa-lg" style="padding: 8px;"></i></apex:commandLink>
+                                                <apex:commandLink title="Remove All" action="{!DeleteAllUsers}" reRender="panel1"><i class="fa fa-backward" style="padding: 5px;"></i></apex:commandLink>
+                                            </td>
+                                            <td >
+                                                <apex:selectList value="{!RightSelected}" id="rightlist" styleClass="form-control" style="width:180px;height:180px;"  multiselect="true" >
+                                                    <apex:selectOptions value="{!RightUsers}"/>
+                                                </apex:selectList>
+                                            </td>
+                                        </tr>
+                                    </table><br/>
+                                    <table class="tbl2 table1">
+                                        <tr class="row">
+                                            <td align="right"> <apex:outputLabel >Ext.Email &nbsp;</apex:outputLabel></td>
+                                            <td colspan="3" > <apex:inputText value="{!ExternalMails}"  style="width:500px;"/>
+                                                <apex:outputLabel >(use commas to separate multiple addresses)</apex:outputLabel><br/></td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td align="right"><Span style="color:red;font-size:1.4em;">*</span>
+                                                <apex:outputLabel >Title &nbsp;</apex:outputLabel></td>
+                                            <td colspan="3" > <apex:inputText value="{!Title}"  style="width:500px;"/></td>
+                                        </tr>
+                                        <tr class="row">
+                                            <td align="right" valign="top"> <apex:outputLabel >Email Body &nbsp;</apex:outputLabel></td>
+                                            <td colspan="3" > <apex:inputTextArea value="{!emailBody}"  style="width:600px;height:200px;"/></td>
+                                        </tr>                                        
+                                    </table>
+                                </apex:outputPanel>
+                            </div>
+                </div>                        
+                    </section>
+            </div>
+            </div>
+        </apex:form>
+    </apex:page>

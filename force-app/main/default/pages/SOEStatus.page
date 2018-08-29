@@ -1,0 +1,131 @@
+<apex:page standardStylesheets="false" showHeader="false" controller="SOE_DashBoards_Cntrl">
+    <style>
+        body {font-family: calibri; background-color: #eee;font-size:14px;}
+        .drawing {padding: 0px;margin: 0px;}
+        #testTimeline {margin: 20px;position: relative;}
+        .tlMajor {left: 80px;position: absolute;width: 10px;height: 10px;background-color: #888;border: 2px solid #eee;}
+        .tlDateLabel {position: absolute;font-size: 12px;color: #888;text-align: right;font-style: italic;left: 0px;width: 70px;}
+        .tlLine { position: absolute; width: 2px; background-color: #888;top: 0px;left: 85px;border: 1px solid #aaa;}
+        .tlDateDot { left: 95px;position: absolute; width: 0;height: 0;border-top: 10px solid transparent;border-bottom: 10px solid transparent;border-right: 10px solid #5cac73;}
+        .tlEventFlag {left: 105px; position: absolute; width: 150px; height:13px; background-color:#5cac73; font-size: 14px; padding: 2px 0px 6px 4px; color: #fff; cursor: pointer;}
+        .tlEventExpand {left: 230px; position: absolute; width: 200px; background-color: #5cac73; font-size: 12px; padding: 0 10px 0 10px;color: #fff; }
+        body .btn { color: #fff;   padding : 4px 15px 4px 15px; background :#529dc8 ;font-size:15px; border-radius : 16px; border : 1px;}
+        .btn:hover, .btn:focus, .btn.focus { background :  #367fa9;  }
+    </style> 
+    <body>
+    <apex:form id="frm">
+        <apex:actionfunction action="{!openCancel}" name="cancel" rerender="frm" /> 
+    <div > <font size="5px" color="blue"><center>{!soe.name} : {!soe.SOE_Title__c}</center>   </font> </div>
+    <div  style="text-align: right;width:95%;">  <apex:commandButton value="Cancel" action="{!OpenCancel}" styleClass="btn btn-primary"  style="padding-left: 15px; padding-right:15px;"/>     </div>
+    <div style="width: 400px;float:left;">
+    <div id="testTimeline" style="height: 480px;">
+    
+    <div class="tlLine" style="height: 480px;"></div>
+    <div id="div1" >
+        <div class="tlMajor" style="background-color:green;"></div>
+        <span class="tlDateLabel" style="color:green;font-size:14px;"><b><apex:outputField value="{!soe.Schedule_Start__c}" title="Schedule Start"/></b></span>
+    </div>
+    <div id="div2" >
+    <div class="tlMajor" style="background-color:green;"></div>
+    <span class="tlDateLabel" style="color:green;font-size:14px;"><b><apex:outputField value="{!soe.Schedule_End__c}" title="Schedule End"/></b></span>
+    </div>
+    <div id="div3" >
+    <div class="tlMajor" style="background-color:orange;"></div>
+    <span class="tlDateLabel" style="color:orange;font-size:14px;"><b><apex:outputField value="{!soe.Warning_Zone__c}" title="Warning Zone"/></b></span>
+    </div>
+    <div id="div4" >
+    <div class="tlMajor" style="background-color:red;"></div>
+    <span class="tlDateLabel" style="color:red;font-size:14px;"><b><apex:outputField value="{!soe.BAU_Impact__c}" title="BAU Impact"/></b></span>
+    </div>
+    <div id="div5" style="position: absolute;">
+        <div class="tlDateDot" id="psd"></div>
+        <div class="tlEventFlag" id="ps"><b>PS: </b><apex:outputField value="{!soe.Min_Planned_Start__c}"/></div>
+        <div class="tlEventExpand" style="display: none;">
+            <p><b>Sat Mar 15 2014 00:00:00 GMT+0530 (India Standard Time)</b></p>    
+            </div>
+    </div>
+    <div id="div6" style="position: absolute;">
+        <div class="tlDateDot" id="ped"></div>
+        <div class="tlEventFlag" id="pe"><b>PE: </b><apex:outputField value="{!soe.Max_Planned_End__c}"/></div>
+        <div class="tlEventExpand" style="display: none;">
+            <p><b>Sat Mar 15 2014 00:00:00 GMT+0530 (India Standard Time)</b></p>    
+            </div>
+    </div>
+    <div id="div7" style="position: absolute;">
+        <div class="tlDateDot" id="fed"></div>
+        <div class="tlEventFlag" id="fe"><b>FE: </b><apex:outputField value="{!soe.Max_Forecast_End__c}"/></div>
+        <div class="tlEventExpand" style="display: none;">
+            <p><b>Sat Mar 15 2014 00:00:00 GMT+0530 (India Standard Time)</b></p>    
+            </div>
+    </div>
+    <div id="div8" style="position: absolute;">
+    <div class="tlDateDot" style="border-right: 10px solid #3391E8;"></div>
+        <div class="tlEventFlag" id="ct"><b>CT: </b><apex:outputField value="{!soe.Current_Time__c}"/></div>
+        <div class="tlEventExpand" style="display: none;">
+            <p><b>Sat Mar 15 2014 00:00:00 GMT+0530 (India Standard Time)</b></p>    
+            </div>
+        </div>
+    </div>
+    </div>
+    <div style="width:400px;float:left;">
+    <br/><br/>
+    <table>
+        <tr>
+            <td><b>PS: <apex:outputField value="{!soe.Min_Planned_Start__c}"/></b></td>
+            <td>* PS = Planned Start</td>
+        </tr>
+        <tr>
+            <td><b>PE : <apex:outputField value="{!soe.Max_Planned_End__c}"/></b></td>
+            <td>* PE = Planned End</td>
+        </tr>
+        <tr>
+            <td><b>FE : <apex:outputField value="{!soe.Max_Forecast_End__c}"/></b></td>
+            <td>* FE = Forecast End</td>
+        </tr>
+        <tr>
+            <td><b>CT: <apex:outputField value="{!soe.Min_Planned_Start__c}"/></b></td>
+            <td>* CT = Current Time</td>
+        </tr>
+    </table><br/><br/><br/><br/>
+</div>
+</apex:form>
+ <apex:includescript value="{!$Resource.Jquery1}" />
+   <script type="text/javascript">
+    j$= jQuery.noConflict();    
+        j$(document).ready(function(){  
+            document.getElementById("div1").style.height='{!green}' + '%';
+            document.getElementById("div2").style.height='{!orange}' + '%';
+            document.getElementById("div3").style.height='{!red}' + '%';
+            document.getElementById("div5").style.top='{!PS}' + '%';
+            document.getElementById("div6").style.top='{!PE}' + '%';
+            document.getElementById("div7").style.top='{!FE}' + '%';
+            document.getElementById("div8").style.top='{!CT}' + '%';
+            if({!PS} > {!green} && {!PS} < {!green} +{!orange} ){
+                j$("#ps").css("background-color","orange");
+                j$("#psd").css("border-right","10px solid orange");
+            }
+            else if({!PS} > {!green} +{!orange} && {!PS} < {!green} +{!orange}+{!red} ){
+                j$("#ps").css("background-color","red");
+                j$("#psd").css("border-right","10px solid red");
+            }            
+            if({!PE} > {!green} && {!PE} < {!green} +{!orange} ){
+                j$("#pe").css("background-color","orange");
+                j$("#ped").css("border-right","10px solid orange");
+            }
+            else if({!PE} > {!green} +{!orange} && {!PE} < {!green} +{!orange}+{!red} ){
+                j$("#pe").css("background-color","red");
+                j$("#ped").css("border-right","10px solid red");
+            }
+            if({!FE} > {!green} && {!FE} < {!green} +{!orange} ){
+                j$("#fe").css("background-color","orange");
+                j$("#fed").css("border-right","10px solid orange");
+            }
+            else if({!FE} > {!green} +{!orange} && {!FE} < {!green} +{!orange}+{!red} ){
+                j$("#fe").css("background-color","red");
+                j$("#fed").css("border-right","10px solid red");
+            }
+          j$("#ct").css("background-color","#3391E8");
+        });
+    </script>
+</body>
+</apex:page>

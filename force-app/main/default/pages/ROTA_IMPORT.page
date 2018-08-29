@@ -1,0 +1,21 @@
+<apex:page controller="Import_ROTA_cntrl" docType="html-5.0" >    
+    <apex:form >
+     <apex:outputPanel rendered="{!$User.UIThemeDisplayed == 'Theme4t'}">
+             <b><center><span style="color:red;font-size:20px;">{!$Label.i8__export001}</span>
+             <br/><apex:commandButton value="Cancel" style="font-size: 13px;" action="{!CancelROTA}" /></center></b>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!$User.UIThemeDisplayed != 'Theme4t'}">  
+        <apex:pageMessages />
+        <apex:pageBlock title="ROTA Upload Section">    
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton action="{!CancelROTA}" value="Cancel" style="float:right" />
+            </apex:pageBlockButtons> 
+            <left>
+                <apex:inputFile value="{!contentFile}" filename="{!nameFile}" accept=".csv"/> <apex:commandButton action="{!ReadFile}" value="Upload" id="theButton" style="width:75px;"/>
+                <br/> <br/><font color="green" size="3px"> <b> {!$Label.i8__rotaimport004} <a href="{!URLFOR($Resource.ROTA_Template)}" target="_Blank"> Click here </a> to download the template. </b> </font>
+                <br/> <font color="red"> <b>Note: {!$Label.i8__rotaimport005}</b></font>                
+            </left> 
+        </apex:pageBlock>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

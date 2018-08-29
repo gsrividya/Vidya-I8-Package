@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Run_Delay__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <formula>IF(OR(ISPICKVAL( Status__c , &#39;Running&#39;),ISPICKVAL( Status__c , &#39;Completed&#39;),ISPICKVAL( Status__c , &#39;Force Completed&#39;)), ( End_Time__c -  Start_Time__c  )*24*60-( Planned_End__c -  Planned_Start__c )*24*60,null)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Run Delay</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

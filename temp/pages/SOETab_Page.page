@@ -1,0 +1,6 @@
+<!--<apex:page action="{!URLFOR($Action.SOE__c.List, $ObjectType.SOE__c)}">
+</apex:page>-->
+
+<apex:page showHeader="true" tabstyle="SOE__c" > 
+    <apex:ListViews type="SOE__c" /> 
+</apex:page>

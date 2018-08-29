@@ -1,0 +1,8 @@
+Dear {!Incident__c.Assignee__c},<br/><br/>
+The Incident raised has been Closed, brief details are as follows:<br/>
+Incident: {!Incident__c.Name}<br/>
+SOE : {!Incident__c.00N58000003f5f3}<br/>
+TASK: {!Incident__c.Task__c}<br/>
+Description:{!Incident__c.Summary__c}<br/><br/>
+Regards, <br/>
+{!Incident__c.LastModifiedBy}<br/>

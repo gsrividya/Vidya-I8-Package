@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SOE_Cannot_be_changed_after_created</fullName>
+    <active>true</active>
+    <errorConditionFormula>ISCHANGED(SOE__c  )</errorConditionFormula>
+    <errorMessage>SOE Cannot be changed after Acess Request is Created.</errorMessage>
+</ValidationRule>

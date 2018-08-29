@@ -1,0 +1,262 @@
+<apex:page sidebar="false" standardStylesheets="true" showHeader="false"  controller="SOE_SingleDashboard_Cntrl" renderAs="pdf" docType="html-5.0">
+    <apex:stylesheet value="{!URLFOR($Resource.DHTMLXGantt4, 'codebase/dhtmlxgantt.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.DHTMLXGantt4, 'codebase/dhtmlxgantt.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.DHTMLXGantt4, 'codebase/ext/dhtmlxgantt_tooltip.js')}"/> 
+    <html >
+        <head>    
+            <style type="text/css">
+                @page { size : A4 portrait;}
+                @page rotated { size : A4 landscape;}
+                table { page : rotated;}  
+            </style>
+        </head>  
+        <body style="font-family: sans-serif;">
+            <div style="width:100%;">
+                <!--<div style="font-size:30px;color:#921D15;"><center>IOAP</center></div>-->
+                <div width="100%"><center><div style="font-size:30px;width:100%;color:#921D15;"><center>{!soe.Name} - {!soe.SOE_Title__c}</center></div></center></div>
+            </div>&nbsp;
+            <div title="Top Content">
+                <div style="overflow-x:auto;">
+                     <table  border="1px"  cellpadding="0" cellspacing="0" width="100%">
+                        <tr style="text-align:center;color:#242829;background-color:#f2f2f2;font-size:14px;font-weight: normal;">
+                            <th width="25%">SOE Status</th>
+                            <th width="25%"> <b>Completed %</b></th>
+                            <th width="25%"> Incidents </th>
+                            <th width="25%" >Overall Status</th>
+                        </tr>
+                        <tr style="font-size:12px;">
+                         <td  width="25%" ><span >{!soe.SOE_RAG__c}</span></td>
+                         <td  width="25%" >{!soe.Completed__c}</td>
+                         <td width="25%">Open:{!OpenIncidents}  &nbsp;&nbsp;&nbsp;Closed:{!ClosedIncidents} </td>
+                         <td width="25%"> <span >{!soe.Dealy_Ahead_mins__c } mins</span></td>
+                        </tr>
+                        </table>&nbsp;
+                        <table  border="1px"  class="class1"  cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <th colspan="6" style="font-size:17px;background-color:#AEACB5;color:#FFFFFF;"> <center>Overall SOE Status</center></th>
+                            </tr>
+                            <tr style="font-size:14px;background-color:#f2f2f2;">
+                               <th style="text-align:center;color:#242829;">Planned ST</th>
+                               <th style="text-align:center;color:#242829;">Planned ET</th>
+                               <th style="text-align:center;color:#242829;">Forecast ST</th>
+                               <th style="text-align:center;color:#242829;">Forecast ET</th>
+                               <th style="text-align:center;color:#242829;">Actual ST</th>
+                               <th style="text-align:center;color:#242829;">Actual ET</th>                            
+                            </tr>
+                            <tr style="font-size:12px;">    
+                                <td><apex:outputField value="{!soe.Min_Planned_Start__c}"/></td> 
+                                <td><apex:outputField value="{!soe.Max_Planned_End__c}"/></td> 
+                                <td><apex:outputField value="{!soe.Min_Forecast_Start__c}"/></td> 
+                                <td><apex:outputField value="{!soe.Max_Forecast_End__c}"/></td> 
+                                <td><apex:outputField value="{!soe.Min_Start_Time__c  }"/></td> 
+                                <td><apex:outputField value="{!soe.Max_End_Time__c}"/></td> 
+                           </tr>
+                        </table>
+                </div>
+            </div>      <br/>          
+            <div style="overflow-y:auto;overflow-x:auto;height:initial;float:left;width:100%;">
+                <table border="1px" style="width:100%;"   cellpadding="0" cellspacing="0">
+                    <tr><th colspan="5" style="font-size:17px;background-color:#AEACB5;"><center><span style="color:#FFFFFF;">Top 5 Completed Milestone Tasks</span></center></th>  </tr>
+                    <tr style="font-size:14px;background-color:#f2f2f2;">
+                       <th style="text-align:center;color:#242829;"> Milestone Task</th>
+                        <th style="text-align:center;color:#242829;"> Planned ET</th>
+                        <th style="text-align:center;color:#242829;"> Forecast ET</th>
+                        <th style="text-align:center;color:#242829;"> Actual ET</th>
+                        <th style="text-align:center;color:#242829;"> RV <br/><span style="font-size:12px;">(mins)</span></th>                
+                    </tr>
+                    <apex:outputPanel rendered="{!MilestoneList1 = null || MilestoneList1.Size<= 0 }"> <tr style="font-size:12px;"> <td colspan="5"> No tasks.</td></tr></apex:outputPanel>
+                    <apex:repeat value="{!MilestoneList1}" var="list1">
+                        <tr style="font-size:12px;">
+                            <td> {!list1.ID_Text__c} - {!list1.Task_Title__c}</td>
+                            <td > <apex:outputField value="{!list1.Planned_End__c}"/></td>
+                            <td > <apex:outputField value="{!list1.Forecast_End__c}"/></td>
+                            <td > <apex:outputField value="{!list1.Actual_End__c}"/></td>
+                            <td > <apex:outputField value="{!list1.Run_Delay__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </table>&nbsp;       
+            </div>
+            <div style="overflow-y:auto;overflow-x:auto;height:initial;float:left;width:100%">
+                <table border="1px" style="width:100%;"   cellpadding="0" cellspacing="0">
+                    <tr><th colspan="5" style="font-size:17px;background-color:#AEACB5;"><center><span style="color:#FFFFFF;">Next Top 5 Milestone Tasks</span></center></th></tr>
+                    <tr style="font-size:14px;background-color:#f2f2f2;">
+                       <th style="text-align:center;color:#242829;"> Milestone Task</th>
+                        <th style="text-align:center;color:#242829;"> Planned ET</th>
+                        <th style="text-align:center;color:#242829;"> Forecast ET</th>
+                        <th style="text-align:center;color:#242829;"> Actual ET</th>
+                        <th style="text-align:center;color:#242829;"> RV <br/><span style="font-size:12px;">(mins)</span></th>                
+                    </tr>
+                    <apex:outputPanel rendered="{!MilestoneList2 = null || MilestoneList2.Size<= 0 }"> <tr style="font-size:12px;"> <td colspan="5">  No tasks.</td></tr></apex:outputPanel>
+                    <apex:repeat value="{!MilestoneList2}" var="list1">
+                        <tr style="font-size:12px;">
+                            <td> {!list1.ID_Text__c} - {!list1.Task_Title__c}</td>
+                            <td> <apex:outputField value="{!list1.Planned_End__c}"/></td>
+                            <td> <apex:outputField value="{!list1.Forecast_End__c}"/></td>
+                            <td > <apex:outputField value="{!list1.Actual_End__c}"/></td>
+                            <td > <apex:outputField value="{!list1.Run_Delay__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </table>&nbsp;
+            </div>
+            <div  style="overflow-y:auto;overflow-x:auto;height:initial;float:left;width:100%;">
+                <table border="1px" style="overflow-y:auto;overflow-x:scroll;width:100%;border-top:2px solid black;" cellpadding="0" cellspacing="0">
+                    <tr ><th colspan="5" style="font-size:17px;background-color:#AEACB5;"><center><span style="color:#FFFFFF;">Top 5 High Priority Incidents</span></center></th>  </tr>
+                    <tr style="font-size:14px;background-color:#f2f2f2;">
+                        <th style="text-align:center;color:#242829;">Inc #</th>
+                        <th style="text-align:center;color:#242829;"> Type</th>
+                        <th style="text-align:center;color:#242829;"> Status</th>
+                        <th style="text-align:center;color:#242829;"> Summary</th>               
+                    </tr>
+                    <apex:outputPanel rendered="{!Incidents1 = null || Incidents1.Size<= 0 }"> <tr style="font-size:12px;"> <td colspan="5">  No Incidents.</td></tr></apex:outputPanel>
+                    <apex:repeat value="{!Incidents1}" var="list1">
+                        <tr style="font-size:12px;">
+                            <td > {!list1.Name} </td>
+                            <td > <apex:outputField value="{!list1.Inc_Type__c }"/></td>
+                            <td > <apex:outputField value="{!list1.Status__c}"/></td>
+                            <td > <apex:outputField value="{!list1.Summary__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </table>&nbsp; 
+            </div>
+            <div  style="overflow-y:auto;overflow-x:auto;height:initial;float:left;width:100%" >
+                <table border="1px" width="100%" cellpadding="0" cellspacing="0" style="border-top:2px solid black;">
+                    <tr><th colspan="5" style="font-size:17px;background-color:#AEACB5;"><center><span style="color:#FFFFFF;">Top 5 Medium Priority Incidents</span></center></th>  </tr>
+                    <tr style="font-size:14px;background-color:#f2f2f2;">
+                        <th style="text-align:center;color:#242829;">Inc #</th>
+                        <th style="text-align:center;color:#242829;"> Type</th>
+                        <th style="text-align:center;color:#242829;"> Status</th>
+                        <th style="text-align:center;color:#242829;"> Summary</th>               
+                    </tr>
+                    <apex:outputPanel rendered="{!Incidents2 = null || Incidents2.Size<= 0 }"> <tr style="font-size:12px;"> <td colspan="5">  No Incidents.</td></tr></apex:outputPanel>
+                    <apex:repeat value="{!Incidents2}" var="list1">
+                        <tr style="font-size:12px;">
+                            <td> {!list1.Name} </td>
+                            <td > <apex:outputField value="{!list1.Inc_Type__c }"/></td>
+                            <td > <apex:outputField value="{!list1.Status__c}"/></td>
+                            <td > <apex:outputField value="{!list1.Summary__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </table>&nbsp;
+            </div>   
+            <div style="overflow-y:auto;overflow-x:auto;height:initial;float:left;width:100%">
+                <table border="1px" style="width:100%" cellpadding="0" cellspacing="0">
+                    <thead style="width:100%"> 
+                        <tr ><th colspan="5" style="font-size:17px;background-color:#AEACB5;"><center><span style="color:#FFFFFF;">Top 5 Completed Critical Path Tasks</span></center></th>  </tr>
+                        <tr style="font-size:14px;background-color:#f2f2f2;">
+                            <th style="text-align:center;color:#242829;">CP Task</th>
+                            <th style="text-align:center;color:#242829;"> Planned ET</th>
+                            <th style="text-align:center;color:#242829;"> Forecast ET</th>
+                            <th style="text-align:center;color:#242829;"> Actual ET</th>
+                            <th style="text-align:center;color:#242829;"> RV<br/> <span style="font-size:12px;">(mins)</span></th>                
+                        </tr>
+                        <apex:outputPanel rendered="{!CriticalPath1 = null || CriticalPath1.Size<= 0 }"> <tr style="font-size:12px;"> <td colspan="5">  No tasks.</td></tr></apex:outputPanel>
+                    </thead> 
+                    <tbody>
+                        <apex:repeat value="{!CriticalPath1}" var="list1">
+                            <tr style="font-size:12px;">
+                                <td> {!list1.ID_Text__c} - {!list1.Task_Title__c}</td>
+                                <td > <apex:outputField value="{!list1.Planned_End__c}"/></td>
+                                <td > <apex:outputField value="{!list1.Forecast_End__c}"/></td>
+                                <td > <apex:outputField value="{!list1.Actual_End__c}"/></td>
+                                <td > <apex:outputField value="{!list1.Run_Delay__c}"/></td>
+                            </tr>
+                        </apex:repeat>
+                    </tbody>   
+                </table>&nbsp;    
+            </div>
+            <div style="overflow-y:auto;overflow-x:auto;height:initial;float:left;width:100%">
+                <table border="1px" style="width:100%" cellpadding="0" cellspacing="0">
+                    <tr ><th colspan="5" style="font-size:17px;background-color:#AEACB5;"><center><span style="color:#FFFFFF;">Next Top 5 Critical Path Tasks</span></center></th></tr>
+                    <tr style="font-size:14px;background-color:#f2f2f2;">
+                        <th style="text-align:center;color:#242829;">CP Task</th>
+                        <th style="text-align:center;color:#242829;"> Planned ET</th>
+                        <th style="text-align:center;color:#242829;"> Forecast ET</th>
+                        <th style="text-align:center;color:#242829;"> Actual ET</th>
+                        <th style="text-align:center;color:#242829;"> RV<br/> <span style="font-size:12px;">(mins)</span></th>                
+                    </tr>
+                    <apex:outputPanel rendered="{!CriticalPath2 = null || CriticalPath2.Size<= 0 }"> <tr style="font-size:12px;"> <td colspan="5">  No tasks.</td></tr></apex:outputPanel>
+                    <apex:repeat value="{!CriticalPath2}" var="list1">
+                        <tr style="font-size:12px;">
+                            <td> {!list1.ID_Text__c} - {!list1.Task_Title__c}</td>
+                            <td > <apex:outputField value="{!list1.Planned_End__c}"/></td>
+                            <td > <apex:outputField value="{!list1.Forecast_End__c}"/></td>
+                            <td > <apex:outputField value="{!list1.Actual_End__c}"/></td>
+                            <td > <apex:outputField value="{!list1.Run_Delay__c}"/></td>
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </div>
+        </body>
+        <script>
+        var start =0;
+        var pagesize =50;  
+        window.onload=function()
+        {
+            TasksDispaly();
+        }
+        function TasksDispaly()
+        {    
+            gantt.config.scale_unit = "day";
+            gantt.config.duration_unit = "hour";        
+            gantt.config.date_scale = "%D %d/%m/%Y";
+            gantt.config.details_on_create = true;       
+            gantt.config.subscales = [{unit:"hour", step:1, date:"%H"}];
+            gantt.config.scale_height = 24;      
+            gantt.config.readonly = true;       
+            gantt.config.min_column_width = 22;
+            gantt.config.row_height = 30;
+            gantt.config.tooltip_hide_timeout = 5000;
+            gantt.config.columns = [       
+                {name:"title", label:"Stack Details", width:200},
+                {name:"planned", label:"Planned End", width:150},
+                {name:"forecast", label:"Forecast End", width:150}              
+            ];           
+        gantt.templates.task_text=function(start,end,task){
+            return "<b>Title:</b> "+task.text+",<b> Duration:</b> "+task.taskdur;
+        };
+        gantt.templates.tooltip_text = function(start,end,task){
+            var x=  new Date(task.start_date );
+            var start = x.getFullYear() + '-' + (x.getMonth()+1) + '-' + x.getDate() + ' ' + x.getHours() + ':' + x.getMinutes();
+            var y=  new Date(task.end_date );
+            var end = y.getFullYear() + '-' + (y.getMonth()+1) + '-' + y.getDate() + ' ' + y.getHours() + ':' + y.getMinutes();
+            return "<b> Task Id:</b> "+ task.idtext+"<br/><b>Task Title:</b> "+task.text+"<br/> <b>Start Time: </b>"+start+"<br/> <b>End Time: </b>"+end+"<br/><b>Duration:</b> " + task.taskdur;
+        };        
+        var str=''; 
+        var SOEID = '{!JSENCODE(HTMLENCODE(SOEId))}';
+        var total = '{!count}';
+        Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.SOE_SingleDashboard_Cntrl.getTasks}',SOEID,start,pagesize,function(result, event){
+            console.log(result);
+            if (event.status){ 
+                var list2 =new Array();
+                for(var i=0;i<result.length ;i++)
+                { 
+                    var Enddate = new Date(result[i].End_Time__c);
+                    var Startdate = new Date(result[i].Start_Time__c);
+                    var formattedendDate = ('0' + Enddate.getDate()).slice(-2) + '/' + ('0' + (Enddate.getMonth() + 1)).slice(-2) + '/' + Enddate.getFullYear() + ' ' + ('0' + Enddate.getHours()).slice(-2) + ':' + ('0' + Enddate.getMinutes()).slice(-2);
+                    var formattedStartDate = ('0' + Startdate.getDate()).slice(-2) + '/' + ('0' + (Startdate.getMonth() + 1)).slice(-2) + '/' + Startdate.getFullYear() + ' ' + ('0' + Startdate.getHours()).slice(-2) + ':' + ('0' + Startdate.getMinutes()).slice(-2);
+                    
+                    var Fdate = new Date(result[i].Forecast_End__c);
+                    var Pdate = new Date(result[i].Planned_End__c);
+                    var forecastendDate = ('0' + Fdate.getDate()).slice(-2) + '/' + ('0' + (Fdate.getMonth() + 1)).slice(-2) + '/' + Fdate.getFullYear() + ' ' + ('0' + Fdate.getHours()).slice(-2) + ':' + ('0' + Fdate.getMinutes()).slice(-2);
+                    var plannedendDate = ('0' + Pdate.getDate()).slice(-2) + '/' + ('0' + (Pdate.getMonth() + 1)).slice(-2) + '/' + Pdate.getFullYear() + ' ' + ('0' + Pdate.getHours()).slice(-2) + ':' + ('0' + Pdate.getMinutes()).slice(-2);
+                    var x = result[i].Id_Before_Decimal__c +'.0';
+                    list2.push({planned:plannedendDate.toString(), forecast: forecastendDate.toString(),text:result[i].Task_Title__c, start_date:formattedStartDate , end_date:formattedendDate , idtext:result[i].ID_Text__c,taskdur: result[i].Duration__c , title: result[i].ID_Text__c+' : '+result[i].Task_Title__c} );
+                }
+                
+                gantt.init("gantt_here");
+                gantt.clearAll(); 
+                gantt.parse({data:list2});
+            }
+            else if (event.type === 'exception') {
+                alert(event.message +  event.where );
+            } 
+                else {
+                    alert(event.message);
+                } 
+        },
+                     {escape: true}
+                   ); 
+    }
+       </script> 
+    </html>
+</apex:page>

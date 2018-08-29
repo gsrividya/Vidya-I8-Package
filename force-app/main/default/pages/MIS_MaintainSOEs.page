@@ -1,0 +1,94 @@
+<apex:page controller="MIS_SOEs_cntrl" showHeader="false" standardStylesheets="false">
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;}
+        .table-responsive   { width: 100%; margin-bottom: 15px; overflow-x: auto; overflow-y: hidden;-webkit-overflow-scrolling: touch; -ms-overflow-style: -ms-autohiding-scrollbar; }
+        .padd-left {  padding-left:30px;  }
+        .padd-left-40 { padding-left:50px;  }
+        @media only screen and (min-width: 256px){
+            .selectlist{   min-width:70px;  min-height:110px;  }
+            .desk_element{display: none;  }
+        }
+        @media only screen and (min-width: 600px){
+            .selectlist{  width:auto; min-width:180px;  min-height:180px; }
+            .desk_element{ display: block; }
+        }
+    </style>    
+    <apex:form >
+        <div class="wrapper">
+            <c:SOEPageHeader object="{!misobj.Id}"></c:SOEPageHeader>
+            <div  style="min-height:0px!important" id="body">
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                            <div class="row">
+                                <div class="col-md-3" style="margin-bottom: 5px">
+                                    <i class="fa fa-database fa-2x"></i>
+                                    <p style="display: inline; font-size: 24px; font-weight: bold;"><span style=" text-transform:uppercase;">maintain SOE</span>s</p>
+                                </div>
+                                <div class="col-md-5">
+                                    <center><apex:outputLabel rendered="{!errorbool == true}" id="message">
+                                        <div Class="bg-success" style="text-transform:uppercase;">
+                                            <h4><b>{!errormessage}</b></h4>
+                                        </div>
+                                    </apex:outputLabel></center>
+                                </div>
+                                <div class="col-md-4" style="text-align: right">            
+                                    <apex:commandButton value="Apply" action="{!Apply_method}" styleClass="btn btn-primary" style="padding-left: 15px; padding-right:15px;"/>
+                                    <apex:commandButton value="Close" action="{!cancel_method}" styleClass="btn btn-primary" style="padding-left: 15px; padding-right:15px;"/>&nbsp;
+                                </div>
+                            </div><br/>
+                            <div class="row">
+                                <label class="col-md-1 col-xs-2"><b>Search SOE</b></label>
+                                <div class="col-md-11 col-xs-10">
+                                    <apex:inputText value="{!search_SOE}" styleclass="col-md-2"/><apex:commandButton value="Search" action="{!search_Action}" styleClass="col-md-1"/>
+                                    <div class="col-md-9"></div>
+                                </div>
+                            </div><br/>
+                            <div>
+                                <table class="table1">
+                                    <tr>
+                                        <td class="desk_element"></td>
+                                        <td align="center" > <b>Available SOEs</b></td>
+                                        <td></td>
+                                        <td align="center" ><b>Selected SOEs</b></td> 
+                                    </tr>
+                                    <tr>
+                                        <td valign="top" class="desk_element">
+                                            <apex:outputLabel >Add/Remove SOEs</apex:outputLabel>
+                                        </td>
+                                        <td width="120px">
+                                            <apex:selectList value="{!selectedleftSOE}" id="leftlist" styleClass="form-control selectlist" multiselect="true" size="10">
+                                                <apex:selectOptions value="{!leftSOE}"/>
+                                            </apex:selectList>
+                                        </td>
+                                        <td width="20px">
+                                            <apex:commandLink title="Reset" action="{!refreshList}" reRender="leftlist,rightlist"><i class="fa fa-refresh" style="padding: 5px;"></i></apex:commandLink>
+                                            <apex:commandLink title="Add All" action="{!AddAllSOEs}" reRender="leftlist,rightlist"><i class="fa fa-forward" style="padding: 5px;"></i></apex:commandLink>
+                                            <apex:commandLink title="Add Selected" action="{!addSOE}" reRender="leftlist,rightlist"><i class="fa fa-caret-right fa-lg" style="padding: 8px;"></i></apex:commandLink>
+                                            <apex:commandLink title="Remove Selected" action="{!removeSOE}" reRender="leftlist,rightlist"><i class="fa fa-caret-left fa-lg" style="padding: 8px;"></i></apex:commandLink>
+                                            <apex:commandLink title="Remove All" action="{!removeAllSOEs}" reRender="leftlist,rightlist"><i class="fa fa-backward" style="padding: 5px;"></i></apex:commandLink>
+                                        </td>
+                                        <td >
+                                            <apex:selectList value="{!selectedrightSOE}" id="rightlist" styleClass="form-control selectlist" multiselect="true" size="10">
+                                                <apex:selectOptions value="{!rightSOE}"/>
+                                            </apex:selectList>
+                                        </td>
+                                    </tr>
+                                </table><br/>
+                            </div>
+                        </div>
+                    </div>                        
+                </section>
+            </div>
+        </div>
+        <apex:includescript value="{!$Resource.Jquery1}" />
+    <script type="text/javascript"> 
+    j$= jQuery.noConflict(); 
+    j$(document).ready(function(){ 
+         if( '{!$User.UIThemeDisplayed}'== 'Theme4d')
+            j$("body").css("font-size","130%");
+     });
+</script>
+    </apex:form>
+</apex:page>

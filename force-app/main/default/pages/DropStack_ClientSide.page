@@ -1,0 +1,86 @@
+<apex:page showheader="false" standardstylesheets="false" controller="Stack_Management_Delete">
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar {  background-color:#CFEEF8; border-color: #303260;} 
+    </style>   
+    <script>
+    function deleteStack(){
+        var res = confirm('Would you like to drop the Stack');
+        if(res == true){               
+            deleteStackmet();
+        }
+    }
+    </script>
+    <apex:form id="frm">         
+        <apex:actionFunction name="deleteStackmet" action="{!deleteStack}"/>  
+        <div class="wrapper">
+            <!--Header section starts ------>
+            <c:SOEPageHeader sid="{!SOEObj.Id}" ></c:SOEPageHeader>  
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <form id="frmTasksOverview" class="form-group">
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                        <h3 style="display:inline;COLOR:#093E4F;">DROP STACK</h3> 
+                                    </div>
+                                    <div class="col-lg-4" style="text-align: right"> 
+                                        <apex:outputPanel rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && (SOEobj.Status__c != I8.STATUS_IMP_COMP && SOEobj.Status__c != I8.STATUS_SOE_COMP && SOEobj.Status__c != I8.STATUS_IMPINPROGRESS &&  SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress')}">
+                                            <button type="button" class="btn btn-primary btn-sm" onclick="deleteStack();"  style="padding-left: 15px; padding-right:15px;">Drop</button>  
+                                        </apex:outputPanel>
+                                        <apex:commandButton value="Cancel" action="{!openCancel}" styleclass="btn btn-primary btn-sm"  style="padding-left: 15px; padding-right:15px;" immediate="true"/>        
+                                    </div>                                    
+                                </div> <br/>
+                                <apex:outputPanel rendered="{!error}">
+                                    <div class="alert alert-danger" role="alert" id="err"> <span>{!errormessage}</span></div>
+                                </apex:outputPanel>                                
+                                <hr />
+                                <apex:outputPanel rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && (SOEobj.Status__c != I8.STATUS_IMP_COMP && SOEobj.Status__c != I8.STATUS_SOE_COMP && SOEobj.Status__c != I8.STATUS_IMPINPROGRESS &&  SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress')}">
+                                    <div class="row">
+                                        <div class="col-sm-1">
+                                            <label> Stage Level</label>
+                                        </div>     
+                                        <div class="col-sm-3">
+                                            <apex:inputField value="{!taskobj.Stage_Level__c}"> 
+                                                <apex:actionSupport event="onchange" action="{!getdeleteitems}"/>
+                                            </apex:inputField>
+                                        </div>                                         
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-1">
+                                            <label> Stack</label>
+                                        </div>     
+                                        <div class="col-sm-3">
+                                            <apex:selectList value="{!selectdeletecon}" size="1">
+                                                <apex:selectOptions value="{!deloptins}">
+                                                </apex:selectOptions>
+                                            </apex:selectList>
+                                        </div>                                         
+                                    </div> </apex:outputPanel>
+                                <apex:outputPanel rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && SOEobj.Status__c == I8.STATUS_IMP_COMP || SOEobj.Status__c == I8.STATUS_SOE_COMP || SOEobj.Status__c == I8.STATUS_IMPINPROGRESS}">
+                                    <div class="div_class1">
+                                        <center><strong><h3>{!$Label.i8__addtask002}</h3></strong></center>
+                                    </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && (SOEobj.QA_Review_Required__c == true &&  SOEobj.QA_Review__c == 'In Progress')|| (SOEobj.WalkThrough_Required__c == true && SOEobj.WalkThrough__c == 'In Progress')}">
+                                    <div class="div_class1">
+                                        <center><strong><h3>{!$Label.i8__addtask003}</h3></strong></center>
+                                    </div>
+                                </apex:outputPanel> 
+                                <apex:outputPanel rendered="{!!CONTAINS(ImpMgrMapKey,$User.Id)}">
+                                    <div class="div_class1">
+                                        <center><strong><h3>{!$Label.i8__addtask001}</h3></strong></center>
+                                    </div>
+                                </apex:outputPanel>                                                                                       
+                            </div>
+                        </div>                        
+                    </form>
+                </section>
+            </div> <!-- Content Wrapper ends---->
+            <c:PageFooter ></c:PageFooter><!-- Footer section ends------>
+        </div>
+    </apex:form>
+</apex:page>

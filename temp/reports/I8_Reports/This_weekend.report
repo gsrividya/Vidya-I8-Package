@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>SOE__c.SOE_Title__c</field>
+    </columns>
+    <columns>
+        <field>SOE__c.Baseline_Start__c</field>
+    </columns>
+    <columns>
+        <field>SOE__c.Imp_Duration__c</field>
+    </columns>
+    <columns>
+        <field>SOE__c.Schedule_Start__c</field>
+    </columns>
+    <columns>
+        <field>SOE__c.Schedule_End__c</field>
+    </columns>
+    <columns>
+        <field>SOE__c.Warning_Zone__c</field>
+    </columns>
+    <columns>
+        <field>SOE__c.BAU_Impact__c</field>
+    </columns>
+    <format>Tabular</format>
+    <name>This Week SOEs</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntityCustomEntity$SOE__c$Task__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>SOE__c.Schedule_Start__c</dateColumn>
+        <interval>INTERVAL_THISWEEK</interval>
+    </timeFrameFilter>
+</Report>

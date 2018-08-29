@@ -1,0 +1,155 @@
+<apex:page showheader="false" standardstylesheets="false" controller="cloneTask_cntrl">
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;}
+        .navbar { background-color:#CFEEF8;border-color: #303260;} 
+    </style>
+    <apex:form id="frm"> 
+        <div class="wrapper">
+            <!--Header section starts ------>
+            <c:SOEPageHeader sid="{!SOEId}" ></c:SOEPageHeader>             
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <div class="box box-primary">
+                        <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                            <div class="row">
+                                <div class="col-lg-3">
+                                    <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                    <h3 style="display:inline;COLOR:#093E4F;">CLONE TASK</h3>
+                                </div>
+                                <div class="col-lg-5"></div>
+                                <div class="col-lg-4" style="text-align: right">
+                                <apex:outputPanel rendered="{!errorboolean == false}">  
+                                    <apex:commandButton value="Clone" styleclass="btn btn-primary btn-sm" action="{!clone_task}" rendered="{!SOEobj.Status__c != I8.STATUS_IMP_COMP && SOEobj.Status__c != I8.STATUS_SOE_COMP && SOEobj.Status__c != I8.STATUS_IMPINPROGRESS && SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id)}"  style="padding-left: 15px; padding-right:15px;"/>
+                                   </apex:outputPanel>
+                                   <apex:commandButton value="Cancel" action="{!OpenCancel}" styleClass="btn btn-primary"   style="padding-left: 15px; padding-right:15px;"/>                                      
+                                </div>
+                            </div>
+                            <hr/>
+                            <apex:actionRegion rendered="{!! (CONTAINS(ImpMgrMapKey,$User.Id))}">
+                                <b><center><h3>{!$Label.i8__addtask001}</h3></center></b>
+                            </apex:actionRegion>
+                            <apex:actionRegion rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && (SOEobj.Status__c == I8.STATUS_IMP_COMP || SOEobj.Status__c == I8.STATUS_SOE_COMP || SOEobj.Status__c == I8.STATUS_IMPINPROGRESS)}"><b><center><h3>{!$Label.i8__addtask002}</h3></center></b></apex:actionRegion>
+                            <apex:actionRegion rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && (SOEobj.QA_Review__c == 'In Progress' || SOEobj.WalkThrough__c == 'In Progress')}"><b><center><h3>{!$Label.i8__addtask003}</h3></center></b></apex:actionRegion>
+                            <apex:actionRegion rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && SOEobj.Status__c != I8.STATUS_IMP_COMP && SOEobj.Status__c != I8.STATUS_SOE_COMP && SOEobj.Status__c != I8.STATUS_IMPINPROGRESS && SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress'}">
+                                <apex:outputPanel rendered="{!errorbool == true}"> 
+                                    <div class="alert alert-danger" role="alert" id="err"> {!errmsg} </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel id="div1" rendered="{!errorboolean== false}">
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="box box-info">
+                                                <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                                    <div class="row">
+                                                        <div class="col-sm-3">  <label>Source SOE</label> </div>
+                                                        <div class="col-sm-7">
+                                                            <apex:selectList size="1" value="{!selectedSourceSOE}" styleClass="form-control" style="padding:0px;">
+                                                                <apex:selectOptions value="{!SourceSOEList}"></apex:selectOptions>
+                                                                <apex:actionSupport action="{!SourceStageList}" event="onchange" reRender="div1"/>
+                                                            </apex:selectList>
+                                                        </div>
+                                                        <div class="col-sm-2">  </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-3"><label>Source Stage Level </label>  </div>
+                                                        <div class="col-sm-7">
+                                                            <apex:inputField value="{!taskobj.Stage_Level__c}">
+                                                                <apex:actionSupport action="{!SourceStageList}" event="onchange" rerender="div1"/>
+                                                            </apex:inputField>
+                                                        </div>
+                                                        <div class="col-sm-2">   </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-3"><label>Source Stage</label>  </div>
+                                                        <div class="col-sm-7">
+                                                            <apex:selectList size="1" value="{!SourceStage}">
+                                                                <apex:selectOptions value="{!SourceStagesList}"></apex:selectOptions>
+                                                                <apex:actionSupport action="{!getSourceTasks}" status="Source" event="onchange" reRender="div1,ar"/>
+                                                            </apex:selectList>
+                                                        </div>
+                                                        <div class="col-sm-2">   </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-3"> <label>Source Task</label> </div>
+                                                        <div class="col-sm-7">
+                                                            <apex:selectList size="1" value="{!SourceTask}">
+                                                                <apex:selectOptions value="{!SourceTaskList}"></apex:selectOptions>
+                                                                <apex:selectOption itemLabel="View More" itemValue="more" rendered="{!SourceTaskList.size == 1000}"/>
+                                                                <apex:actionSupport action="{!ViewMore}" status="Source" event="onchange" reRender="div1,ar"/>
+                                                            </apex:selectList>
+                                                            <apex:actionStatus id="Source">
+                                                                <apex:facet name="start">
+                                                                    <i class="fa fa-spinner fa-pulse fa-lg fa-fw" style="color: #1797C0;"></i>
+                                                                    <span class="sr-only">Loading...</span>
+                                                                </apex:facet>
+                                                            </apex:actionstatus>
+                                                        </div>
+                                                        <div class="col-sm-2"> </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="box box-info">
+                                                <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                                    <div class="row">
+                                                        <div class="col-sm-3"> <label>Target SOE</label> </div>
+                                                        <div class="col-sm-6"> <apex:outputLabel >{!SOEobj.name}:{!SOEobj.SOE_Title__c}</apex:outputLabel></div>
+                                                        <div class="col-sm-3">   </div> 
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-3"><label>Target Stage Level </label>  </div>
+                                                        <div class="col-sm-7">
+                                                            <apex:inputField value="{!taskobj1.Stage_Level__c}">
+                                                                <apex:actionSupport action="{!TargetStageList}" event="onchange" rerender="div1"/>
+                                                            </apex:inputField>
+                                                        </div>
+                                                        <div class="col-sm-2">   </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-3"><label>Target Stage</label></div>
+                                                        <div class="col-sm-7">
+                                                            <apex:selectList size="1" value="{!TargetStage}">
+                                                                <apex:selectOptions value="{!TargetStagesList}"></apex:selectOptions>
+                                                                <apex:actionSupport action="{!getTargetTasks}" status="Target" event="onchange" reRender="div1"/>
+                                                            </apex:selectList>
+                                                        </div>
+                                                        <div class="col-sm-2">   </div> 
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-sm-3"> <label>Target Task</label>  </div>
+                                                        <div class="col-sm-4">
+                                                            <apex:selectList size="1" value="{!TargetTask}">
+                                                                <apex:selectOptions value="{!TargetTaskList}"></apex:selectOptions>
+                                                                <apex:selectOption itemLabel="View More" itemValue="more" rendered="{!TargetTaskList.size == 1000}"/>
+                                                                <apex:actionSupport action="{!ViewMore}" status="Target" event="onchange" reRender="div1,ar"/>
+                                                            </apex:selectList>
+                                                            <apex:actionStatus id="Target">
+                                                                <apex:facet name="start">
+                                                                    <i class="fa fa-spinner fa-pulse fa-lg fa-fw" style="color: #1797C0;"></i>
+                                                                    <span class="sr-only">Loading...</span>
+                                                                </apex:facet>
+                                                            </apex:actionstatus>
+                                                        </div>
+                                                        <div class="col-sm-3 table1">     
+                                                            <apex:selectRadio value="{!Selectedoption}">
+                                                                <apex:selectOptions value="{!selectbefore_or_after}"></apex:selectOptions>
+                                                                <apex:actionSupport event="onchange" reRender=""/>
+                                                            </apex:selectRadio>                                                                     
+                                                        </div> 
+                                                        <div class="col-sm-2"> </div>
+                                                    </div>                                                              
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </apex:outputPanel>
+                            </apex:actionRegion>
+                        </div>
+                    </div>
+                </section>
+            </div> <!-- Content Wrapper ends---->
+            <c:PageFooter ></c:PageFooter><!-- Footer section ends------>
+        </div>
+    </apex:form>
+</apex:page>

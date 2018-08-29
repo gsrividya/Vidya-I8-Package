@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Field__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <label>Field</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Task Title</fullName>
+                <default>false</default>
+                <label>Task Title</label>
+            </value>
+            <value>
+                <fullName>Days</fullName>
+                <default>false</default>
+                <label>Days</label>
+            </value>
+            <value>
+                <fullName>Hours</fullName>
+                <default>false</default>
+                <label>Hours</label>
+            </value>
+            <value>
+                <fullName>Minutes</fullName>
+                <default>false</default>
+                <label>Minutes</label>
+            </value>
+            <value>
+                <fullName>Technical Detail</fullName>
+                <default>false</default>
+                <label>Technical Detail</label>
+            </value>
+            <value>
+                <fullName>Description</fullName>
+                <default>false</default>
+                <label>Description</label>
+            </value>
+            <value>
+                <fullName>Milestone</fullName>
+                <default>false</default>
+                <label>Milestone</label>
+            </value>
+            <value>
+                <fullName>Dependency Type</fullName>
+                <default>false</default>
+                <label>Dependency Type</label>
+            </value>
+            <value>
+                <fullName>Schedule Start</fullName>
+                <default>false</default>
+                <label>Schedule Start</label>
+            </value>
+            <value>
+                <fullName>Schedule End</fullName>
+                <default>false</default>
+                <label>Schedule End</label>
+            </value>
+            <value>
+                <fullName>Warning Zone</fullName>
+                <default>false</default>
+                <label>Warning Zone</label>
+            </value>
+            <value>
+                <fullName>BAU Impact</fullName>
+                <default>false</default>
+                <label>BAU Impact</label>
+            </value>
+            <value>
+                <fullName>RAG status</fullName>
+                <default>false</default>
+                <label>RAG status</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

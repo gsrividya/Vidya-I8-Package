@@ -1,0 +1,8 @@
+Dear {!Incident__c.Assignee__c},<br/><br/>
+An Incident has been assigned to you, brief details are as follows:<br/>
+Incident  Number : {!Incident__c.Name}<br/>
+Soe Name:{!Incident__c.SOE1__c}<br/>
+Task Title :{!Incident__c.Task__c}<br/>
+Incidenet Summary :  {!Incident__c.Summary__c}<br/><br/>
+Regards, <br/>
+{!Incident__c.LastModifiedBy}<br/>

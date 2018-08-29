@@ -1,0 +1,206 @@
+@istest
+Public class Test_AllTasks_ClientSide_Cntrl {
+    Public static i8Constants i8 = new I8Constants();
+     @testSetup static void setup() {
+        SOEUtility.SystemSettings_Insert();
+        SOEUtility.TwilioSettings_Insert('TwilioUtility','no'); 
+        Department__c service = SOEUtility.Dep_Insert('Service2');
+        Role__c  Role = SOEUtility.Role_Insert('Imp Manager');
+        Role__c  Role1 = SOEUtility.Role_Insert('QA Manager');
+        SOE__c SOE = SOEUtility.SOE_Insert('SOE All Tasks1',service.id,false,true,true,false,false);
+        System.assertEquals(SOE.SOE_Title__c , 'SOE All Tasks1');        
+    }
+    Static testmethod void AllTasks_Method1(){
+        Test.STartTest();        
+        SOE__c soe = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE All Tasks1']; 
+        System.assertEquals(SOE.SOE_Title__c , 'SOE All Tasks1');
+        user user1 = SOEUtility.user_insert('user--6@gmail.com');
+        Member__c member1 = [select id from Member__c where Email__c ='user--6@gmail.com'];
+        list<Task__c> tas = [select id,Id_Text__c from Task__c where soe__c =: soe.Id and Stage_Level__c =: i8.CONTEXT_IMP order by Id_Before_Decimal__c,Id_After_Decimal__c];
+        ApexPages.CurrentPage().getparameters().put('Id', soe.Id);
+        AllTasks_ClientSide_Cntrl  All = new AllTasks_ClientSide_Cntrl ();
+        All.SOEBuildComplete();
+        All.SOESchedule();
+        soe.Status__c =i8.STATUS_SCHEDULED;
+        soe.Schedule_Start__c = System.Now()+1;
+        soe.Schedule_End__c = soe.Schedule_Start__c.AddHours(2);
+        soe.Warning_Zone__c = soe.Schedule_End__c.AddHours(2);
+        soe.Schedule_End__c = soe.Warning_Zone__c.AddHours(2);
+        update soe;         
+        Task_triggerHandler.UpdateAllTasks(new list<id>{soe.id},i8.CONTEXT_IMP);
+        All = new AllTasks_ClientSide_Cntrl ();
+        All.SOEFreeze();
+        All.SOEExecute();
+        ApexPages.CurrentPage().getparameters().put('ActiveId', tas[1].Id);
+        All.ReRunTask();
+        Test.StopTest();
+        All.CompleteTask();
+        All.SOEExecute();
+        All.SOESuspend();       
+        Incident__c inc = SOEUtility.Incident_insert(soe.Id,null,i8.STATUS_SUSPENDED,i8.STATUS_OPEN,'SOE',member1.Id);
+        All.SOEReExecute(); 
+        All.SOEAbandon();
+    }
+     Static testmethod void AllTasks_Method2(){
+        Test.StartTest();
+        SOE__c soe = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE All Tasks1']; 
+        System.assertEquals(SOE.SOE_Title__c , 'SOE All Tasks1');
+        user user1 = SOEUtility.user_insert('user--7@gmail.com');
+        SOE.QA_Manager__c =  user1.Id; 
+        soe.QA_Review_Required__c = true;
+        update SOE; 
+        ApexPages.CurrentPage().getparameters().put('Id', soe.Id);
+        AllTasks_ClientSide_Cntrl  All = new AllTasks_ClientSide_Cntrl ();
+        All.SOEBuildComplete();
+        All.QAReview();
+        
+        ApexPages.CurrentPage().getparameters().put('Id', soe.Id);
+        Review_Cntrl rc = new Review_Cntrl();
+        rc.Tasklist[2].RV_Comments__c = 'sasas';
+        rc.QAFeedBack();
+        rc.QAFeedBack();        
+        All.getSOEButtons();
+        All.QAReview();
+        rc = new Review_Cntrl();
+        rc.QAComplete();
+        rc.QAComplete();
+        rc.PrevPage = 1000;
+        rc.Prev();
+        rc.SOE = null;
+        rc.WalkthroughComplete();
+        rc.QA_TaskList = null;
+        rc.TaskUpdate();
+        Test.StopTest();
+    }
+        
+    Static testmethod void AllTasks_Method3(){
+        Test.StartTest();
+        SOE__c soe = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE All Tasks1']; 
+        System.assertEquals(SOE.SOE_Title__c , 'SOE All Tasks1');
+        user user1 = SOEUtility.user_insert('user--5@gmail.com');
+        Member__c member1 = [select id from Member__c where Email__c ='user--5@gmail.com'];
+        Team__c Team1=SOEUtility.Team_insert('sap');
+        Team_Member__c Teammember1=SOEUtility.Teammember_insert(member1.id,Team1.id);      
+        list<Task__c> tas = [select id,Id_Text__c from Task__c where soe__c =: soe.Id and Stage_Level__c =: i8.CONTEXT_IMP order by Id_Before_Decimal__c,Id_After_Decimal__c];
+        ApexPages.CurrentPage().getparameters().put('Id', soe.Id);
+        AllTasks_ClientSide_Cntrl  All = new AllTasks_ClientSide_Cntrl ();
+        tas[4].Team__c = Team1.Id;
+        tas[4].Owner__c = Teammember1.Id;
+        update tas[4];
+        AllTasks_ClientSide_Cntrl.getTasks('select id,Owner__c from Task__c','',SOE.Id,10,0);
+        All.BroadCastOnOff();
+        All.BroadCastOnOff();
+        All.audioclip();
+        ApexPages.CurrentPage().getparameters().put('ActiveId', tas[4].Id);
+        All.ActivateTask1();
+        All.CompleteTask();
+        Test.StopTest();
+    }
+    Static testmethod void AllTasks_Method4(){
+        Test.STartTest();        
+        SOE__c soe = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE All Tasks1']; 
+        System.assertEquals(SOE.SOE_Title__c , 'SOE All Tasks1');        
+        list<Task__c> tas = [select id,Id_Text__c from Task__c where soe__c =: soe.Id and Stage_Level__c =: i8.CONTEXT_IMP order by Id_Before_Decimal__c,Id_After_Decimal__c];
+        ApexPages.CurrentPage().getparameters().put('Id', soe.Id);
+        BroadCast__c br = SOEUtility.Broadcast_Insert('this is one message');
+        AllTasks_ClientSide_Cntrl  All = new AllTasks_ClientSide_Cntrl ();
+        All.SOEBuildComplete();
+        soe.Walkthrough_Required__c = true;
+        update soe; 
+        soe.Status__c =i8.STATUS_SCHEDULED;
+        soe.Schedule_Start__c = System.Now()+1;
+        soe.Schedule_End__c = soe.Schedule_Start__c.AddHours(2);
+        soe.Warning_Zone__c = soe.Schedule_End__c.AddHours(2);
+        soe.Schedule_End__c = soe.Warning_Zone__c.AddHours(2);
+        update soe;         
+        Task_triggerHandler.UpdateAllTasks(new list<id>{soe.id},i8.CONTEXT_IMP);
+        All = new AllTasks_ClientSide_Cntrl ();
+        All.WalkThrough();
+        User user1 = SOEUtility.USer_Insert('user--32--@gmail.com');
+        Member__c member1 = [select id from Member__c where Email__c ='user--32--@gmail.com'];
+        role__c role = [select id from Role__c where Reference_Role__c = 'Imp Manager' limit 1];
+        SOE_Team_Member__c stm1 = SOEUtility.teammember_insert(member1.id,'Read',soe.id,role.id);
+        Review_Cntrl  rc = new Review_Cntrl();
+        rc.WalkThroughComplete();
+         rc.WalkThroughComplete();
+        rc.Cancel();
+        All.Cancel();
+        ApexPages.CurrentPage().getparameters().put('tas', tas[1].Id); 
+        ApexPages.CurrentPage().getparameters().put('body1','this is sample message'); 
+        All.AddPINtoTask();
+        All.openAddTask();
+        All.openEditStack();
+        All.openManageDependencies();
+        All.openModifyTask();
+        All.openCreateStack();
+        All.openCloneStack();
+        All.openDropStack();
+        All.openJumpStack();
+        All.openMoveStack();
+        All.openCloneTask();
+        All.openDropTask();
+        All.openAddDocuments();
+        All.openListIncidents();
+        All.openCreateIncident();
+        All.openListOpenIncidents();
+        All.openListClosedIncidents();
+        All.openSOEStatus();
+        All.openSOEDashboards();
+        All.openNewBroadcast();
+        All.openSearchReplace();
+        All.openAllDocuments();
+        All.openAttachments();
+        All.openResourceROTA();
+        All.openHistoryPage();
+        All.openMyView();
+        All.openReviewWalkthroughPage();
+        All.openTaskGanttChart();
+        All.openResourceGanttChart();
+        All.openIOAP();
+        All.openEmailPage();
+        All.CreateCall();
+        All.CreateSMS();
+        test.StopTest();
+     }
+     Static testmethod void AllTasks_Method5(){
+        Test.STartTest();
+        SOE__c soe = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE All Tasks1']; 
+        System.assertEquals(SOE.SOE_Title__c , 'SOE All Tasks1');
+        soe.Status__c =i8.STATUS_SCHEDULED;
+        soe.Schedule_Start__c = System.Now();
+        soe.Schedule_End__c = soe.Schedule_Start__c.AddHours(2);
+        soe.Warning_Zone__c = soe.Schedule_End__c.AddHours(2);
+        soe.Schedule_End__c = soe.Warning_Zone__c.AddHours(2);
+        update soe;
+        soe.Status__c =i8.STATUS_FREEZE;
+        update soe;
+        ApexPages.CurrentPage().getparameters().put('Id', soe.Id);
+        AllTasks_ClientSide_Cntrl  All = new AllTasks_ClientSide_Cntrl ();
+        All.SOEExecute();
+        Test.StopTest();
+     }
+     Static testmethod void AllTasks_Method6(){
+        Test.STartTest();
+        SOE__c soe = [select id,SOE_Title__c from SOE__c where SOE_Title__c ='SOE All Tasks1']; 
+        System.assertEquals(SOE.SOE_Title__c , 'SOE All Tasks1');
+        ApexPages.CurrentPage().getparameters().put('Id', soe.Id);
+        AllTasks_ClientSide_Cntrl  All = new AllTasks_ClientSide_Cntrl ();
+        delete soe;
+        All.getSOEButtons();
+        All.UpdateTasks();
+        All.ActivateTask1();
+        All.RerunTask();
+        All.CompleteTask();
+        All.SOEBuildComplete();
+        All.QAReview();
+        All.Walkthrough();
+        All.SOEFreeze();
+        All.CreateCall();
+        All.CreateSMS();
+        All.SOEExecute();
+        All.ADDPINToTask();
+        ApexPages.CurrentPage().getparameters().put('ActiveId', 'fgftrtrtrt');
+        All.CreateCall();
+        Test.StopTest();
+    }
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Validation_on_Start_Date_2</fullName>
+    <active>true</active>
+    <errorConditionFormula>Start_Time__c &lt;  SOE__r.Baseline_Start__c</errorConditionFormula>
+    <errorMessage>Start Time should be greater than selected SOE Baseline Start date.</errorMessage>
+</ValidationRule>

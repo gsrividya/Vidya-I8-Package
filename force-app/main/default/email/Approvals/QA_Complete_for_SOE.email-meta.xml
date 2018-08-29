@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Send mail when SOE status is QA Review On Complete</description>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>QA Complete for SOE</name>
+    <style>none</style>
+    <subject>QA Completed</subject>
+    <textOnly>Hi {!SOE__c.OwnerFullName},
+
+This mail is regarding {!SOE__c.Name} QA Completed. SOE, brief details as follows:
+
+SOE : {!SOE__c.Name}
+SOE Name : {!SOE__c.SOE_Title__c}
+
+Regards,
+{!ApprovalRequest.Process_Approver}.</textOnly>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Message_Start_Date_Should_not_be_Empty</fullName>
+    <active>true</active>
+    <errorConditionFormula>ISBLANK(Message_Start_Date__c )</errorConditionFormula>
+    <errorMessage>Please enter Start date</errorMessage>
+</ValidationRule>

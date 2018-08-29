@@ -1,0 +1,127 @@
+<apex:page standardController="Expense_Claim__c" extensions="Expenses_cntrl" sidebar="false" standardStylesheets="false" showHeader="false"> 
+    <apex:form >
+    <apex:stylesheet value="{!$Resource.Bootstrap}" />
+    <apex:stylesheet value="{!URLFOR($Resource.FontAwesome, '/font-awesome-4.7.0/css/font-awesome.min.css')}" />
+    <apex:stylesheet value="{!$Resource.AdminLTE}" />    
+    <style>         
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar {background-color:#CFEEF8;border-color: #303260;margin-left: 0px !important;} 
+        .wrapper {background-color: #EEE !important;}
+        .row{padding-top:10px;}
+        .lookupInput {display: inline;vertical-align: middle;white-space: nowrap;}
+        .lookupInput img {background-repeat: no-repeat;margin-right: .25em;vertical-align: middle;}
+        .lookupInput .disabled {background-color: #ccc;}
+        .lookupInput .emptyDependentLookup {font-style: italic;}
+        .lookupInput input[readonly] {background-color: #e6e6e6;border: 2px solid #e6e6e6;color: #333;cursor: default;}
+        .lookupInput a.readOnly {float: right;}
+        .lookupInput span.readOnly {display: block;white-space: normal;}
+        .lookupInput span.totalSummary {font-weight: bold;}
+        .inlineEditRequiredDiv .lookupInput img,.inlineEditDiv .lookupInput img {vertical-align: middle;}
+        .quickCreateModule .lookupInput input {max-width: 155px }
+        .lookupIcon {background-image: url(/img/func_icons/util/lookup20.gif);background-position: 0 0;width: 20px;height: 20px;background-position: top left}
+        .lookupIconOn {background-image: url(/img/func_icons/util/lookup20.gif);background-position: 0 0;width: 20px;height: 20px;background-position: top right}  
+        body .btn { color: #fff;   padding : 4px 15px 4px 15px; background :#529dc8 ;font-size:15px; border-radius : 16px;}
+        .btn:hover, .btn:focus, .btn.focus { background :  #367fa9;  }      
+    </style>
+    <apex:includescript value="{!$Resource.Jquery1}" />
+        
+        <script>
+        j$ = jQuery.noConflict();
+        j$(document).ready( function () {
+            if( '{!$User.UIThemeDisplayed}'== 'Theme4d')
+                j$("body").css("font-size","130%");
+        });  
+        </script> 
+        <div class="wrapper">
+            <div  style="min-height:0px!important">
+                <section class="content">
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin: 7px;">
+                             <apex:outputPanel rendered="{!errorMessage != null}" >
+                                    <div class="alert alert-danger" role="alert"  style="width:100%;"> {!errorMessage} </div>
+                                </apex:outputPanel>
+                               <div class="row">
+                                    <div class="col-md-9">
+                                        <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                        <h3 style="display:inline;COLOR:#093E4F;">{!ExpClaim.Name}</h3>
+                                    </div>
+                                    <div class="col-md-3" style="text-align: right">    
+                                        <apex:commandButton action="{!SaveExpenses}" value="Save Expenses"  rendered="{!WrapperList.Size > 0 }" styleclass="btn btn-primary" style="padding-left: 15px; padding-right:15px;" />
+                                        <apex:commandButton value="Cancel" styleclass="btn btn-primary" style="padding-left: 15px; padding-right:15px;" action="{!CancelExpenses}" immediate="true"/>
+                                    </div>
+                                </div>
+                                <hr/>                                 
+                                <div class="row" style="padding: 5px; margin: 15px;">
+                               
+                                    <div class="box box-success" >
+                                        <div class="box-body">
+                                            <div class="row" style="margin : 0px;">
+                                              <div class="table-responsive"> 
+                                                <div class="col-md-9"><h4> <b>Expenses</b></h4></div> 
+                                                <apex:outputPanel rendered="{!WrapperList.Size > 0 }" id="table1">
+                                                  <script type="text/javascript">
+                                                   j$ = jQuery.noConflict();
+                                                   j$(document).ready(function() {
+                                                       j$('#PredecesorsTable').DataTable( { 
+                                                            "columnDefs": [                                            
+                                                                {
+                                                                    "targets": [ 0 ],
+                                                                    "visible": false
+                                                                },
+                                                            ],
+                                                             "order": [[ 0, "asc" ]]                          
+                                                       });
+                                                    });
+                                                    </script>  
+                                                <table id="PredecesorsTable" class="display table"  >
+                                                    <thead>
+                                                    <tr>
+                                                    <th> S No</th>
+                                                    <th>Actions</th>
+                                                    <th>Date</th>
+                                                    <th>SOE</th>
+                                                    <th>Task</th>
+                                                    <th>Expense Type</th>
+                                                    <th>Payment Type</th>
+                                                    <th>Amount</th>
+                                                    <th>Description</th>
+                                                </tr></thead><tbody>      
+                                                <apex:repeat value="{!WrapperList}" var="item" id="pagetabel" rendered="{!WrapperList.Size > 0 }">
+                                                <tr>
+                                                   <td> {!item.count}</td>
+                                                   <td>
+                                                        <apex:commandLink action="{!AddEntry}" reRender="table1" >
+                                                            <i class="fa fa-arrow-circle-down fa-lg" title="Add New Entry" style="color:blue;"></i>
+                                                        </apex:commandLink>  
+                                                        <apex:commandLink action="{!DeletEntry}" reRender="table1" rendered="{!WrapperList.Size > 1 }" >
+                                                            <i class="fa fa-trash fa-lg" title="Delete Entry" style="color:blue;"></i>
+                                                            <apex:param value="{!item.Count}" assignTo="{!DeleteId}" name="DeleteId"/>
+                                                        </apex:commandLink>  
+                                                    </td>                    
+                                                    <td > <apex:inputField value="{!item.Exp.Date__c}" />   </td>                      
+                                                    <td > <apex:inputField value="{!item.EXp.SOE__c}"  style="width:100px;"/></td>  
+                                                    <td ><apex:inputField value="{!item.Exp.Task__c}" style="width:100px;"/></td>                                 
+                                                    <td ><apex:inputField value="{!item.Exp.Expense_Type__c}"  style="width:100px;"/></td>  
+                                                    <td > <apex:inputField value="{!item.Exp.Payment_Type__c}" /></td>  
+                                                    <td ><apex:inputField value="{!item.Exp.Amount__c}" style="width:120px;"/></td>  
+                                                    <td > <apex:inputField value="{!item.Exp.Description__c}" /></td>  
+                                                    </tr>
+                                                </apex:repeat> 
+                                               </tbody>
+                                                </table>
+                                                </apex:outputPanel>
+                                                </div>
+                                            </div>
+                                        </div>
+                                     </div>
+                                </div>
+                             </div>
+                         </div>
+                    </section>
+               </div>
+           </div> 
+             <apex:includescript value="{!$Resource.JQuery_Min}" />     
+             <apex:includescript value="{!$Resource.JQuery_DataTable_Min}" />   
+             <apex:stylesheet value="{!$Resource.JQuery_DataTable_CSS}" />            
+    </apex:form>     
+</apex:page>

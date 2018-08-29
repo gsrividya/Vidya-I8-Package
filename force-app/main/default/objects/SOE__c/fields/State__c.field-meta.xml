@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>State__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <formula>IF(TEXT(Status__c) = &#39;Build&#39;,IMAGE(&quot;/resource/I8__build&quot;,&quot;Build&quot;,20,20),
+
+IF(TEXT(Status__c) = &#39;Abandoned&#39;,IMAGE(&quot;/resource/I8__abandon&quot;,&quot;Abandoned&quot;,20,20),
+
+IF(TEXT(Status__c) = &#39;Review&#39;,IMAGE(&quot;/resource/I8__Status/review.png&quot;,&quot;Review&quot;,20,20),
+
+IF(TEXT(Status__c) = &#39;Scheduled&#39;,IMAGE(&quot;/resource/I8__Schedule&quot;,&quot;Scheduled&quot;,20,20),
+
+IF(TEXT(Status__c) = &#39;SOE Completed&#39;,IMAGE(&quot;/resource/I8__ImpCompleted&quot;,&quot;Completed&quot;,20,20),
+
+IF(TEXT(Status__c) = &#39;Closed&#39;,IMAGE(&quot;/resource/I8__Iceflow/Closed.png&quot;,&quot;Closed&quot;,20,20),
+
+IF(TEXT(Status__c) = &#39;Freeze&#39;,IMAGE(&quot;/resource/I8__Status/freeze.png&quot;,&quot;Freeze&quot;,20,20),
+
+IF(TEXT(Status__c) = &#39;Suspended&#39;,IMAGE(&quot;/resource/I8__suspend&quot;,&quot;Suspended&quot;,20,20),
+IF(TEXT(Status__c) = &#39;Imp Completed&#39;,IMAGE(&quot;/resource/I8__Complete&quot;,&quot;ImpCompleted&quot;,20,20),
+IF(TEXT(Status__c) = &#39;BO In Progress&#39;,IMAGE(&quot;/resource/I8__BOInProgress&quot;,&quot;BO In Progress&quot;,20,20),
+IF(TEXT(Status__c) = &#39;SOE BO completed&#39;,IMAGE(&quot;/resource/I8__SOEBOCompleted&quot;,&quot;SOE BO Completed&quot;,25,25),
+IF(TEXT(Status__c) = &#39;BO Completed&#39;,IMAGE(&quot;/resource/I8__BOCompleted&quot;,&quot;BO Completed&quot;,20,20),
+IF(TEXT(Status__c) = &#39;Imp In Progress&#39;,IMAGE(&quot;/resource/I8__InProgress&quot;,&quot;InProgress&quot;,20,20),null)
+))))))))))))</formula>
+    <label>State</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

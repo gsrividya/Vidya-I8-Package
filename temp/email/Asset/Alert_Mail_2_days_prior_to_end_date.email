@@ -1,0 +1,5 @@
+Hi<br/><br/>
+This is to inform that your access to the Asset is going to expire in 48 Hours. Kindly check below for further details:<br/>
+Asset: '{!Asset_Assignment__c.Asset__c}'<br/>
+Assignment No. : '{!Asset_Assignment__c.Name}'<br/>
+Please <a href="https://ap2.salesforce.com/{!Asset_Assignment__c.Id}">click here</a> to review.

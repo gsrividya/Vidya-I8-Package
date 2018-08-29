@@ -1,0 +1,319 @@
+<apex:page showheader="false" controller="Edit_Stack_Cntrl" standardStylesheets="false">       
+      <style>
+        .popover { background-color: #e3f3ff !important;}        
+        .table.dataTable thead .sorting {  background: none !important;     } 
+        a {   color: #0070d2;     }
+        a:hover, a:active, a:focus {outline: none; text-decoration: underline; color: #005fb2; }         
+        .HoverPopup { position: relative; white-space: nowrap; z-index: 0;  }
+        .HoverPopup:hover {background-color: white;Text-decoration: none;white-space: nowrap;z-index: 50;}
+        .HoverPopup div {position: absolute;visibility: hidden;white-space: nowrap;}
+        .HoverPopup:hover div {display:inline;visibility: visible;border: 1px solid black;background-color: white;white-space: nowrap;color: black;padding:2px 3px;margin-left:8px;}
+    </style>
+    <apex:form id="frm">
+        <div class="wrapper">
+            <c:SOEPageHeader sid="{!CurSOE.Id}" ></c:SOEPageHeader>  
+            <div  style="min-height:0px!important">             
+                <section class="content">    
+                    <apex:outputPanel rendered="{!!Task_Accessible}">{!$Label.i8__addtask001}
+                    <apex:commandbutton styleclass="btn btn-primary btn-sm" action="{!Cancel_action}" value="Cancel" style="padding-left: 15px; padding-right:15px;"/> </apex:outputPanel>
+                    <apex:outputPanel rendered="{!Task_Accessible}">
+                    <apex:outputPanel id="panel1">
+                        <div class="box box-success ">                        
+                            <apex:outputPanel id="panel2">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">                                
+                                <div class="row">
+                                    <div class="col-md-2">   
+                                        <i class="fa fa-folder-open fa-lg"></i>
+                                        <h4 style="margin-left: 5px; display: inline"><b>ACTIONS</b></h4>
+                                        <apex:actionStatus onstart="blockPage()" onstop="unblockPage()" id="blockUI"/>
+                                    </div>
+                                    <apex:outputPanel rendered="{! Task_Create_Update_Delete  && CONTAINS(ImpMgrMapKey,$User.Id) && !(CurSOE.Status__c==i8.STATUS_BUILD || CurSOE.Status__c==i8.STATUS_REVIEW || CurSOE.Status__c==i8.STATUS_SCHEDULED || CurSOE.Status__c == i8.STATUS_FREEZE)}"><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{!$Label.AddTask002}<br/></apex:outputPanel>
+                                    <apex:outputPanel rendered="{! !Task_Create_Update_Delete  || !CONTAINS(ImpMgrMapKey,$User.Id)}"><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{!$Label.AddTask001}<br/></apex:outputPanel>
+                                    <apex:outputPanel rendered="{! Task_Create_Update_Delete  &&  CONTAINS(ImpMgrMapKey,$User.Id) && (CurSOE.QA_Review__c == 'In Progress' || CurSOE.WalkThrough__c == 'In Progress')}"><br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{!$Label.AddTask003}<br/></apex:outputPanel>
+                                    <apex:outputPanel rendered="{! Task_Create_Update_Delete  && CONTAINS(ImpMgrMapKey,$User.Id) && (CurSOE.Status__c==i8.STATUS_BUILD || CurSOE.Status__c==i8.STATUS_REVIEW || CurSOE.Status__c==i8.STATUS_SCHEDULED || CurSOE.Status__c == i8.STATUS_FREEZE) && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress'}">                                          
+                                        <div class="col-md-7">
+                                            <apex:selectRadio styleClass="col-md-7 table1" value="{!selectaction}">
+                                                <apex:selectOption itemLabel="Add" itemValue="Append" id="Append" rendered="{!(CurSOE.Status__c==i8.STATUS_BUILD || CurSOE.Status__c==i8.STATUS_REVIEW || CurSOE.Status__c==i8.STATUS_SCHEDULED || CurSOE.Status__c == i8.STATUS_FREEZE)}"/> 
+                                                <apex:selectOption itemLabel="Move Selected" itemValue="Move_Selected"/>
+                                                <apex:selectOption itemLabel="Copy Selected" itemValue="Copy_Selected"/>
+                                                <apex:selectOption itemLabel="Delete Selected" itemValue="Delete_Selected"/> 
+                                                <apex:actionSupport event="onchange" reRender="panel2"/>
+                                            </apex:selectRadio>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <apex:commandButton value="GO" action="{!Go_method}" styleclass="btn btn-primary btn-sm " rerender="panel1" status="updateStatus1" style="padding-left: 15px; padding-right:15px;"/>
+                                             <apex:actionStatus id="updateStatus1">
+                                            <apex:facet name="start">
+                                               <img src="{!$Resource.Running}" alt="" height="25" width="25" /> Processing...
+                                            </apex:facet>
+                                        </apex:actionStatus>
+                                        </div>                                        
+                                        <div  style="margin:0px;padding:0px">
+                                            <div class="row" >
+                                                <div class="col-lg-2"></div>
+                                                <div class="col-xs-3" style="width:auto;padding-top:5px;">
+                                                    <apex:outputPanel rendered="{!IF(selectaction == 'Append',true,false) && (CurSOE.Status__c!=i8.STATUS_BUILD || CurSOE.Status__c!=i8.STATUS_REVIEW || CurSOE.Status__c!=i8.STATUS_SCHEDULED || CurSOE.Status__c == i8.STATUS_FREEZE)}" >                                                           
+                                                        <label class="lbl" style="width:auto;position:initial;margin:0px;padding:0px">Rows</label>&nbsp;&nbsp;
+                                                        <apex:selectList value="{!selectRow}" size="1" multiselect="false" styleClass="slds-scrollable--x" >
+                                                            <apex:selectOptions value="{!Rows}"/>
+                                                        </apex:selectList>
+                                                    </apex:outputPanel>  
+                                                </div>                                     
+                                                <div class="col-xs-2" style="width:auto;padding-top:5px;">                                        
+                                                    <apex:outputLabel styleclass="optional" rendered="{!IF(selectaction == 'Move_Selected' || selectaction == 'Copy_Selected',true,false)}" ><b>to Stack</b></apex:outputLabel>                                    
+                                                </div>
+                                                <div class="col-xs-3" style="width:auto;padding-top:5px;">                                        
+                                                    <apex:selectList value="{!ToStack}" size="1" multiselect="false" rendered="{!IF(selectaction == 'Move_Selected' || selectaction == 'Copy_Selected',true,false)}">
+                                                        <apex:selectOptions value="{!ToStackList}"></apex:selectOptions>
+                                                        <apex:actionSupport event="onchange" action="{!ToStackChanged}" reRender="task1" status="updateStatus1"/>
+                                                    </apex:selectList>
+                                                </div>
+                                                <div class="col-xs-2" style="width:auto;padding-top:5px;">                                        
+                                                    <apex:outputLabel styleclass="optional" rendered="{!IF(selectaction == 'Move_Selected' || selectaction == 'Copy_Selected',true,false)}"><b>before task</b></apex:outputLabel>                                                         
+                                                </div>
+                                                <div class="col-xs-2" style="width:auto;padding-top:5px;">                                        
+                                                    <apex:selectList value="{!selectTask}" size="1" multiselect="false"  rendered="{!IF(selectaction == 'Move_Selected' || selectaction == 'Copy_Selected',true,false)}" id="task1">
+                                                        <apex:selectOptions value="{!Tasks}"></apex:selectOptions>                                                        
+                                                    </apex:selectList>
+                                                </div>
+                                            </div>                                            
+                                        </div>                                        
+                                    </apex:outputPanel></div>
+                            </div>
+                            </apex:outputPanel>                            
+                        </div>
+                        <div class="box box-primary ">
+                               <div class="box-body" style="padding: 5px; margin-left: 15px;">                                
+                                <div class="row">
+                                    <div class="col-lg-4" id="msg">    <i class="fa fa-tasks fa-lg" style="padding: 3px;" title="Edit Stack"></i>   <h4 style="display: inline;"><b>EDIT STACK</b></h4>   </div> 
+                                     <div class="col-lg-6" id="testdiv">
+                                        <apex:actionregion rendered="{!errorbool == true}" > <h4 id="messages" width="90%"  class="bg-success" style="text-transform:uppercase;"><center><span>{!errormessage}</span></center></h4>  </apex:actionregion>
+                                        <apex:actionregion rendered="{!errorbool1 == true}" >       <h4 id="messages" width="90%"  class="bg-warning" style="text-transform:uppercase;"><center><span>{!errormessage1}</span></center></h4> </apex:actionregion>
+                                         <apex:actionregion rendered="{!errmsg != null}" ><center><div class="alert alert-danger" role="alert" id="err"> {!errmsg} </div></center> </apex:actionregion>
+                                         <script type="text/javascript">
+                                            $(function() {
+                                                    $("#testdiv").delay(5000).fadeOut(0);
+                                            });
+                                        </script>
+                                    </div> 
+                                </div>                                 
+                                <hr />
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                    <div class="col-lg-1 col-xs-4 lbl" style="width: auto;"> <span style="padding: 0px"><b>Stack</b></span> </div>                                    
+                                    <div class="col-lg-3" style="padding: 0px;">
+                                        <apex:selectList value="{!FromStack}" styleClass="form-control" size="1" multiselect="false">
+                                            <apex:selectOptions value="{!FromStackList}"></apex:selectOptions>
+                                            <apex:actionSupport event="onchange" action="{!FromStackChanged}" reRender="panel1" status="updateStatus"/>
+                                        </apex:selectList>
+                                    </div>
+                                    <div class="col-lg-2" style="width:auto;padding-top:5px;">                                  
+                                        <label class="lbl" style="width:auto;position:initial;margin:0px;padding:0px">Rows</label>&nbsp;&nbsp;
+                                        <apex:selectList value="{!pageSize}" size="1" multiselect="false" styleClass="slds-scrollable--x" >
+                                            <apex:selectOptions value="{!TableRows}"/>
+                                            <apex:actionSupport event="onchange" action="{!Tasks}" rerender="panel1" status="updateStatus"/>
+                                        </apex:selectList>
+                                    </div> 
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <apex:actionStatus id="updateStatus">
+                                            <apex:facet name="start">   <img src="{!$Resource.Running}" alt="" height="25" width="25" /> Processing...   </apex:facet>
+                                        </apex:actionStatus>
+                                    </div>
+                                    <div class="col-lg-4" style="text-align: right"> 
+                                         <apex:commandButton styleclass="btn btn-primary btn-sm" onclick="DisableNextButton();" action="{!Apply_Action}" id="btn1" value="Save" rendered="{!Task_Create_Update_Delete && CONTAINS(ImpMgrMapKey,$User.Id) && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress'}" reRender="panel1" status="updateStatus" style="padding-left: 15px; padding-right:15px;"/>                              
+                                         <apex:commandbutton styleclass="btn btn-primary btn-sm" action="{!Cancel_action}" value="Cancel" style="padding-left: 15px; padding-right:15px;"/> 
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="box box-danger ">                                 
+                                    <div class="box-body" style="padding: 5px;">                                              
+                                        <div class="table-responsive" >                                          
+                                            <table class="display table table-hover table1" id="table1" style="background-color:transparent;">
+                                                <thead>                                                    
+                                                    <tr class="">
+                                                        <th scope="col" align="middle"> 
+                                                            <center><apex:inputCheckbox value="{!SelectAll}"  rendered="{!(CurSOE.Status__c==i8.STATUS_BUILD || CurSOE.Status__c==i8.STATUS_REVIEW || CurSOE.Status__c==i8.STATUS_SCHEDULED || CurSOE.Status__c == i8.STATUS_FREEZE)&& (CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id))&& Task_Create_Update_Delete  }"> 
+                                                                <apex:actionSupport event="onchange"  action="{!SelectAllCheckbox}" reRender="panel1" status="updateStatus"/>
+                                                            </apex:inputCheckbox></center>
+                                                        </th>
+                                                        <th  scope="col"><center>STATE</center></th>
+                                                       <apex:ACTIONREgion rendered="{!Stack_Status == false && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && ListSize != null && ListSize > 2 && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Create_Update_Delete }">
+                                                            <th  scope="col" ><center>Up/Dn</center></th>
+                                                       </apex:ACTIONREgion>                                                       
+                                                        <th  scope="col"><center>ID</center></th>
+                                                        <th scope="col"><center>TITLE</center></th>
+                                                        <th  scope="col"><center>DAYS</center></th>
+                                                        <th  scope="col"><center>HRS</center></th>
+                                                        <th  scope="col"><center>MINS</center></th>
+                                                        <th  scope="col"><center>TEAM</center></th>
+                                                        <th  scope="col"><center>OWNER</center></th>                                                        
+                                                        <th  scope="col"><center>DEPS</center></th>
+                                                        <th  scope="col"><center>LINK</center></th>
+                                                        <th  scope="col"><center>JUMP</center></th>
+                                                        <th  scope="col"><center>DOCS</center></th>
+                                                    </tr>
+                                                </thead>                                                
+                                                <tbody>
+                                                    <apex:repeat value="{!WrapperList}" var="t1">
+                                                        <tr class="">
+                                                            <td class="">
+                                                                <apex:inputCheckbox value="{!t1.check}" rendered="{!(ListSize  != t1.task.Id_After_Decimal__c && t1.newtask == false || selectaction == 'Approve_Selected') && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && t1.task.Status__c != i8.STATUS_COMPLETED && t1.task.Jump__c == False && ListSize > 2 && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Create_Update_Delete }" id="inputId"/>
+                                                            </td>
+                                                            <td class="" data-label="State"><center><apex:outputField value="{!t1.task.State__c }" rendered="{!t1.newtask  == false}"/></center>
+                                                            &nbsp;&nbsp;
+                                                            </td>
+                                                               <apex:ACTIONREgion rendered="{!Stack_Status == false && CurSOE.Status__c !=  i8.STATUS_SOE_COMP && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && ListSize > 2 && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Create_Update_Delete }">
+                                                                <td width="15px">
+                                                                   <apex:commandLink action="{!Up_Method}" reRender="panel1"  rendered="{!ListSize  != t1.task.Id_After_Decimal__c && t1.task.Id_After_Decimal__c != 1 && t1.newtask == false}">                                                          
+                                                                        <i class="fa fa-arrow-circle-up fa-lg" ></i>
+                                                                        <apex:param value="{!t1.task.Id_Before_Decimal__c}" name="IdText" assignTo="{!IdText}"/>
+                                                                        <apex:param value="{!t1.task.Id_After_Decimal__c }" name="IdText1" assignTo="{!IdText1}"/>
+                                                                   </apex:commandLink>
+                                                                   <apex:commandLink action="{!Down_Method}" style="float:right;" reRender="panel1" rendered="{!ListSize  != t1.task.Id_After_Decimal__c && ListSize  -1 != t1.task.Id_After_Decimal__c && t1.newtask == false }">                                                          
+                                                                        <i class="fa fa-arrow-circle-down fa-lg"></i>
+                                                                        <apex:param value="{!t1.task.Id_Before_Decimal__c}" name="IdText" assignTo="{!IdText}"/>
+                                                                        <apex:param value="{!t1.task.Id_After_Decimal__c }" name="IdText1" assignTo="{!IdText1}"/>
+                                                                   </apex:commandLink>
+                                                                </td>
+                                                               </apex:ACTIONREgion>
+                                                            <td class="" data-label="Id"><center><apex:outputField value="{!t1.task.ID_Text__c }"  rendered="{!t1.newtask == false}"/>
+                                                                <apex:outputLabel rendered="{!t1.newtask == true }">.</apex:outputLabel></center>
+                                                            </td>                                                            
+                                                            <td class="" data-label="Title"><center>
+                                                                <apex:inputField value="{!t1.task.Task_Title__c  }" style="width:200px;" rendered="{!Stack_Status == false && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_SOE_COMP  && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && t1.task.Status__c!=i8.STATUS_COMPLETED && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Create_Update_Delete }"/>
+                                                                <apex:outputField value="{!t1.task.Task_Title__c  }" style="width:200px;" rendered="{!(Stack_Status == true || CurSOE.Status__c == i8.STATUS_IMP_COMP || CurSOE.Status__c == i8.STATUS_SOE_COMP  || CurSOE.Status__c == i8.STATUS_IMPINPROGRESS || t1.task.Status__c==i8.STATUS_COMPLETED) || (CurSOE.QA_Review__c == 'In Progress' || CurSOE.WalkThrough__c == 'In Progress')|| !CONTAINS(ImpMgrMapKey,$User.Id) || !Task_Create_Update_Delete  }"/>
+                                                            </center></td>                                                            
+                                                            <td class="" data-label="Days"><center>
+                                                                <apex:inputField value="{!t1.task.Days__c}"  style="width: 30px;" rendered="{!Stack_Status == false && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && t1.task.Status__c!=i8.STATUS_COMPLETED && t1.task.Jump__c == false && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Create_Update_Delete }"/>
+                                                                <apex:outputField value="{!t1.task.Days__c }" style="width:30px;" rendered="{!Stack_Status == true ||CurSOE.Status__c == i8.STATUS_IMP_COMP || CurSOE.Status__c == i8.STATUS_IMPINPROGRESS || t1.task.Status__c==i8.STATUS_COMPLETED || t1.task.Jump__c == true || (CurSOE.QA_Review__c == 'In Progress' || CurSOE.WalkThrough__c == 'In Progress') || !CONTAINS(ImpMgrMapKey,$User.Id) || !Task_Create_Update_Delete }"/>
+                                                            </center></td>
+                                                            <td class="" data-label="Hrs"><center>
+                                                                <apex:inputField value="{!t1.task.Hours__c}"  style="width: 30px;" rendered="{!Stack_Status == false && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && t1.task.Status__c!=i8.STATUS_COMPLETED && t1.task.Jump__c == false && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Create_Update_Delete }"/>
+                                                                <apex:outputField value="{!t1.task.Hours__c}" style="width:30px;" rendered="{!Stack_Status == true || CurSOE.Status__c == i8.STATUS_IMP_COMP || CurSOE.Status__c == i8.STATUS_IMPINPROGRESS || t1.task.Status__c==i8.STATUS_COMPLETED || t1.task.Jump__c == true || (CurSOE.QA_Review__c == 'In Progress' || CurSOE.WalkThrough__c == 'In Progress') || !CONTAINS(ImpMgrMapKey,$User.Id) || !Task_Create_Update_Delete }"/>
+                                                            </center></td>
+                                                            <td class="" data-label="Mins"><center>
+                                                                <apex:inputField value="{!t1.task.Minutes__c}"  style="width: 30px;" rendered="{!Stack_Status == false && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && t1.task.Status__c!=i8.STATUS_COMPLETED && t1.task.Jump__c == false && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id)&& Task_Create_Update_Delete }"/>
+                                                                <apex:outputField value="{!t1.task.Minutes__c}" style="width:30px;" rendered="{!Stack_Status == true || CurSOE.Status__c == i8.STATUS_IMP_COMP || CurSOE.Status__c == i8.STATUS_IMPINPROGRESS || t1.task.Status__c==i8.STATUS_COMPLETED || t1.task.Jump__c == true || (CurSOE.QA_Review__c == 'In Progress' || CurSOE.WalkThrough__c == 'In Progress') || !CONTAINS(ImpMgrMapKey,$User.Id) || !Task_Create_Update_Delete }"/>
+                                                            </center></td>
+                                                            <td class="" data-label="Team" style="padding-right: 0px;"><center>
+                                                                <center><apex:inputField value="{!t1.task.Team__c }" rendered="{!Stack_Status == false && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && t1.task.Status__c!=i8.STATUS_COMPLETED && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Create_Update_Delete }"/>
+                                                                    <apex:outputField value="{!t1.task.Team__c}" style="width:250px;" rendered="{!Stack_Status == true || CurSOE.Status__c == i8.STATUS_IMP_COMP || CurSOE.Status__c == i8.STATUS_IMPINPROGRESS || t1.task.Status__c==i8.STATUS_COMPLETED || (CurSOE.QA_Review__c == 'In Progress' || CurSOE.WalkThrough__c == 'In Progress') || !CONTAINS(ImpMgrMapKey,$User.Id) || !Task_Create_Update_Delete }"/></center>
+                                                            </center></td>
+                                                             <td class="" data-label="Owner" style="padding-right: 0px;"><center>
+                                                                <center><apex:inputField value="{!t1.task.Owner__c}" rendered="{!Stack_Status == false && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && t1.task.Status__c!=i8.STATUS_COMPLETED && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Create_Update_Delete }"/> 
+                                                                    <apex:outputField value="{!t1.task.Owner__c}" style="width:250px;" rendered="{!Stack_Status == true || CurSOE.Status__c == i8.STATUS_IMP_COMP || CurSOE.Status__c == i8.STATUS_IMPINPROGRESS || t1.task.Status__c==i8.STATUS_COMPLETED || (CurSOE.QA_Review__c == 'In Progress' || CurSOE.WalkThrough__c == 'In Progress') || !CONTAINS(ImpMgrMapKey,$User.Id) ||!Task_Create_Update_Delete }"/></center>
+                                                            </center></td>
+                                                            <td class="" data-label="Deps">
+                                                                <center><apex:commandLink action="{!OpenDependency}" styleclass="HoverPopup" rendered="{!t1.task.Is_Stack__c == false && t1.task.End_Stack__c == false && t1.newtask == false}"> 
+                                                                    <apex:param name="TaskRecId" value="{!t1.task.ID}" assignTo="{!TaskRecId}"/>
+                                                                        <apex:outputPanel rendered="{!t1.task.Dependency_Type__c == i8.NODEP}"><i class="fa fa-chain-broken" style="color:black;"></i></apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!t1.task.Dependency_Type__c == i8.LINKDEP}"><i class="fa fa-link" style="color:black;"></i></apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!t1.task.Dependency_Type__c == i8.INTERNALDEP}"><i class="fa fa-link" ></i></apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!t1.task.Dependency_Type__c == i8.EXTERNALDEP}"><i class="fa fa-link" style="color:red;"></i></apex:outputPanel>
+                                                                <apex:outputPanel >
+                                                                    <div style="min-width:150px; width:pixels|%|relative_length"  >
+                                                                            <table ><tr><td width="10%"><b>Predecessors</b></td></tr></table>
+                                                                        <center><apex:outputLabel value="-- None --" style="font-weight:bold;" rendered="{!t1.task.Dependencies__r.size == 0}"/></center>
+                                                                        <apex:dataTable value="{!t1.task.Dependencies__r}" var="dep">
+                                                                            <apex:column value="{!dep.Type__c}" rendered="{!dep.Dependent_Type__c=='Predecessors'}" style="width:100px;"/>
+                                                                            <apex:column rendered="{!dep.Dependent_Type__c=='Predecessors'}" style="width:70px;">-</apex:column>
+                                                                            <apex:column rendered="{!dep.Dependent_Type__c=='Predecessors'}">
+                                                                                <apex:commandLink rendered="{!dep.Preceeding_Task__r.Status__c == 'Available' &&  t1.task.Is_Stack__c == false}">
+                                                                                    <center><i class="fa fa-play-circle fa-lg" title="Activate Task" style="color:blue;"></i></center>
+                                                                                </apex:commandLink>
+                                                                                <apex:outputField value="{!dep.Preceeding_Task__r.State__c}" rendered="{!dep.Preceeding_Task__r.Status__c != 'Available'}"/>
+                                                                            </apex:column> 
+                                                                            <apex:column value="{!dep.Preceeding_Task__r.ID_Text__c}" rendered="{!dep.Dependent_Type__c=='Predecessors'}" style="width:100px;"/>
+                                                                            <apex:column rendered="{!dep.Dependent_Type__c=='Predecessors'}" style="width:70px;">-</apex:column>
+                                                                            <apex:column rendered="{!dep.Dependent_Type__c=='Predecessors'}">
+                                                                                <apex:outputLabel > {!dep.Preceeding_Task__r.Task_Title__c }</apex:outputLabel>
+                                                                                <apex:outputLabel rendered="{!dep.Dep_Type__c == 'External'}">( {!dep.Preceeding_SOE__r.SOE_Title__c })</apex:outputLabel>
+                                                                            </apex:column>
+                                                                        </apex:dataTable>
+                                                                        <table ><tr><td width="10%"> <b>Successors</b></td></tr></table>
+                                                                        <center><apex:outputLabel value="-- None --" style="font-weight:bold;" rendered="{!t1.task.Dependencies__r.size == 0}"/></center>
+                                                                        <apex:dataTable value="{!t1.task.Dependencies__r}" var="dep">
+                                                                            <apex:column value="{!dep.Type__c}" rendered="{!dep.Dependent_Type__c=='Successors'}" style="width:100px;"/>
+                                                                            <apex:column rendered="{!dep.Dependent_Type__c=='Successors'}" style="width:70px;">-</apex:column>
+                                                                            <apex:column rendered="{!dep.Dependent_Type__c=='Successors'}">
+                                                                                <apex:commandLink rendered="{!dep.Preceeding_Task__r.Status__c == 'Available' &&  t1.task.Is_Stack__c == false}">
+                                                                                    <center><i class="fa fa-play-circle fa-lg" title="Activate Task" style="color:blue;"></i></center>
+                                                                                </apex:commandLink>
+                                                                                <apex:outputField value="{!dep.Preceeding_Task__r.State__c}" rendered="{!dep.Preceeding_Task__r.Status__c != 'Available'}"/>
+                                                                            </apex:column> 
+                                                                            <apex:column value="{!dep.Preceeding_Task__r.ID_Text__c}" rendered="{!dep.Dependent_Type__c=='Successors'}" style="width:100px;"/>
+                                                                            <apex:column rendered="{!dep.Dependent_Type__c=='Successors'}" style="width:70px;">-</apex:column>
+                                                                            <apex:column rendered="{!dep.Dependent_Type__c=='Successors'}">
+                                                                                <apex:outputLabel > {!dep.Preceeding_Task__r.Task_Title__c }</apex:outputLabel>
+                                                                                <apex:outputLabel rendered="{!dep.Dep_Type__c == 'External'}"> ({!dep.Preceeding_SOE__r.SOE_Title__c })</apex:outputLabel>
+                                                                            </apex:column>
+                                                                        </apex:dataTable>
+                                                                        </div>
+                                                                </apex:outputPanel>
+                                                                </apex:commandLink></center>
+                                                            </td>
+                                                            <td class="" data-label="Link">
+                                                                <center><apex:inputCheckbox id="link1" value="{!t1.task.Link__c}" rendered="{!Stack_Status == false && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && ListSize != t1.task.Id_After_Decimal__c && t1.newtask == false && t1.task.Status__c!=i8.STATUS_COMPLETED && t1.task.Id_After_Decimal__c != 1 && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id) && Task_Create_Update_Delete }"  >
+                                                                    </apex:inputCheckbox>
+                                                                    <apex:outputField value="{!t1.task.Link__c}" rendered="{!Stack_Status == true ||(CurSOE.Status__c == i8.STATUS_IMP_COMP || CurSOE.Status__c == i8.STATUS_IMPINPROGRESS || t1.task.Status__c==i8.STATUS_COMPLETED || CurSOE.QA_Review__c == 'In Progress' || CurSOE.WalkThrough__c == 'In Progress' || !CONTAINS(ImpMgrMapKey,$User.Id) || !Task_Create_Update_Delete ) && t1.task.Id_After_Decimal__c != 1}"/></center>
+                                                            </td>
+                                                            <td class="" data-label="Jump">
+                                                                <center><apex:inputCheckbox value="{!t1.task.Jump__c}" rendered="{!t1.task.Status__c != i8.STATUS_READY && Stack_Status == false && CurSOE.Status__c != i8.STATUS_IMP_COMP && CurSOE.Status__c != i8.STATUS_IMPINPROGRESS && ListSize != t1.task.Id_After_Decimal__c  && t1.newtask == false && t1.task.Status__c!=i8.STATUS_COMPLETED && CurSOE.QA_Review__c != 'In Progress' && CurSOE.WalkThrough__c != 'In Progress' && CONTAINS(ImpMgrMapKey,$User.Id)&& Task_Create_Update_Delete  && ListSize > 2}" /> 
+                                                                    <apex:outputField value="{!t1.task.Jump__c}" rendered="{!t1.task.Status__c == i8.STATUS_READY || Stack_Status == true ||  CurSOE.Status__c == i8.STATUS_IMP_COMP || CurSOE.Status__c == i8.STATUS_IMPINPROGRESS || t1.task.Status__c==i8.STATUS_COMPLETED || (CurSOE.QA_Review__c == 'In Progress' || CurSOE.WalkThrough__c == 'In Progress') || !CONTAINS(ImpMgrMapKey,$User.Id) || !Task_Create_Update_Delete }"/></center>
+                                                            </td>
+                                                            <td class="" data-label="Docs">
+                                                                <center><apex:commandLink action="{!openDocuments}">
+                                                                     <apex:param name="taskid" value="{!t1.task.ID}" assignTo="{!taskid}"/>                                                                        
+                                                                    <apex:outputPanel rendered="{! t1.task.Attachments.Size == 0 && t1.newtask == false}"> <i class="fa fa-file-text" title="No Documents attached, click to add" style="color:black;"></i></apex:outputPanel>
+                                                                    <apex:outputPanel rendered="{! t1.task.Attachments.Size > 0 }"> <i class="fa fa-file-text" title="Documents attached, click to add & view" style="color:blue;"></i></apex:outputPanel>                                                                        
+                                                                </apex:commandLink></center>
+                                                            </td>                                                            
+                                                        </tr>
+                                                    </apex:repeat>                                        
+                                                </tbody>
+                                            </table>                                             
+                                        </div> 
+                                        <div class="col-lg-4"></div>
+                                        <div class="col-lg-4">                                        
+                                            <div class="btn-group" role="group" aria-label="...">
+                                                <apex:commandButton value="<<" rerender="panel1" action="{!beginning}" status="updateStatus2" styleclass="btn btn-primary" disabled="{!index==0}" style="padding-left: 15px; padding-right:15px;"/>
+                                                <apex:commandButton value="<" rerender="panel1" action="{!previous}" status="updateStatus2" styleclass="btn btn-primary" disabled="{!Prev}" style="padding-left: 15px; padding-right:15px;"/>
+                                                <apex:commandButton value=">"  rerender="panel1" action="{!next}" status="updateStatus2" styleclass="btn btn-primary" disabled="{!nxt}" style="padding-left: 15px; padding-right:15px;"/>
+                                                <apex:commandButton value=">>" rerender="panel1" action="{!end}" status="updateStatus2" styleclass="btn btn-primary" disabled="{! (index + PageSize) >= totalRecs}" style="padding-left: 15px; padding-right:15px;"/>
+                                            </div>
+                                            <apex:actionStatus id="updateStatus2">
+                                                <apex:facet name="start">
+                                                   <img src="{!$Resource.Running}" alt="" height="25" width="25" /> Processing...
+                                                </apex:facet>
+                                            </apex:actionStatus>
+                                        </div> 
+                                        <div class="col-lg-4" style="text-align: right">
+                                             <apex:outputPanel rendered="{! (index + PageSize) > totalRecs && WrapperList != null && WrapperList.Size > 0}"> <b>Showing records from {!index+1} to {! totalRecs} of {!totalRecs}.</b></apex:outputPanel>
+                                             <apex:outputPanel rendered="{! (index + PageSize) <= totalRecs && WrapperList!= null && WrapperList.Size > 0}"><b> Showing records from {!index+1} to {! index + PageSize} of {!totalRecs}.</b></apex:outputPanel>
+                                        </div>                                      
+                                    </div>
+                                     
+                                </div>
+                            </div>
+                        </div>
+                   </apex:outputPanel>
+                   </apex:outputPanel>
+                </section>
+            </div>            
+            <footer class="main-footer">
+                <div class="pull-right hidden-xs">
+                    <b>Version</b> 2.3.0
+                </div>                
+                <strong>Copyright &copy; 2014-2015 <a href="#">DEMO</a>.</strong> All rights reserved.
+            </footer>       
+        </div>
+    <apex:includescript value="{!$Resource.Jquery1}" /> 
+    <script>
+        function DisableNextButton() {
+            btnId ='j_id0:frm:btn1';
+            document.getElementById(btnId).disabled = 'true';
+        }
+    </script>
+    </apex:form>
+</apex:page>

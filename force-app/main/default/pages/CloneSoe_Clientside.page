@@ -1,0 +1,207 @@
+<apex:page standardController="SOE__c" showHeader="false" sidebar="false" extensions="Clone_SOE_cntrl" standardStylesheets="false">  
+    <style>        
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar {background-color:#CFEEF8; border-color: #303260;  } 
+         hr {margin-top: 10px; margin-bottom: 5px; }
+        #selector_cat{width: 100px; overflow: auto;}
+        .custPopup{  background-color: white;     border-width: 1px; border-style: solid;  z-index: 9999;  left:50%;  padding:10px; position: fixed;   left: 25%;    top:15%;  }
+        .popupBackground{ background-color:black; opacity: 0.20;  filter: alpha(opacity = 20);  position: absolute;  width: 100%;  height: 100%;       top: 0; left: 0; z-index: 9998;    }
+        @media screen and (min-width: 1080px) {
+            .clone{padding-top: 115px;  }
+        } 
+        body .btn { color: #fff;   padding : 4px 15px 4px 15px; background :#529dc8 ;font-size:15px; border-radius : 16px;}
+        .btn:hover, .btn:focus, .btn.focus { background :  #367fa9;  }    
+    </style>    
+    <apex:form >    
+        <div class="wrapper">
+            <!--Header section starts ------>
+           <c:SOEPageHeader sid="{!OriginalSOE1.Id}"></c:SOEPageHeader> 
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <form id="frmTasksOverview" class="form-group">
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                               <div class="row">
+                                    <div class="col-xs-9">
+                                        <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                        <h3 style="display:inline;COLOR:#093E4F;">CLONE SOE</h3>
+                                    </div>
+                                    <div class="col-xs-3" style="text-align: right">    
+                                        <apex:commandButton value="Cancel" action="{!CancelSOE}"   styleClass="btn btn-primary btn-sm"/>
+                                    </div>
+                                </div>
+                                <hr/>                                
+                                  <apex:outputPanel id="frm">
+                                  <apex:outputPanel rendered="{!err}"><div class="alert alert-danger" role="alert" id="err"> {!$Label.CloneSOE001}</div></apex:outputPanel>
+                                   <apex:outputPanel rendered="{!err1}"><div class="alert alert-info" role="alert" id="err"> {!$Label.CloneSOE002}</div></apex:outputPanel>                              
+                                   <apex:outputPanel rendered="{!errormsg != null}"><div class="alert alert-danger" role="alert" id="err"> {!errormsg} </div></apex:outputPanel>                              
+                                  <apex:outputPanel id="tstpopup">                                
+                                        <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}" />
+                                        <apex:outputPanel styleClass="custPopup" style="max-height: 55%; height:relative; max-width: 55%; width:relative; overflow-x: hidden;" layout="block" rendered="{!displayPopUp}">
+                                            <div class="box box-info">
+                                                <div class="box-body scrollable-menu" style="padding: 5px; margin-left: 10px;margin-right: 10px; ">
+                                                    <apex:outputPanel rendered="{!errmsg}"><div class="alert alert-danger" role="alert" id="err"> {!$Label.CloneSOE001}</div></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!Extnl_depcy_selct == '0' }"><center> {!$Label.i8__clonesoe003}</center></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!Extnl_depcy_selct == '1' }"><center> {!$Label.i8__clonesoe004} </center></apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!WrapperList.Size ==0 && Extnl_depcy_selct == '2' }"> {!$Label.i8__clonesoe005} <br/>{!$Label.i8__clonesoe006}</apex:outputPanel>
+                                                    <apex:outputPanel styleClass="table-responsive" rendered="{!WrapperList != null && WrapperList.Size > 0 && Extnl_depcy_selct == '2' }">
+                                                     <table class="table table1">
+                                                         <thead>
+                                                           <tr>
+                                                                <th>SOE No</th>
+                                                                <th>Old SOE Title</th>
+                                                                <th>New SOE Title</th>
+                                                            </tr>
+                                                          </thead>
+                                                          <tbody>
+                                                            <apex:repeat value="{!WrapperList}" var="wc">                                                             
+                                                                <tr>
+                                                                    <td><apex:outputText value="{!wc.SOEName }"/> </td>      
+                                                                    <td><apex:outputText value="{!wc.OldSOETitle}"/></td>
+                                                                    <td><apex:inputText value="{!wc.newSOE.SOE_Title__c}"/></td>                                  
+                                                                </tr>
+                                                            </apex:repeat>
+                                                          </tbody>
+                                                    </table>
+                                                    </apex:outputPanel>
+                                                    <center>    <apex:commandButton value="Ok" action="{!PopUpOk}"  styleClass="btn btn-primary btn-sm"/>
+                                                    <apex:commandButton value="Cancel" action="{!PopUpCancel}" reRender="frm" styleClass="btn btn-primary btn-sm"/>  </center>
+                                                </div>
+                                            </div>
+                                        </apex:outputPanel>
+                                  </apex:outputPanel>                                  
+                                 <div class="row">
+                                  <apex:outputPanel rendered="{!PageName == 'tab'}">
+                                    <div class="col-lg-4">
+                                        <div class="box box-info">
+                                            <div class="box-body" style="padding: 5px; margin-left: 10px;margin-right: 10px;">
+                                               <apex:outputPanel id="selsoe">
+                                                <div class="row">
+                                                    <div class="col-md-3">      <apex:outputLabel style="font-size:14px;font-weight:bold;" value="Search SOE"/>    </div>
+                                                    <div class="col-md-4" style="padding-left:0px;">     <apex:inputtext value="{!Seact_ip}" id="serid"/>    </div>
+                                                   <div class="col-md-5">     
+                                                       <apex:commandButton value="Search" action="{!SOE_List}" rerender="selectlist,frm" disabled="{!SelectList}" />   &nbsp;
+                                                        <apex:commandButton value="Clear" action="{!ClrStr}" rerender="serid,selectlist,frm" disabled="{!SelectList}" />
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-3">   </div>                                                   
+                                                    <div class="col-md-6" style="padding-left:0px;">    
+                                                        <apex:selectList multiselect="false" size="15" styleClass="col-md-12 form-control" style="min-width:180px;" value="{!CloneSOE}" id="selectlist" disabled="{!SelectList}">
+                                                            <apex:selectOptions value="{!SOE_Options}"/>
+                                                        </apex:selectList> 
+                                                    </div>
+                                                    <div class="col-md-3 clone">  <apex:commandButton value="Clone" action="{!Select_CloneSOE}" styleClass="btn btn-primary btn-sm" disabled="{!SelectList}" reRender="frm"/>   </div>
+                                                </div>
+                                                     <center>
+                                                        <apex:commandButton value="Clear"  action="{!ClearSelection}" styleClass="hidden-xs btn btn-primary btn-sm" rendered="{!PageName == 'tab'}" reRender="frm" disabled="{!SelectList}"/>
+                                                    </center>
+                                               </apex:outputPanel> 
+                                            </div>
+                                        </div>                                        
+                                    </div>    
+                                      </apex:outputPanel>
+                                     <apex:outputPanel rendered="{!CloneSOE != null && CloneSOE !='' && err1 == false}" id="sec2" >
+                                    <div class="col-lg-8">
+                                                <div class="box box-info">
+                                                    <div class="box-body" style="padding: 5px; margin-left: 15;">                                                   
+                                                        <div class="row">
+                                                            <div class="col-md-3">  <label>  SOE Title </label>      </div>
+                                                            <div class="col-md-3">  <apex:inputField value="{!NewSOE1.SOE_Title__c}"/>     </div>
+                                                             <div class="col-md-3">      <label> Change Request No </label>      </div>  
+                                                            <div class="col-md-3">   <apex:outputField value="{!NewSOE1.Change_Record__c}"/>   </div>                                                             
+                                                        </div>                                                       
+                                                        <div class="row">
+                                                             <div class="col-md-3">   <label> Department  </label>   </div>  
+                                                             <div class="col-md-3">  <apex:outputField value="{!NewSOE1.Department__c}"/>     </div>
+                                                             <div class="col-md-3">   <label> Audio Call No </label> </div>
+                                                             <div class="col-md-3"><apex:outputField value="{!NewSOE1.Conference_Call_No__c}"/>    </div>                                                              
+                                                        </div>                                                         
+                                                        <div class="row">
+                                                            <div class="col-md-3">  <label> Programme  </label>       </div>
+                                                            <div class="col-md-3">   <apex:outputField value="{!NewSOE1.Programme__c}"/>  </div>
+                                                            <div class="col-md-3">     <label> QA Review Required </label> </div> 
+                                                            <div class="col-md-3">   <apex:outputField value="{!NewSOE1.QA_Review_Required__c}"/>   </div>                                                             
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">    <label> Project </label>  </div> 
+                                                             <div class="col-md-3">   <apex:outputField value="{!NewSOE1.Project__c}"/>   </div>
+                                                            <div class="col-md-3">   <label> QA Manager </label>  </div>
+                                                            <div class="col-md-3">  <apex:outputField value="{!NewSOE1.QA_Manager__c}"/>     </div>                                                               
+                                                        </div>  
+                                                        <div class="row">
+                                                            <div class="col-md-3">  <label> Status </label>
+                                                                 <span data-toggle="tooltip" data-placement="right" title="Default Set To Build" class="Tooltipbgcolour"> <i class="fa fa-question-circle" style="color:#F28500;"></i></span>
+                                                            </div>
+                                                            <div class="col-md-3">  <apex:outputField value="{!NewSOE1.Status__c}"/>  </div>                                                           
+                                                            <div class="col-md-3">    <label> WalkThrough Required  </label>    </div>  
+                                                             <div class="col-md-3">   
+                                                                <apex:outputField value="{!NewSOE1.WalkThrough_Required__c}"/>                                             
+                                                            </div> 
+                                                        </div>
+                                                         <div class="row">
+                                                            <div class="col-md-3">   <label> Baseline Start </label>   </div> 
+                                                             <div class="col-md-5 col-xs-12">   <apex:outputField value="{!NewSOE1.Baseline_Start__c}"/>  </div>
+                                                            <div class="col-md-3">    </div>                                                               
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">  <label> Summary </label>  </div>
+                                                            <div class="col-md-8">  <apex:outputField value="{!NewSOE1.Summary__c}" styleClass="col-md-12"/>   </div>  
+                                                        </div>  
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                 <label> Keep All Imp Mgrs </label><span data-toggle="tooltip" data-placement="right" title="Keep same implementation managers from the source SOE">
+                                                                <i class="fa fa-question-circle" style="color:#F28500;"></i></span>
+                                                            </div>
+                                                            <div class="col-md-3">   <apex:inputCheckbox value="{!Imp}"/> </div>
+                                                            <div class="col-md-3">  
+                                                                <label> Keep Jump Tasks </label>  <span data-toggle="tooltip" data-placement="right" title="All the jumped tasks to be carried from the source SOE">
+                                                                <i class="fa fa-question-circle" style="color:#F28500;"></i></span>                                                                                                               
+                                                            </div>  
+                                                             <div class="col-md-3">    <apex:inputCheckbox value="{!Jump}"/>       </div> 
+                                                        </div>                                                         
+                                                        <div class="row">
+                                                            <div class="col-md-3">   <label> Keep Time Bound </label>
+                                                                <span data-toggle="tooltip" data-placement="right" title="Current time is assigned to TimeBound"> 
+                                                                <i class="fa fa-question-circle" style="color:#F28500;"></i></span>
+                                                            </div>
+                                                            <div class="col-md-3">    <apex:inputCheckbox value="{!TimeBound}"/>   </div>
+                                                            <div class="col-md-3">     <label> % Of Contingency </label>
+                                                                 <span data-toggle="tooltip" data-placement="right" title="The calculation can be based on planned duartion of source SOE">
+                                                                <i class="fa fa-question-circle" style="color:#F28500;"></i></span>                                                  
+                                                            </div>  
+                                                             <div class="col-md-3">                                                                  
+                                                                <apex:selectList value="{!Plus_Minus_value}" size="1" id="sl">
+                                                                    <apex:selectOptions value="{!Plus_Minus_values}"/>                                                
+                                                                </apex:selectList>
+                                                                <apex:inputText value="{!Contingency}" />                                                
+                                                            </div>  
+                                                        </div>                                                            
+                                                        <div class="row">
+                                                            <div class="col-md-3">   <label>  External Dependencies </label>     </div>
+                                                            <div class="col-md-7">
+                                                                <apex:selectList value="{!Extnl_depcy_selct}" size="1"> 
+                                                                <apex:selectOptions value="{!Extnl_depndcy}"/>
+                                                                <apex:actionSupport event="onchange" reRender="frm"/>
+                                                                </apex:selectList> 
+                                                            </div>
+                                                            <div class="col-md-2">       </div>  
+                                                        </div> 
+                                                        <div class="row">
+                                                            <div class="col-md-12">  <center> <apex:commandButton value="Create" action="{!CloneSOE}" rerender="frm" styleClass="btn btn-primary btn-sm"  /></center>  </div>    
+                                                        </div>                                                                                                          
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </apex:outputPanel>  
+                                </div> </apex:outputPanel>
+                            </div> 
+                        </div>
+                    </form>
+                </section>
+            </div> <!-- Content Wrapper ends---->
+            <c:PageFooter ></c:PageFooter><!-- Footer section ends------>
+        </div>
+   </apex:form> 
+</apex:page>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>My_MIS_View</fullName>
+    <columns>NAME</columns>
+    <columns>MIS_Title__c</columns>
+    <columns>CREATEDBY_USER</columns>
+    <columns>SOEs__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>My MIS View</label>
+</ListView>

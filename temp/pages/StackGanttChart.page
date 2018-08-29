@@ -1,0 +1,126 @@
+<apex:page controller="StackGanttChart_Cntrl" standardStylesheets="false" showHeader="false"> 
+  <head>        
+        <apex:stylesheet value="{!URLFOR($Resource.DHTMLXGantt4, 'codebase/dhtmlxgantt.css')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.DHTMLXGantt4, 'codebase/dhtmlxgantt.js')}"/> 
+        <apex:includeScript value="{!URLFOR($Resource.DHTMLXGantt4, 'codebase/ext/dhtmlxgantt_tooltip.js')}"/>        
+        <style type="text/css">
+            html, body{ height:100%; padding:0px; margin:0px; overflow: hidden;}
+            .child_preview{box-sizing: border-box;margin-top: 2px;position: absolute;  z-index: 1;  color: white; text-align: center;    font-size: 12px;     }   
+            .gantt_task_line.task-collapsed{   opacity: 0.25;       }    
+            .gantt_task_line.gantt_project.task-collapsed .gantt_task_content{      display: none;      }   
+            .gantt_row.task-parent{  font-weight: bold;     }   
+            .Btn { border-radius:15px;width:70px;height:26px;background:white;border: 1px solid #B6B6B4; }       
+        </style>
+    </head>
+    <body>
+        <div><c:SOEPageHeader object="{!MISId}" ></c:SOEPageHeader>  <!--Header section ends------></div>
+        <br/>
+        <div style="width:99%"> 
+        
+            <div style="width:20%;float:left;">
+                &nbsp;&nbsp;
+                 <input type="button" value="Day" onclick="DayView();" id="button1" class="Btn"/>
+                 <input type="button" value="TimeLine" onclick="TimelineView();" id="button2" class="Btn"/>
+            </div>
+            <div style="width:70%;float:left;">  </div>
+            <div style="width:10%;float:right;" > <apex:form >   <apex:commandButton value="Cancel" action="{!OpenCancel}" styleClass="btn btn-primary"  /> </apex:form>   </div> 
+        </div>
+        <div style="clear: left;"></div><br/>
+        <div id="gantt_here" style='width:98%; height:77%;'></div>  
+    
+        <script type="text/javascript">
+            var start =0;
+            var pagesize =5; 
+            DayView();
+            window.onload=function()
+            {
+            //   TasksDispaly(); 
+            } 
+            function DayView(){
+                gantt.config.scale_unit = "month";
+                gantt.config.row_height = 24;
+                gantt.config.date_scale = "%F, %Y";
+                gantt.config.scale_height = 50; 
+                gantt.config.subscales = [
+                    {unit:"day", step:1, date:"%j, %D" }
+                ];
+                document.getElementById('button1').style.backgroundColor = '#529dc8';
+                document.getElementById('button2').style.backgroundColor = 'white';
+                 TasksDispaly(); 
+            }
+            function TimelineView(){
+                document.getElementById('button2').style.backgroundColor = '#529dc8';
+                document.getElementById('button1').style.backgroundColor = 'white';
+                gantt.config.scale_unit = "hour";
+                gantt.config.duration_unit = "minute";        
+                gantt.config.date_scale = "%H:%i";
+                gantt.config.details_on_create = true;
+                gantt.config.subscales = [{unit:"day", step:1, date:"%d-%D %M,%Y"}]; 
+                TasksDispaly();   
+            }  
+            
+            function TasksDispaly()
+            {            
+                gantt.config.readonly = true;
+                if({!$User.UIThemeDisplayed == 'Theme3' || $User.UIThemeDisplayed == 'Theme4d'}){
+                    gantt.config.columns = [
+                    {name:"soe", label:"SOE", width:100, tree:true},
+                    {name:"idtext", label:"ID", width:50},
+                    {name:"text", label:"Task Title", width:150} ,
+                    {name:"sdate", label:"Start Date", width:110},
+                    {name:"edate", label:"End Date", width:110}       
+                    ];
+                 }
+                else{
+                      gantt.config.columns = [{name:"idtext", label:"Id", width:140, tree:true}  ];
+                }
+                           
+                gantt.config.lightbox.sections = [
+                    {name: "description", height: 70, map_to: "text", type: "textarea", focus: true},
+                    {name: "type", type: "typeselect", map_to: "type"},
+                    {name: "time", type: "duration", map_to: "auto"}
+                ];
+                gantt.init("gantt_here");                
+                gantt.templates.task_text=function(start,end,task){
+                    return "<b>"+task.idtext+"</b> - "+task.text;
+                };
+                gantt.templates.tooltip_text = function(start,end,task){
+                        var x=  new Date(task.start_date );
+                        var start = x.getFullYear() + '-' + (x.getMonth()+1) + '-' + x.getDate() + ' ' + x.getHours() + ':' + x.getMinutes();
+                        var y=  new Date(task.end_date );
+                        var end = y.getFullYear() + '-' + (y.getMonth()+1) + '-' + y.getDate() + ' ' + y.getHours() + ':' + y.getMinutes();
+                        return "<b> SOE :</b> "+ task.soe+"<br/><b> Task Id:</b> "+ task.idtext+"<br/><b>Task Title:</b> "+task.text+"<br/> <b>Start Time: </b>"+start+"<br/> <b>End Time: </b>"+end+"<br/><b>Duration:</b> " + task.taskdur;
+                };
+                gantt.templates.link_text=function(start,end,task){
+                        return "<b>"+task.id+"</b> - "+task.text;
+                };              
+                var str=''; 
+                var MISId = '{!JSENCODE(HTMLENCODE(MISId))}';
+                Visualforce.remoting.Manager.invokeAction('{!$RemoteAction.StackGanttChart_Cntrl.getTasks}',MISId,function(result, event){
+                console.log(result);
+                 if (event.status){ 
+                        var list2 =new Array();
+                        for(var i=0;i<result.length ;i++)
+                        {                         
+                            var Enddate = new Date(result[i].I8__End_Time__c);
+                            var Startdate = new Date(result[i].I8__Start_Time__c);
+                            var formattedendDate = ('0' + Enddate.getDate()).slice(-2) + '/' + ('0' + (Enddate.getMonth() + 1)).slice(-2) + '/' + Enddate.getFullYear() + ' ' + ('0' + Enddate.getHours()).slice(-2) + ':' + ('0' + Enddate.getMinutes()).slice(-2);
+                            var formattedStartDate = ('0' + Startdate.getDate()).slice(-2) + '/' + ('0' + (Startdate.getMonth() + 1)).slice(-2) + '/' + Startdate.getFullYear() + ' ' + ('0' + Startdate.getHours()).slice(-2) + ':' + ('0' + Startdate.getMinutes()).slice(-2);
+                            list2.push({"soe": result[i].I8__SOE__r.Name,"id":result[i].Id,"open":false,color:"#6CC417",text:result[i].I8__Task_Title__c, start_date:formattedStartDate ,sdate:formattedStartDate, end_date:formattedendDate , edate : formattedendDate,idtext:result[i].I8__ID_Text__c,taskdur: result[i].I8__Duration__c} );
+                        }                       
+                        gantt.clearAll(); 
+                        gantt.parse({data:list2});
+                   }
+                  else if (event.type === 'exception') {
+                      alert(event.message +  event.where );
+                  } 
+                  else {
+                        alert(event.message);
+                  } 
+                 },
+                   {escape: true}
+                );    
+            }            
+        </script>
+    </body>
+</apex:page>

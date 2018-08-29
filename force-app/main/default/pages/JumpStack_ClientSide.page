@@ -1,0 +1,60 @@
+<apex:page showheader="false" standardstylesheets="false" controller="jump_stack_cntrl">
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar { background-color:#CFEEF8; border-color: #303260; } 
+    </style>  
+    <apex:form id="frm">      
+        <div class="wrapper">
+            <c:SOEPageHeader sid="{!SOEObj.Id}" ></c:SOEPageHeader>  
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <form id="frmTasksOverview" class="form-group">
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                             <apex:outputPanel id="panel1">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                        <h3 style="display:inline;COLOR:#093E4F;">Jump Stack</h3> 
+                                    </div>
+                                    <div class="col-lg-4" style="text-align: right">                                              
+                                        <apex:commandButton value="Jump"  rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && SOEobj.Status__c != I8.STATUS_IMP_COMP && SOEobj.Status__c != I8.STATUS_SOE_COMP && SOEobj.Status__c != I8.STATUS_IMPINPROGRESS &&  SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress'}"  action="{!jump_stack}" styleclass="btn btn-primary btn-sm"  style="padding-left: 15px; padding-right:15px;"/>                                                                                                    
+                                        <apex:commandButton value="Cancel" action="{!OpenCancel}" styleClass="btn btn-primary"   style="padding-left: 15px; padding-right:15px;"/>                                 
+                                     </div>
+                                </div>  
+                                <hr />                                
+                                <apex:outputPanel rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && (SOEobj.Status__c == I8.STATUS_IMP_COMP || SOEobj.Status__c == I8.STATUS_SOE_COMP || SOEobj.Status__c == I8.STATUS_IMPINPROGRESS) }"><b><center><h3>{!$Label.i8__addtask002}</h3></center></b></apex:outputPanel>
+                                <apex:outputPanel rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && (SOEobj.QA_Review__c == 'In Progress' || SOEobj.WalkThrough__c == 'In Progress')}"><b><center><h3>{!$Label.i8__addtask003}</h3></center></b></apex:outputPanel>
+                                <apex:outputPanel rendered="{!!(CONTAINS(ImpMgrMapKey,$User.Id))}"><b><center><h3>{!$Label.i8__addtask001}</h3></center></b></apex:outputPanel>
+                                <apex:outputPanel rendered="{! CONTAINS(ImpMgrMapKey,$User.Id) && SOEobj.Status__c != I8.STATUS_IMP_COMP && SOEobj.Status__c != I8.STATUS_SOE_COMP && SOEobj.Status__c != I8.STATUS_IMPINPROGRESS &&  SOEobj.QA_Review__c != 'In Progress' && SOEobj.WalkThrough__c != 'In Progress'}">
+                                    <apex:outputPanel rendered="{!error}">    <div class="alert alert-danger" role="alert" id="err">{!errmsg}</div>   </apex:outputPanel>
+                                    <div class="row">
+                                        <div class="col-sm-1">   <label> Stage</label> </div>     
+                                        <div class="col-sm-1">
+                                            <apex:selectList value="{!SourceStage}" size="1" >
+                                                <apex:selectOptions value="{!StagesList}"> </apex:selectOptions>
+                                                <apex:actionSupport action="{!getSelect_stack}" event="onchange" rerender="panel1"/>
+                                            </apex:selectList>
+                                        </div>              
+                                    </div> 
+                                    <div class="row">
+                                        <div class="col-sm-1">   <label> Stack</label>  </div>     
+                                        <div class="col-sm-1">
+                                            <apex:selectList value="{!selected_Stack}" size="1" multiselect="false">
+                                                <apex:selectOptions value="{!stack_options}">
+                                                </apex:selectOptions>
+                                            </apex:selectList>
+                                        </div>              
+                                    </div>       
+                                </apex:outputPanel>
+                                </apex:outputPanel>
+                            </div>
+                        </div>                        
+                    </form>
+                </section>
+            </div> <!-- Content Wrapper ends---->
+            <c:PageFooter ></c:PageFooter><!-- Footer section ends------>
+        </div>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,4 @@
+Hi {!Task__c.CreatedBy},<br/>
+This is an reminder regaurding the task assigned to you is assumed to start at {!Task__c.Start_Time__c}. So please be ready with the required resources<br/>
+SOE Title: {!Task__c.SOE__c} - {!Task__c.SOE__cr.SOE_title__c}<br/>
+Task Title:{!Task__c.Name} - {!Task__c.Task_Title__c}<br/>

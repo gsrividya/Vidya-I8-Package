@@ -1,0 +1,186 @@
+<apex:page controller="Export_Soe_cntrl"  showHeader="false" sidebar="false" standardStylesheets="false">  
+    <style>
+        .paddtop{  padding-top:70px;}
+        .custPopup{  background-color: white;  border-width: 2px;  border-color: solid-red; z-index: 9999; left: 50%;   width: 30%;   padding:10px;  position: absolute; width: 250px;  height: 90px;  left: 30%;top:18%; }
+        .popupBackground{ background-color:black;   border-color: #eeeeee; border-width: 2px;  opacity: 0.20; filter: alpha(opacity = 20);   position: absolute;  width: 100%;   height: 1000%;  top: 0; left: 0;  z-index: 9998;   }  
+    </style>        
+    <apex:form >
+         <apex:outputPanel rendered="{!$User.UIThemeDisplayed == 'Theme4t'}">
+             <b><center><span style="color:red;font-size:20px;">{!$Label.i8__export001}</span>
+             <br/><apex:commandButton value="Cancel" style="font-size: 13px;" action="{!CancelSOE}"  immediate="true"/></center></b>
+        </apex:outputPanel>
+        <apex:outputPanel rendered="{!$User.UIThemeDisplayed != 'Theme4t'}">        
+        <div class="wrapper">
+            <!--Header section starts ------>
+           <c:SOEPageHeader sid="{!soelist.Id}"></c:SOEPageHeader>            
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <form id="frmTasksOverview" class="form-group">
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                               <div class="row">
+                                    <div class="col-lg-8">
+                                        <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                        <h3 style="display:inline;COLOR:#093E4F;">EXPORT SOE</h3>
+                                    </div>
+                                    <div class="col-lg-4" style="text-align: right">       <apex:commandButton value="Cancel" action="{!CancelSOE}"  styleClass="btn btn-primary btn-sm" />  </div>
+                                </div>
+                                <hr/>
+                                 <apex:outputPanel id="frm">
+                                  <apex:outputPanel rendered="{!errormsg != null}"><div class="alert alert-danger" role="alert" id="err"> {!errormsg} </div></apex:outputPanel>                              
+                                 <div class="row">
+                                   <apex:outputPanel rendered="{! PageName == 'tab'}"> 
+                                    <div class="col-lg-4">
+                                        <div class="box box-info">
+                                            <div class="box-body" style="padding: 5px; margin-left: 10px;margin-right: 10px;">
+                                               <apex:outputPanel id="selsoe"  >
+                                                <div class="row">
+                                                    <div class="col-sm-3" >   <apex:outputLabel style="font-size:14px;font-weight:bold;" value="Search SOE"/>  </div>
+                                                    <div class="col-sm-4" style="padding-left:0px;">  <apex:inputText value="{!SearchValue}"  id="serid"/>   </div>
+                                                   <div class="col-sm-5">     
+                                                       <apex:commandButton value="Search" action="{!SOE_List}" rerender="frm" disabled="{!SelectList}"/>  &nbsp;
+                                                       <apex:commandButton value="Clear" action="{!Clear_search}" rerender="frm" disabled="{!SelectList}"/>
+                                                   </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-3">        </div>                                                   
+                                                    <div class="col-sm-6" style="padding-left:0px;">    
+                                                       <apex:selectList multiselect="false" size="11" style="width:200px;" value="{!DownloadSoe}" id="selectlist" disabled="{!SelectList}" >
+                                                        <apex:selectOptions value="{!SOE_Options}"/>
+                                                    </apex:selectList> 
+                                                    </div>
+                                                    <div class="col-sm-3" >     
+                                                       <br/><br/><br/><br/><apex:commandButton value="Go" reRender="frm" action="{!Select_soe}" styleClass="btn btn-primary btn-sm" disabled="{!SelectList}"/>
+                                                    </div>
+                                                </div>
+                                               </apex:outputPanel> 
+                                            </div>
+                                        </div>
+                                    </div> </apex:outputPanel>      
+                                     <apex:outputPanel rendered="{!DownloadSoe != null && DownloadSoe !='' || PageName != 'tab'}" >
+                                    <div class="col-lg-8">
+                                                <div class="box box-info">
+                                                    <div class="box-body" style="padding: 5px; margin-left: 15;">                                                   
+                                                        <div class="row">
+                                                            <div class="col-sm-3">  <label>  SOE Ttitle  </label>      </div>
+                                                            <div class="col-sm-3">    <apex:outputField value="{!soelist.SOE_Title__c}"/>    </div>
+                                                             <div class="col-sm-3">     <label>  Change Request No  </label>       </div>  
+                                                            <div class="col-sm-3">   <apex:outputField value="{!soelist.Change_Record__c}"/>        </div>                                                             
+                                                        </div>                                                       
+                                                        <div class="row">
+                                                             <div class="col-sm-3">     <label>  Department  </label>     </div>  
+                                                            <div class="col-sm-3">    <apex:outputField value="{!soelist.Department__c}"/>     </div>
+                                                             <div class="col-sm-3">   <label>   Audio Call No </label> </div>
+                                                            <div class="col-sm-3">   <apex:outputField value="{!soelist.Conference_Call_No__c}"/>  </div>                                                              
+                                                        </div>                                                         
+                                                        <div class="row">
+                                                            <div class="col-md-3">  <label> Programme   </label>   </div>
+                                                            <div class="col-md-3"> <apex:outputField value="{!soelist.Programme__c}"/>     </div>
+                                                            <div class="col-md-3">    <label> QA Review Required   </label>     </div> 
+                                                            <div class="col-md-3">    <apex:outputField value="{!soelist.QA_Review_Required__c}"/> </div>                                                             
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">      <label> Project  </label>  </div> 
+                                                             <div class="col-md-3">    <apex:outputField value="{!soelist.Project__c}"/>    </div>
+                                                            <div class="col-md-3">    <label>   QA Manager </label>   </div>
+                                                            <div class="col-md-3">   <apex:outputField value="{!soelist.QA_Manager__c}"/>   </div>                                                               
+                                                        </div>  
+                                                        <div class="row">
+                                                            <div class="col-md-3">  <label> Status </label>   </div>
+                                                            <div class="col-md-3">  <apex:outputField value="{!soelist.Status__c}"/>  </div>                                                           
+                                                            <div class="col-md-3">     <label>  WalkThrough Required  </label>      </div>  
+                                                             <div class="col-md-3">     <apex:outputField value="{!soelist.WalkThrough_Required__c}"/>      </div> 
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">  <label>  Summary </label>    </div>
+                                                            <div class="col-md-3">  <apex:outputField value="{!soelist.Summary__c}"/>   </div>
+                                                            <div class="col-md-3"> <label>  Pre-Imp Stage </label>  </div>
+                                                            <div class="col-md-3"><apex:outputField value="{!soelist.Pre_Implementation_Stage__c}"/> </div> 
+                                                        </div> 
+                                                        <div class="row">
+                                                            <div class="col-md-3">    <label>  Imp Duration </label> </div>  
+                                                            <div class="col-md-3">    <apex:outputField value="{!soelist.Imp_Duration__c}"/>  </div>
+                                                            <div class="col-md-3">     <label>   Post-Imp Stage </label>    </div>  
+                                                             <div class="col-md-3">    <apex:outputField value="{!soelist.Post_Implementation_Stage__c}"/>     </div>  
+                                                        </div>                                                        
+                                                        <div class="row">
+                                                            <div class="col-md-3">    <label> Baseline Start </label>   </div>
+                                                            <div class="col-md-3"> <apex:outputField value="{!soelist.Baseline_Start__c}"/>   </div>
+                                                            <div class="col-md-3">   <label>  BackOut Stage </label>    </div>
+                                                            <div class="col-md-3">   <apex:outputField value="{!soelist.BackOut_Stage__c}"/>   </div>                                                            
+                                                        </div>
+                                                        <div class="row">                                                                                                             
+                                                        </div>                                            
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </apex:outputPanel> 
+                                           <center> <apex:outputPanel rendered="{!DownloadSoe != null && DownloadSoe !=''}">                                                
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="row">
+                                                            <div class="col-md-3"></div>
+                                                            <div class="col-md-2"><b>Select Fields ToDisplay</b> </div>
+                                                            <div class="col-md-1"></div>
+                                                            <div class="col-md-2"> <b>Display Fields</b> </div>
+                                                            <div class="col-md-4"></div>
+                                                        </div>
+                                                         <div class="row">  
+                                                            <div class="col-md-3"></div> 
+                                                            <div class="col-md-2">
+                                                                <apex:selectList value="{!leftselected }" style="width:200px;height:200px;" id="leftlist" multiselect="true" size="10" >
+                                                                    <apex:selectOptions value="{!leftFields}"></apex:selectOptions>
+                                                                </apex:selectList>
+                                                            </div>
+                                                            <div class="col-md-1">
+                                                                <div class="row"></div>
+                                                                <div class="row"> </div>
+                                                                <div class="row">
+                                                                    <apex:commandLink title="Add Selected" action="{!AddFields}" reRender="leftlist,rightlist"><i class="fa fa-caret-right fa-2x" style="padding: 8px;"></i></apex:commandLink>
+                                                                </div>
+                                                                <div  class="row">
+                                                                    <apex:commandLink title="Remove Selected" action="{!DeleteFields}" reRender="leftlist,rightlist"><i class="fa fa-caret-left fa-2x" style="padding: 8px;"></i></apex:commandLink>
+                                                                </div>
+                                                                <div class="row"> </div>
+                                                                <div class="row"> </div>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                               <apex:selectList value="{!Rightselected}"  style="width:200px;height:200px;" id="rightlist" multiselect="true" size="10" >
+                                                                    <apex:selectOptions value="{!Rightfileds}"></apex:selectOptions>
+                                                                </apex:selectList>
+                                                            </div>
+                                                            <div class="col-md-4"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <br/>
+                                                <div class="row">
+                                                    <center><apex:commandButton value="Export"  action="{!Export_method}" styleClass="btn btn-primary btn-sm"/> &nbsp;
+                                                    </center>    
+                                               </div>
+                                            </apex:outputPanel></center>
+                                            <apex:outputPanel id="tstpopup" rendered="{!displaypopup}">
+                                                <apex:outputPanel styleClass="popupBackground" layout="block" />
+                                                <apex:outputPanel styleClass="custPopup" layout="block">
+                                                    <apex:outputText >Choose Download Format:</apex:outputText><br/>
+                                                    <apex:selectRadio value="{!selectradio}" id="selrad" styleClass="table1">
+                                                        <apex:selectOption itemLabel="PDF" itemValue="PDF" id="pdfsel"/>
+                                                        <apex:selectOption itemLabel="CSV" itemValue="CSV" id="csvsel"/>    
+                                                        <apex:actionSupport event="onchange" rerender="tstpopup"/>  
+                                                    </apex:selectRadio>                             
+                                                    <center ><apex:commandbutton value="ok"  action="{!DownloadSoe_method}" styleClass="btn btn-primary btn-sm"/>
+                                                        <apex:commandButton value="Close" action="{!close_method}" styleClass="btn btn-primary btn-sm"/>&nbsp;&nbsp;
+                                                    </center>
+                                                </apex:outputPanel>
+                                        </apex:outputPanel>  
+                                </div> </apex:outputPanel>
+                            </div>
+                        </div>
+                    </form>
+                </section>
+            </div> 
+            <c:PageFooter ></c:PageFooter>
+        </div> 
+        </apex:outputPanel>       
+    </apex:form>
+</apex:page>

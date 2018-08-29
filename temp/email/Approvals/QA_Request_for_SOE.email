@@ -1,0 +1,7 @@
+Hi {!ApprovalRequest.Process_Approver},<br/>
+This mail is regarding approval request of {!SOE__c.Name} after thorough analysis of the SOE, brief details as follows: <br/>
+SOE : {!SOE__c.Name}<br/>
+SOE Name : {!SOE__c.SOE_Title__c}<br/>
+<a href="https://c.ap2.visual.force.com/apex/AllTasks_ClientSide?id={!SOE__c.Id}&view=0">Please click here to check the request</a> <br/><br/>
+Regards, <br/>
+{!SOE__c.OwnerFullName}.

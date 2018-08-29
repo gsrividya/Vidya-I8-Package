@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Max_Planned_End__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <label>Max Planned End</label>
+    <summarizedField>Task__c.Planned_End__c</summarizedField>
+    <summaryFilterItems>
+        <field>Task__c.Stage__c</field>
+        <operation>equals</operation>
+        <value>Imp</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>Task__c.Is_Stack__c</field>
+        <operation>equals</operation>
+        <value>True</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>Task__c.Stage_Level__c</field>
+        <operation>equals</operation>
+        <value>Implementation</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Task__c.SOE__c</summaryForeignKey>
+    <summaryOperation>max</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

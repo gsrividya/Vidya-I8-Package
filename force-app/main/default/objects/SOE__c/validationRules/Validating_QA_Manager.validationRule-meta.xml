@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Validating_QA_Manager</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(QA_Review_Required__c == False, QA_Manager__c != Null)</errorConditionFormula>
+    <errorDisplayField>QA_Review_Required__c</errorDisplayField>
+    <errorMessage>Please select the Checkbox.</errorMessage>
+</ValidationRule>

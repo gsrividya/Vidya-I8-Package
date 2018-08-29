@@ -1,0 +1,28 @@
+<apex:page showHeader="false" sidebar="false" contentType="application/x-excel#{!Task[0].SOE__r.Name}:{!Task[0].SOE__r.SOE_Title__c}.xls" controller="PDF_cntrl" action="{!getfields}" >
+      <apex:pageBlock >       
+      <table border="1"> <tr><td colspan="12" width="100%" align="center" style="font-size:20px;color:blue;"><b>{!Task[0].SOE__r.Name}:{!Task[0].SOE__r.SOE_Title__c}</b></td></tr>
+      </table>
+      <apex:pageBlockSection >
+           <apex:repeat value="{!soelist}" var="soe">
+                <Apex:repeat value="{!str}" var="f">                  
+                     <table >   <tr >    <td  class="col-md-12" colspan="8" ><b>{!labelMap[f]} </b>:{!soe[f]} </td>  </tr> </table>
+                </Apex:repeat>                   
+            </apex:repeat>
+         </apex:pageBlockSection>                 
+         <table> <tr><td colspan="12" width="100%" align="center" style="font-size:20px;color:blue;"><b>Task List</b></td></tr></table>
+            <apex:pageBlockTable value="{!WrapperList}" var="list" border="1" title="Task Information">
+            <apex:column value="{!list.tas.Stage_Level__c}" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}"/>
+            <apex:column value="{!list.tas.Status__c }" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}"/>
+            <apex:column headerValue="ID" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}">#{!list.tas.ID_Text__c}</apex:column>
+            <apex:column value="{!list.tas.Stage__c}" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}"/>
+            <apex:column value="{!list.tas.Task_Title__c}" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}"/>            
+            <apex:column value="{!list.tas.Start_Time__c}" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}"/>
+            <apex:column value="{!list.tas.Duration__c}" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}"/>
+            <apex:column value="{!list.tas.End_Time__c}" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}"/>  
+            <apex:column headerValue="Owner" value="{!list.tas.Stack_Owner_Name__c}" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}"/>
+            <apex:column value="{!list.tas.Description__c}" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}"/>  
+            <apex:column headerValue="Predecessors" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}">  {!list.Pred}  </apex:column>
+            <apex:column headerValue="Successors" style="{!IF((list.tas.Is_Stack__c == true),'background-color:#2f99c6;', IF(list.tas.End_Stack__c == true,'background-color:#ccfcfc;',''))}">  {!list.Succ}  </apex:column>  
+        </apex:pageBlockTable>     
+        </apex:pageBlock>        
+</apex:page>

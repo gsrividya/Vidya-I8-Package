@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <encodingKey>ISO-8859-1</encodingKey>
+    <name>Mail to Assignee when Incident Closed</name>
+    <style>none</style>
+    <subject>Incident Closed</subject>
+    <textOnly>Dear {!Incident__c.Assignee__c},
+
+The Incident raised has been Closed, brief details are as follows:
+Incident: {!Incident__c.Name}
+SOE : {!Incident__c.00N58000003f5f3}
+TASK: {!Incident__c.Task__c}
+Description:{!Incident__c.Summary__c}
+
+Regards,
+{!Incident__c.LastModifiedBy}</textOnly>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

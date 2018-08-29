@@ -1,0 +1,118 @@
+<apex:page Controller="Rota_Cntrl" showHeader="false" standardStylesheets="false" sidebar="false">    
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar {  background-color:#CFEEF8;   border-color: #303260;   }  
+        
+    </style>
+        <body>       
+            <div class="wrapper">
+               <c:SOEPageHeader sid="{!SOEID}" ></c:SOEPageHeader>  <!--Header section ends------>
+                <div  style="min-height:0px!important">
+                    <!-- Main content -->
+                    <section class="content">
+                        <div class="box box-primary ">           
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">            
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <img src="{!$Resource.UserIcon2}" height="30" width="40" style="vertical-align:middle;border-radius:5px" />
+                                        <h3 style="display:inline;COLOR:#093E4F;">RESOURCE ROTA</h3>
+                                    </div>
+                                    <div class="col-lg-4" style="text-align: right">
+                                         <apex:form >  <apex:commandButton value="Cancel" action="{!CancelTask}" styleClass="btn btn-primary"  style="padding-left: 15px; padding-right:15px;"/>&nbsp;&nbsp;  </apex:form>
+                                    </div>
+                                    <div class="col-xs-12">     <hr /> </div>
+                                </div>
+                                 <apex:outputPanel rendered="{!errmsg!= null}" >
+                                        <div class="alert alert-danger" role="alert" id="err" style="width:100%;"> {!errmsg} </div>
+                                    </apex:outputPanel>
+                                <div class="table-responsive">
+                                    
+                                    <table id="PredecesorsTable" class="display table"  >
+                                        <thead>
+                                            <tr>
+                                                <th> SOE#</th>
+                                                <th>ROTA#</th>
+                                                <th>Name</th>                                                
+                                                <th>Team</th>
+                                                <th>Email</th>
+                                                <th>Mobile</th>
+                                                <th>Desk Phone</th>
+                                                <th>Location</th>
+                                                <th>Secondary Name</th>
+                                                <th>Secondary Team</th>
+                                                <th>Secondary Mail</th>
+                                                <th>Secondary Mobile</th>
+                                                <th>Secondary Desk Phone</th>
+                                                <th>Manager Name</th>
+                                                <th>Manager Email</th>
+                                                <th>Manager Mobile</th>
+                                                <th>Manager Desk Phone</th>
+                                                <th>Shift Type</th>
+                                                <th width="300px">Start Date</th>
+                                                <th>End Date</th>
+                                                <th>No of Hours</th>
+                                                <th>Vendor</th>
+                                                <th>Application</th>
+                                                <th>Comments</th>                   
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <apex:repeat value="{!RotaList }" var="RTL">
+                                                <tr>
+                                                    <td>{!RTL.SOE__r.name}</td>
+                                                    <td>{!RTL.name}</td>
+                                                    <td>{!RTL.Name__c}</td>
+                                                    <td><apex:outputfield value="{!RTL.Team__c}"/></td>
+                                                    <td>{!RTL.Email__c}</td>
+                                                    <td>{!RTL.Mobile__c}</td>
+                                                    <td>{!RTL.Desk_Phone__c}</td>
+                                                    <td>{!RTL.Location__c}</td>
+                                                    <td>{!RTL.Secondary_Name__c}</td>
+                                                    <td>{!RTL.Secondary_Team__r.name}</td>
+                                                    <td>{!RTL.Secondary_Mail__c}</td>
+                                                    <td>{!RTL.Secondary_Mobile__c}</td>
+                                                    <td>{!RTL.Secondary_DeskPhone__c}</td> 
+                                                    <td>{!RTL.Manager_Name__c}</td>
+                                                    <td>{!RTL.Manager_Email__c}</td>
+                                                    <td>{!RTL.Manager_Mobile__c}</td>
+                                                    <td>{!RTL.Manager_DeskPhone__c}</td>
+                                                    <td>{!RTL.Shift_Type__c}</td>
+                                                    <td width="300px">{!RTL.Start_Date__c}</td>
+                                                    <td>{!RTL.End_Date__c}</td>                        
+                                                    <td>{!RTL.No_of_Hours__c }</td>
+                                                    <td>{!RTL.Vendor__c}</td>
+                                                    <td>{!RTL.Application__c}</td>
+                                                    <td>{!RTL.Comments__c}</td>
+                                                </tr>
+                                            </apex:repeat>
+                                        </tbody>           
+                                    </table>        
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+             <apex:includescript value="{!$Resource.JQuery_Min}" />     
+             <apex:includescript value="{!$Resource.JQuery_DataTable_Min}" />   
+             <apex:stylesheet value="{!$Resource.JQuery_DataTable_CSS}" />
+             <script>
+            j$ = jQuery.noConflict();
+            j$(document).ready( function () {
+                if( '{!$User.UIThemeDisplayed}'== 'Theme4d')
+                   j$('#PredecesorsTable').DataTable( { 
+                          "columnDefs": [                                            
+                                {
+                                    "targets": [ 0 ],
+                                    "visible": false
+                                },
+                            ],
+                             "order": [[ 0, "asc" ]]                        
+                   });                
+               
+            });
+            </script> 
+        </body>    
+    
+</apex:page>

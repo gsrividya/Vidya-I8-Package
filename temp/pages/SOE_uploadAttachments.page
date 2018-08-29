@@ -1,0 +1,91 @@
+<apex:page controller="SOE_UploadAttachments_Cntrl" showHeader="false" standardStylesheets="false">
+    <apex:form >
+        <style>
+            .wrapper {background-color: #EEE !important;}
+            .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+            .navbar {background-color:#CFEEF8;border-color: #303260;}  
+            .table-responsive {width: 100%;margin-bottom: 15px;overflow-x: auto;overflow-y: hidden;-webkit-overflow-scrolling: touch;-ms-overflow-style: -ms-autohiding-scrollbar;border: 1px solid #000000;}
+        </style>
+        <head>
+             <apex:includescript value="{!$Resource.JQuery_Min}" />     
+             <apex:includescript value="{!$Resource.JQuery_DataTable_Min}" />   
+             <apex:stylesheet value="{!$Resource.JQuery_DataTable_CSS}" />
+                <script>
+                j$ = jQuery.noConflict();
+                j$(document).ready( function () {
+                    if( '{!$User.UIThemeDisplayed}'== 'Theme4d')
+                        j$("body").css("font-size","130%");
+                    var contactTable = j$('[id$="contacttable"]').DataTable({
+                        order: [[0, 'asc']], initComplete: function() {
+                            var api = this.api();
+                            var select = j$('[id$=accountSelect]');
+                            api.column(0).data().unique().sort().each( function ( d, j ) {
+                                select.append( '<option value="'+d+'">'+d+'</option>' )
+                            } );   
+                        }
+                    });                   
+                    j$('[id$=accountSelect]').change(function() {
+                        var val = j$.fn.dataTable.util.escapeRegex(
+                            j$(this).val()
+                        );
+                        contactTable.column(0)
+                        .search( val == 'All' ? '' : '^'+val+'$', true, false )
+                        .draw();
+                    });
+                });
+                </script>
+            </head>
+            <body>       
+                <div class="wrapper">
+                    <c:SOEPageHeader sid="{!SOEid}" ></c:SOEPageHeader>  <!--Header section ends------>
+                    <div  style="min-height:0px!important">
+                        <!-- Main content -->
+                        <section class="content">
+                            <div class="box box-primary ">           
+                                <div class="box-body" style="padding: 5px; margin-left: 15px;">            
+                                    <div class="row">
+                                        <div class="col-lg-8">
+                                            <img src="{!$Resource.UserIcon2}" height="30" width="40" style="vertical-align:middle;border-radius:5px" />
+                                            <h4 style="display:inline">Add Attachment</h4>
+                                        </div>
+                                        <div class="col-lg-4" style="text-align: right">
+                                            <apex:commandButton value="Save"  styleclass="btn btn-primary" immediate="true" action="{!upload}" rendered="{! CONTAINS(ImpMgrMapKey,$User.Id)}"  style="padding-left: 15px; padding-right:15px;"/>
+                                            <apex:commandButton value="Cancel" action="{!CancelTask}" styleClass="btn btn-primary"  style="padding-left: 15px; padding-right:15px;"/>
+                                        </div>
+                                        <div class="col-xs-12">
+                                            <hr />
+                                        </div></div>
+                                    <apex:outputPanel rendered="{!checkerror=true}">
+                                        <div Style="background-color:#fffce5;border:1px solid Red;" >  
+                                            <apex:pageMessages ></apex:pageMessages>
+                                        </div>  
+                                    </apex:outputPanel>  
+                                    <apex:outputPanel rendered="{!checksuccess = true}">
+                                        <div Style="background-color:#ccffcc;border:1px solid green;" >  
+                                            <apex:pageMessages ></apex:pageMessages>
+                                        </div>  
+                                    </apex:outputPanel>  
+                                    <div class="row">
+                                        <div class="col-sm-10">
+                                            <apex:inputFile style="width:100%" id="fileToUpload" value="{!fileBody}" filename="{!fileName}"  accept=".mp3,.mp4" rendered="{! CONTAINS(ImpMgrMapKey,$User.Id)}"/>       
+                                        </div>
+                                        <div class="col-sm-2">         
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-10">
+                                            <span style="color: red;">
+                                                <b>{!$Label.i8__soeattachment005}</b>
+                                            </span>
+                                        </div>
+                                        <div class="col-sm-2">         
+                                        </div>
+                                    </div><br/>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </body>
+        </apex:form>
+    </apex:page>

@@ -1,0 +1,8 @@
+Hi {!Access_Request__c.OwnerFullName},
+
+        Your request for accessing the SOE record({!Access_Request__c.SOE__c}) has been Rejected. Reason for rejection is as follows:
+
+Comments: {!ApprovalRequest.Comments}
+
+Regards,
+{!Access_Request__c.Implementation_Manager__c}.

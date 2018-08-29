@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Validation_on_Backout_Process</fullName>
+    <active>true</active>
+    <errorConditionFormula>ISCHANGED(Backout__c)</errorConditionFormula>
+    <errorDisplayField>Backout__c</errorDisplayField>
+    <errorMessage>Once created Process cannot be changed</errorMessage>
+</ValidationRule>

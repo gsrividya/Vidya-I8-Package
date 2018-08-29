@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <label>Status</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Build</fullName>
+                <default>true</default>
+                <label>Build</label>
+            </value>
+            <value>
+                <fullName>Review</fullName>
+                <default>false</default>
+                <label>Review</label>
+            </value>
+            <value>
+                <fullName>Scheduled</fullName>
+                <default>false</default>
+                <label>Scheduled</label>
+            </value>
+            <value>
+                <fullName>Freeze</fullName>
+                <default>false</default>
+                <label>Freeze</label>
+            </value>
+            <value>
+                <fullName>Imp In Progress</fullName>
+                <default>false</default>
+                <label>Imp In Progress</label>
+            </value>
+            <value>
+                <fullName>Imp Completed</fullName>
+                <default>false</default>
+                <label>Imp Completed</label>
+            </value>
+            <value>
+                <fullName>BackingOut</fullName>
+                <default>false</default>
+                <label>BackingOut</label>
+            </value>
+            <value>
+                <fullName>BackedOut</fullName>
+                <default>false</default>
+                <label>BackedOut</label>
+            </value>
+            <value>
+                <fullName>BackoutClosed</fullName>
+                <default>false</default>
+                <label>BackoutClosed</label>
+            </value>
+            <value>
+                <fullName>Abandoned</fullName>
+                <default>false</default>
+                <label>Abandoned</label>
+            </value>
+            <value>
+                <fullName>Suspended</fullName>
+                <default>false</default>
+                <label>Suspended</label>
+            </value>
+            <value>
+                <fullName>SOE Completed</fullName>
+                <default>false</default>
+                <label>SOE Completed</label>
+            </value>
+            <value>
+                <fullName>BO In Progress</fullName>
+                <default>false</default>
+                <label>BO In Progress</label>
+            </value>
+            <value>
+                <fullName>BO Completed</fullName>
+                <default>false</default>
+                <label>BO Completed</label>
+            </value>
+            <value>
+                <fullName>SOE BO Completed</fullName>
+                <default>false</default>
+                <label>SOE BO Completed</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

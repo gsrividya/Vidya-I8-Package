@@ -1,0 +1,46 @@
+<apex:page standardController="SOE__c" id="pg" extensions="Soe_AllAttachments_Cntrl" sidebar="false" standardStylesheets="false" showHeader="false" >
+    <style>
+        .wrapper {background-color: #EEE !important;}
+        .content-wrapper, .right-side, .main-footer, .navbar, .navbar-static-top, .main-header > .navbar {margin-left: 0px !important;} 
+        .navbar {background-color:#CFEEF8;border-color: #303260;}  
+    </style>   
+    <apex:form id="frm">             
+        <div class="wrapper">
+            <!--Header section starts ------>
+            <c:SOEPageHeader sid="{!SOe.Id}" ></c:SOEPageHeader>  <!--Header section ends------>
+            <!-- actionfunctions ends-->
+            <div  style="min-height:0px!important">
+                <section class="content">
+                    <form id="frmTasksOverview" class="form-group">
+                        <div class="box box-primary">
+                            <div class="box-body" style="padding: 5px; margin-left: 15px;">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <img src="{!$Resource.UserIcon}" height="30" width="30" style="border:1px solid #367fa9;border-radius:3px;vertical-align:bottom" />
+                                        <h3 style="display:inline;COLOR:#093E4F;">PLAY AUDIO FILES</h3>                                        
+                                    </div>
+                                    <div class="col-lg-4" style="text-align: right">                                              
+                                        <apex:commandButton value="Cancel" action="{!openCancel}" styleclass="btn btn-primary btn-sm"  style="padding-left: 15px; padding-right:15px;"/>
+                                    </div>
+                                </div>  
+                                <hr />
+                                <apex:outputPanel style="color:red;"><b> {!$Label.i8__soeattachment001}</b></apex:outputPanel>
+                                <apex:outputPanel rendered="{!listAttachment.size == 0}" >  <center><b>{!$Label.i8__soeattachment002}</b></center></apex:outputPanel>
+                                <table class="table1">
+                                    <apex:repeat value="{!listAttachment}" var="item">
+                                        <tr>
+                                            <td> {!item.Name}</td>
+                                            <td><audio src="https://i8dev-dev-ed--c.eu6.content.force.com/servlet/servlet.FileDownload?file={!item.id}" controls="controls"/><br/></td>
+                                        </tr>
+                                    </apex:repeat>
+                                </table>
+                            </div>
+                        </div>                            
+                    </form>
+                </section>
+            </div> <!-- Content Wrapper ends---->
+            <!-- Footer section starts------>
+            <c:PageFooter ></c:PageFooter><!-- Footer section ends------>
+        </div>
+    </apex:form>   
+</apex:page>

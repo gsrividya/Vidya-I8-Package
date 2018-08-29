@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ValidationOnChangeRecord</fullName>
+    <active>true</active>
+    <description>Change Record field allow only Letters, Numbers and Hyphens characters</description>
+    <errorConditionFormula>IF (  AND( NOT (  ISNULL( Change_Record__c ) ) , NOT( REGEX( Change_Record__c ,&quot;^[a-zA-Z0-9-]*$&quot;) ) ) , true,false )</errorConditionFormula>
+    <errorDisplayField>Change_Record__c</errorDisplayField>
+    <errorMessage>Change Record field allow only Letters, Numbers and Hyphens characters</errorMessage>
+</ValidationRule>

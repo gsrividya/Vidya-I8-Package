@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Actual_Duration__c</fullName>
+    <deprecated>false</deprecated>
+    <externalId>false</externalId>
+    <formula>IF(AND(ISBLANK( Actual_End__c),ISBLANK( Actual_Start__c)),&quot;&quot;, 
+IF(Actual_End__c- Actual_Start__c&gt; 0 , 
+TEXT( FLOOR( Actual_End__c- Actual_Start__c) ) &amp; &quot;d &quot; 
+&amp; TEXT( FLOOR( MOD( (Actual_End__c- Actual_Start__c) * 24, 24 ) ) ) &amp; &quot;h &quot; 
+&amp; TEXT( ROUND( MOD( (Actual_End__c- Actual_Start__c) * 24 * 60, 60 ), 0 ) ) &amp; &quot;m&quot;, 
+&quot;0d 0h 0m&quot; 
+))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Actual Duration</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

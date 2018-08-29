@@ -1,0 +1,7 @@
+Hi {!SOE__c.OwnerFullName},<br/><br/>
+This mail is regarding {!SOE__c.Name} QA Completed. SOE, brief details as follows:<br/><br/>
+SOE : {!SOE__c.Name}<br/>
+SOE Name : {!SOE__c.SOE_Title__c}<br/><br/>
+
+Regards,<br/>
+{!ApprovalRequest.Process_Approver}.

@@ -1,0 +1,3 @@
+<apex:page id="MainPage" controller="PDF_cntrl"  showHeader="false" cache="true" contentType="application/vnd-pdf#{!Task[0].SOE__r.Name}:{!Task[0].SOE__r.SOE_Title__c}.pdf">
+    <apex:include pageName="Export_PDF"/>     
+</apex:page>
