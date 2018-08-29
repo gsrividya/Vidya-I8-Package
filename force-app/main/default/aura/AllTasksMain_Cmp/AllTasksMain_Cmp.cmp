@@ -1,0 +1,108 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="SOEId" type="string"/>
+    <aura:attribute name="SOE" type="Object"/>
+    <aura:attribute name="recordError" type="String"/>
+    <aura:attribute name="NavigationItems" type="Object" />
+    <aura:attribute name="ShowMenu" type="boolean" default="false"/>
+    <aura:attribute name="selected" type="String" default=""/>
+    <aura:attribute name="Condition" type="string" />
+    <aura:attribute name="StageLevel" type="string" default="all"/>
+    <force:recordData aura:id="SOERecord"
+                      fields="Name,I8__SOE_Title__c,I8__Status__c,I8__Min_Planned_Start__c,I8__Max_Planned_End__c,I8__Min_Start_Time__c,I8__Max_End_Time__c,I8__Imp_Duration__c,I8__Max_Forecast_End__c,I8__Dealy_Ahead_mins__c ,I8__RAG__c,I8__State__c"               
+                      recordId="{!v.SOEId}"
+                      targetFields="{!v.SOE}"
+                      targetError="{!v.recordError}"     
+                      layoutType="FULL"  
+                      />
+    <div class="slds-box" style="padding:0px 15px 0px 15px;background-color:white;">
+        <div class="slds-grid slds-wrap slds-grid--pull-padded" style="padding:5px">
+            <div class="slds-size--1-of-1 slds-medium-size--1-of-12 ">
+                <img src="{!$Resource.Company_Logo}" alt="" id="phHeaderLogoImage" title="" width="50" height="48" style="margin-top: 0px;"/>
+            </div>
+            <div class="slds-size--1-of-1 slds-medium-size--8-of-12 ">
+                <center> 
+                    <aura:if isTrue="{!v.SOE.I8__Status__c == 'Build' || v.SOE.I8__Status__c == 'Review'}">
+                    	<table><tr> <td> <center><span style="font-size:16px;color:blue;">{!v.SOE.Name} - {!v.SOE.I8__SOE_Title__c} </span></center></td>  </tr> </table>
+                	<aura:set attribute="else">
+                        <table>
+                            <tr>
+                                <td>{!v.SOE.Name}</td>
+                                <td>{!v.SOE.I8__SOE_Title__c}</td>
+                                <aura:if isTrue="{!v.SOE.I8__Status__c == 'Scheduled' || v.SOE.I8__Status__c == 'Freeze'}" >
+                                	<td>Planned Start</td>
+                                	<td>  <ui:outputDateTime  value="{!v.SOE.I8__Min_Planned_Start__c}"  /></td>
+                                </aura:if>
+                                <aura:if isTrue="{!v.SOE.I8__Status__c == 'Imp In Progress' || v.SOE.I8__Status__c == 'Imp Completed' || v.SOE.I8__Status__c == 'SOE Completed'}" >
+                                	<td>Actual Start</td>
+                                	<td>  <ui:outputDateTime  value="{!v.SOE.I8__Min_Start_Time__c}"  /></td>
+                                </aura:if>
+                                <td> Delay / Ahead  Mins</td>
+                                <td><lightning:formattedText value="{!v.SOE.I8__Dealy_Ahead_mins__c}"/></td>
+                            </tr>
+                            <tr>
+                                <td> Imp duration</td>
+                                <td> <lightning:formattedText value="{!v.SOE.I8__Imp_Duration__c}" /></td>
+                                <aura:if isTrue="{!v.SOE.I8__Status__c == 'Scheduled' || v.SOE.I8__Status__c == 'Freeze' }" >
+                                	<td>Planned End</td>
+                                	<td>  <ui:outputDateTime  value="{!v.SOE.I8__Max_Planned_End__c}"  /></td>
+                                </aura:if>
+                                <aura:if isTrue="{!v.SOE.I8__Status__c == 'Imp In Progress' }" >
+                                	<td>Forecast End</td>
+                                	<td>  <ui:outputDateTime  value="{!v.SOE.I8__Max_Forecast_End__c}"  /></td>
+                                </aura:if>
+                                <aura:if isTrue="{! v.SOE.I8__Status__c == 'Imp Completed' || v.SOE.I8__Status__c == 'SOE Completed'}" >
+                                	<td>Actual End</td>
+                                	<td>  <ui:outputDateTime  value="{!v.SOE.I8__Max_End_Time__c}"  /></td>
+                                </aura:if>
+                                <td> RAG Status</td>
+                                <td><aura:unescapedHtml value="{!v.SOE.I8__RAG__c}" /></td>
+                            </tr>
+                        </table>
+                    </aura:set>
+                    </aura:if>
+                    </center>
+            </div>
+            <div class="slds-size--1-of-1 slds-medium-size--3-of-12 ">
+                <lightning:buttonGroup>
+                    <lightning:button  variant="neutral" label="Reset" onclick="{!c.ResetConditions}"/>
+                    <lightning:button variant="neutral" label="Refresh" />
+                    <lightning:button variant="neutral" label="Close" />
+                    <lightning:buttonMenu  alternativeText="Show menu" class="slds-button_last">
+                        <lightning:menuItem label="Menu Item One" value="item1" />
+                        <lightning:menuItem label="Menu Item Two" value="item2" />
+                        <lightning:menuItem label="Menu Item Three" value="item3" />
+                    </lightning:buttonMenu>
+                </lightning:buttonGroup>
+            </div>
+        </div>
+        
+        <lightning:picklistPath aura:id="picklistPath" recordId="{!v.SOEId}"
+                                variant="non-linear"
+                                picklistFieldApiName="I8__Status__c"></lightning:picklistPath>
+        
+        <div class="nav-pull-tab">
+            <div class="landing__logo">
+                <span class="slds-icon_container slds-icon-utility-salesforce1">
+                    <span class="slds-show_medium">
+                        <a onclick="{!c.OpenNavigationMenu}"><lightning:icon iconName="utility:rows"  size="xx-small"/></a>
+                    </span>
+                </span>
+            </div>
+            <a href="#navigation" class="landing__jump-to-nav">Jump to Navigation</a>
+        </div>
+        
+        <div class="slds-grid slds-wrap slds-grid--pull-padded" style="padding:5px">
+            <div class="slds-size--1-of-1 slds-medium-size--3-of-12 slds-hide" aura:id="leftmenu">
+                <div class="slds-box navigationClass">
+                    <lightning:tree items="{! v.NavigationItems }" header="Navigation Menu" onselect="{! c.NavigationMenuSelect }"/>
+                </div>
+            </div>
+            <div class="slds-size--1-of-1 slds-medium-size--12-of-12 " aura:id="table">
+                <div class="slds-box">
+                    <c:AllTasks_Table_Cmp SOEId="{!v.SOEId}" aura:id="tasktable"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

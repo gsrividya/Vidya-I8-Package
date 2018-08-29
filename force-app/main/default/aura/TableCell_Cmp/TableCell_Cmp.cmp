@@ -1,0 +1,17 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="record" type="sobject" />
+    <aura:attribute name="fieldName" type="String" /> 
+    <aura:attribute name="index" type="integer" />
+    <aura:attribute name="value" type="string" />
+    <aura:attribute name="type" type="string" />
+     <aura:attribute name="types" type="string[]" />
+   
+        <aura:if isTrue="{!v.type == 'DATETIME' }" >
+            <ui:outputDateTime  value="{!v.value}"  />
+    </aura:if>
+   
+      <aura:if isTrue="{!v.type != 'DATETIME' }" >
+          <div title="{!v.value}" class="slds-truncate"> <lightning:formattedText value="{!v.value}"/> </div>
+            </aura:if>
+</aura:component>

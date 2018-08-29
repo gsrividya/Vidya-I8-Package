@@ -1,0 +1,10 @@
+.THIS .tableClass{
+    overflow : auto;
+    height:400px;
+}
+.THIS thead th {
+  position: sticky;
+  z-index:999;
+  background-color:#e0ebeb;
+  top: 0;
+}

@@ -1,0 +1,47 @@
+.THIS .nav-pull-tab {
+    flex-direction: column;
+    display: flex;
+    background-color: #99ccff;
+    z-index: 990;
+    text-align: center;
+    pointer-events: auto;
+}
+@media(min-width: 768px) {
+    .THIS .nav-pull-tab {
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        top: 72px;
+        z-index: 10;
+        height: 38px;
+        width: 45px;
+        cursor: pointer;
+    }
+}
+
+@media(min-width: 768px) {
+    .THIS .landing__top-nav {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        height: 82vh;
+        z-index: 20;
+        pointer-events: none;
+    }
+}
+.THIS .landing__jump-to-nav {
+    display: block;
+    background: red;
+}
+@media(min-width: 768px){
+    .THIS .landing__jump-to-nav {
+        display: none;
+    }
+}
+.THIS .navigationClass{
+     overflow-y : auto;
+    overflow-x : hidden;
+     height:520px;
+}

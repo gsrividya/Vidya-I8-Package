@@ -1,0 +1,117 @@
+<aura:component controller="AllTasks_Cntrl" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:method name="taskTableRefresh" action="{!c.getTaskRecords}" > 
+        <aura:attribute name="param1" type="String" /> 
+        <aura:attribute name="param2" type="String" /> 
+    </aura:method>
+    <aura:attribute name="TaskList" type="Task__c[]" />
+    <aura:attribute name="SOEId" type="string" />
+    <aura:attribute name="Condition" type="string" />
+    <aura:attribute name="StageLevel" type="string" default="all"/>
+    
+    <aura:attribute name="CurrentCoulmns" type="string[]" />
+    <aura:attribute name="CurrentFields" type="string[]" />
+    <aura:attribute name="CurrentDatatypes" type="string[]" />
+    
+    <aura:attribute name="MainCoulmns" type="string[]" default="['Task Title' , 'Start Date','Duration','End Date','Team','Owner']"/>
+    <aura:attribute name="MainFields" type="string[]" default="['I8__Task_Title__c','I8__Start_Time__c','I8__Duration__c','I8__End_Time__c','I8__Team__c','I8__Owner__c']"/>
+    <aura:attribute name="MainDatatypes" type="string[]" default="['STRING','DATETIME','STRING','DATETIME','REFERENCE','REFERENCE']"/>
+    
+    <aura:attribute name="MyCoulmns" type="string[]" />
+    <aura:attribute name="MyFields" type="string[]" />
+    <aura:attribute name="MyDataTypes" type="string[]" />
+    
+    <aura:attribute name="PageSize" type="integer" default="10"/>
+    <aura:attribute name="TotalCount" type="integer" />
+    <aura:attribute name="TotalPages" type="integer" />
+    <aura:attribute name="PageNo" type="integer" default="1" />
+    <aura:attribute name="Offset" type="integer" default="0" />
+    <aura:attribute name="Pages" type="integer[]" default="10,20,30,50,100"/>
+    <div class="slds-grid slds-wrap">
+        <div class="slds-size--1-of-1 slds-medium-size--2-of-12  slds-form_horizontal">
+            <lightning:select name="select" label="Select " value="{!v.PageSize}" onchange="{! c.FirstPage }">
+                <aura:iteration items="{!v.Pages}" var="item">
+                    <option text="{!item}"></option>
+                </aura:iteration>
+            </lightning:select>
+        </div>
+        <div class="slds-size--1-of-1 slds-medium-size--8-of-12 ">
+            <center> <span style="color : blue;font-size: 20px;" class="slds-text-title_caps">{!v.StageLevel}
+                <aura:if isTrue="{!v.Condition != undefined}">
+                    - {!v.Condition}
+                </aura:if>
+                </span> </center>
+        </div>
+        <div class="slds-size--1-of-1 slds-medium-size--2-of-12 ">
+            Search
+        </div>
+    </div>
+    <div class="slds-grid slds-wrap">
+    <div class="slds-size--1-of-1 tableClass" >
+    <table class="slds-border--left slds-border--right slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-no-row-hover">
+        <thead>
+            <tr class="slds-text-title_caps"> 
+                <th ><lightning:icon iconName="utility:pinned" size="xx-small"/></th>
+                <th ><lightning:icon iconName="utility:note" size="xx-small"/></th>
+                <th ><lightning:icon iconName="utility:file" size="xx-small"/></th>
+                <th ><lightning:icon iconName="utility:priority" size="xx-small"/></th>
+                <th ><lightning:icon iconName="utility:clock" size="xx-small"/></th>
+                <th ><lightning:icon iconName="utility:notification" size="xx-small"/></th>
+                <th ><lightning:icon iconName="utility:link" size="xx-small"/></th>
+                <th ><lightning:icon iconName="utility:user" size="xx-small"/></th>
+                <th ><b>C</b></th>
+                <th ><b> Stage</b></th>
+                <th ><b> State</b></th>
+                <th ><b> ID</b></th>
+                <aura:iteration items="{!v.CurrentCoulmns}" var="col">
+                    <th scope="col" title="{!col}" ><b>{!col}</b>  </th> 
+                </aura:iteration>
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration items="{!v.TaskList}" var="item" indexVar="index">                        
+                <tr  style="{!item.I8__Is_Stack__c ==true ?'background-color:#b3cccc;': item.I8__End_Stack__c == true ? 'background-color:#e0ebeb;':'' }">
+                    <td><lightning:icon iconName="utility:pinned" size="xx-small"/></td>
+                    <td><lightning:icon iconName="utility:note" size="xx-small"/></td>
+                    <td><lightning:icon iconName="utility:file" size="xx-small"/></td>
+                    <td><lightning:icon iconName="utility:priority" size="xx-small"/></td>
+                    <td><lightning:icon iconName="utility:clock" size="xx-small"/></td>
+                    <td><lightning:icon iconName="utility:notification" size="xx-small"/></td>
+                    <td><lightning:icon iconName="utility:link" size="xx-small"/></td>
+                    <td><lightning:icon iconName="utility:user" size="xx-small"/></td>
+                    <td>C</td>
+                    <td><lightning:formattedText value="{!item.I8__Stage__c}" /></td>
+                    <td><aura:unescapedHtml value="{!item.I8__State__c}" /></td>
+                    <td><lightning:formattedText value="{!item.I8__ID_Text__c}" /></td>
+                    
+                    <aura:iteration items="{!v.CurrentFields}" var="col" indexVar="key">
+                        <td class="slds-wrap" style="width:10%">  
+                            <c:TableCell_Cmp record="{!item}" fieldName="{!col}" types="{!v.CurrentDatatypes}" index="{!key}"/> </td>
+                    </aura:iteration>
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+        </div>
+        </div>
+    <footer class="slds-card__footer">
+        <div class="slds-large-size_12-of-12">
+            <div style="float:left;">
+                Showing {!sub(mult(v.PageNo,v.PageSize),v.PageSize) +1} to 
+                <aura:if isTrue="{!greaterthanorequal(mult(v.PageNo,v.PageSize),v.TotalCount)}">
+                    {!v.TotalCount} of {!v.TotalCount}
+                    <aura:set attribute="else">
+                        {!mult(v.PageNo,v.PageSize)} of {!v.TotalCount}
+                    </aura:set>
+                </aura:if>
+            </div>
+            <div class="slds-button-group btn_pad" role="group">
+                <lightning:buttonIcon class="slds-button--neutral" disabled="{!equals(v.PageNo,1)}" onclick="{!c.FirstPage}" iconName="utility:left" variant="bare" alternativeText="first page" iconClass="dark"/>
+                <lightning:buttonIcon class="slds-button--neutral" disabled="{!equals(v.PageNo,1)}" onclick="{!c.PrevPage}" iconName="utility:chevronleft" variant="bare" alternativeText="previous page" iconClass="dark"/>
+                <input type="number" value="{!v.PageNo}" class="slds-button--neutral slds-button" min="1" max="{!v.TotalPages}" onchange="{!c.ChangePage}" style="width:100px"/>
+                <lightning:buttonIcon class="slds-button--neutral" disabled="{!equals(v.PageNo,v.TotalPages)}" onclick="{!c.NextPage}" iconName="utility:chevronright" variant="bare" alternativeText="next page" iconClass="dark"/>
+                <lightning:buttonIcon class="slds-button--neutral" disabled="{!equals(v.PageNo,v.TotalPages)}" onclick="{!c.LastPage}" iconName="utility:right" variant="bare" alternativeText="last page" iconClass="dark"/>
+            </div>
+        </div>
+    </footer>
+</aura:component>
